@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tzu-Hao Huang</title>
-  <meta name="description" content="Personal academic website of Tzu-Hao Huang — researcher in 5G MIMO, channel charting, and CSI feedback." />
+  <title>Tzu-Hao Huang | 黃子豪</title>
+  <meta name="description" content="Tzu-Hao Huang (黃子豪) — Ph.D. student at National Yang Ming Chiao Tung University working on 5G/6G wireless communications, ISAC, CSI feedback, and reconfigurable intelligent surfaces." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -18,7 +18,7 @@
         <li><a href="#about">About</a></li>
         <li><a href="#research">Research</a></li>
         <li><a href="#publications">Publications</a></li>
-        <li><a href="#projects">Projects</a></li>
+        <li><a href="#awards">Awards</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
       <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
@@ -33,19 +33,21 @@
       <div class="hero__inner">
         <div class="hero__text">
           <p class="hero__eyebrow">Hello, I'm</p>
-          <h1 class="hero__name">Tzu-Hao Huang</h1>
-          <p class="hero__role">M.S. Student · Wireless Communications &amp; Deep Learning</p>
+          <h1 class="hero__name">Tzu-Hao Huang <span class="hero__name-zh">黃子豪</span></h1>
+          <p class="hero__role">Ph.D. Student · Wireless Communications &amp; Deep Learning</p>
+          <p class="hero__affil">National Yang Ming Chiao Tung University (NYCU), Taiwan</p>
           <p class="hero__bio">
-            I am a graduate researcher working at the intersection of
+            I am a Ph.D. student working at the intersection of
             <strong>5G/6G wireless communications</strong> and
-            <strong>deep learning</strong>. My current research focuses on
-            massive MIMO, channel charting, and CSI feedback compression.
-            I enjoy turning hard signal-processing problems into elegant,
-            data-driven solutions.
+            <strong>deep learning</strong>. My research spans
+            integrated sensing and communication (ISAC), deep-learning-based
+            CSI feedback for MIMO systems, reconfigurable intelligent
+            surfaces (RIS), and mmWave/THz communications. I enjoy turning
+            hard signal-processing problems into elegant, data-driven solutions.
           </p>
           <div class="hero__actions">
             <a class="btn btn--primary" href="#contact">Get in touch</a>
-            <a class="btn btn--ghost" href="assets/cv.pdf">Download CV</a>
+            <a class="btn btn--ghost" href="https://github.com/peter94135" target="_blank" rel="noopener">GitHub</a>
           </div>
         </div>
         <div class="hero__photo">
@@ -54,93 +56,123 @@
       </div>
     </section>
 
+    <!-- Education -->
+    <section class="section" id="education">
+      <div class="section__inner">
+        <h2 class="section__title">Education</h2>
+        <ul class="timeline">
+          <li class="timeline__item">
+            <span class="timeline__date">2024 – 2028</span>
+            <div class="timeline__body">
+              <h3 class="timeline__role">Ph.D. in Electrical Engineering / Communications</h3>
+              <p class="timeline__org">National Yang Ming Chiao Tung University (NYCU)</p>
+            </div>
+          </li>
+          <li class="timeline__item">
+            <span class="timeline__date">2021 – 2023</span>
+            <div class="timeline__body">
+              <h3 class="timeline__role">M.S. in Electrical Engineering / Communications</h3>
+              <p class="timeline__org">National Yang Ming Chiao Tung University (NYCU)</p>
+            </div>
+          </li>
+          <li class="timeline__item">
+            <span class="timeline__date">2017 – 2021</span>
+            <div class="timeline__body">
+              <h3 class="timeline__role">B.S. in Electrical Engineering</h3>
+              <p class="timeline__org">National Yang Ming Chiao Tung University (NYCU)</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
     <!-- Research Interests -->
-    <section class="section" id="research">
+    <section class="section section--alt" id="research">
       <div class="section__inner">
         <h2 class="section__title">Research Interests</h2>
         <div class="cards">
           <article class="card">
-            <h3 class="card__title">Massive MIMO</h3>
-            <p>Beamforming, precoding, and signal processing for large-scale antenna systems in 5G/6G networks.</p>
+            <h3 class="card__title">5G / 6G Communications</h3>
+            <p>Physical-layer design and signal processing for next-generation wireless networks.</p>
           </article>
           <article class="card">
-            <h3 class="card__title">Channel Charting</h3>
-            <p>Unsupervised learning of low-dimensional channel representations for localization and mobility.</p>
+            <h3 class="card__title">Integrated Sensing &amp; Communication</h3>
+            <p>ISAC systems that jointly perform sensing, localization, and data transmission.</p>
           </article>
           <article class="card">
             <h3 class="card__title">CSI Feedback</h3>
-            <p>Deep-learning-based compression and reconstruction of channel state information.</p>
+            <p>Deep-learning-based compression and reconstruction of channel state information for MIMO.</p>
           </article>
           <article class="card">
-            <h3 class="card__title">Deep Learning</h3>
-            <p>Neural architectures, representation learning, and their application to physical-layer problems.</p>
+            <h3 class="card__title">Reconfigurable Intelligent Surfaces</h3>
+            <p>Signal optimization and beamforming with RIS to reshape the wireless propagation environment.</p>
+          </article>
+          <article class="card">
+            <h3 class="card__title">mmWave &amp; THz</h3>
+            <p>Beamforming and channel modeling for millimeter-wave and terahertz frequency bands.</p>
+          </article>
+          <article class="card">
+            <h3 class="card__title">Digital Twin &amp; AI</h3>
+            <p>Leveraging digital twins and deep learning for AI-native wireless system design.</p>
           </article>
         </div>
       </div>
     </section>
 
     <!-- Publications -->
-    <section class="section section--alt" id="publications">
+    <section class="section" id="publications">
       <div class="section__inner">
         <h2 class="section__title">Publications</h2>
         <ol class="pub-list">
           <li class="pub">
-            <p class="pub__title">Paper title goes here.</p>
-            <p class="pub__authors"><strong>T.-H. Huang</strong>, A. Coauthor, and B. Advisor.</p>
-            <p class="pub__venue">Conference / Journal Name, Year.</p>
-            <p class="pub__links">
-              <a href="#">PDF</a> ·
-              <a href="#">Code</a> ·
-              <a href="#">DOI</a>
-            </p>
+            <p class="pub__title">UAV localization for next-generation wireless networks.</p>
+            <p class="pub__authors"><strong>T.-H. Huang</strong>, et al.</p>
+            <p class="pub__venue">IEEE Journal / Conference, Year.</p>
           </li>
           <li class="pub">
-            <p class="pub__title">Another paper title.</p>
-            <p class="pub__authors"><strong>T.-H. Huang</strong> and B. Advisor.</p>
-            <p class="pub__venue">Conference / Journal Name, Year.</p>
-            <p class="pub__links">
-              <a href="#">PDF</a> ·
-              <a href="#">DOI</a>
-            </p>
+            <p class="pub__title">Cross-band signal prediction for wireless systems.</p>
+            <p class="pub__authors"><strong>T.-H. Huang</strong>, et al.</p>
+            <p class="pub__venue">IEEE Journal / Conference, Year.</p>
+          </li>
+          <li class="pub">
+            <p class="pub__title">Collaborative MIMO systems.</p>
+            <p class="pub__authors"><strong>T.-H. Huang</strong>, et al.</p>
+            <p class="pub__venue">IEEE Journal / Conference, Year.</p>
+          </li>
+          <li class="pub">
+            <p class="pub__title">Throughput prediction using geographic data.</p>
+            <p class="pub__authors"><strong>T.-H. Huang</strong>, et al.</p>
+            <p class="pub__venue">IEEE Journal / Conference, Year.</p>
           </li>
         </ol>
-        <p class="muted">Replace these with your real publications, or remove the section if you don't have any yet.</p>
+        <p class="muted">Placeholder list based on your research topics — send me the exact titles, authors, venues, years, and DOI/PDF links and I'll format them properly. A Google Scholar link is in the Contact section.</p>
       </div>
     </section>
 
-    <!-- Projects -->
-    <section class="section" id="projects">
+    <!-- Honors, Awards & Patents -->
+    <section class="section section--alt" id="awards">
       <div class="section__inner">
-        <h2 class="section__title">Projects</h2>
-        <div class="cards cards--projects">
-          <article class="card card--project">
-            <h3 class="card__title">Channel Charting Toolkit</h3>
-            <p>An end-to-end pipeline for learning channel charts from CSI data, with visualization tools.</p>
-            <p class="card__tags"><span>Python</span><span>PyTorch</span><span>Signal Processing</span></p>
-            <p class="card__link"><a href="#">View on GitHub →</a></p>
-          </article>
-          <article class="card card--project">
-            <h3 class="card__title">CSI-Net</h3>
-            <p>A neural network for CSI feedback compression evaluated on standard MIMO datasets.</p>
-            <p class="card__tags"><span>Python</span><span>Deep Learning</span></p>
-            <p class="card__link"><a href="#">View on GitHub →</a></p>
-          </article>
-          <article class="card card--project">
-            <h3 class="card__title">Your Next Project</h3>
-            <p>Short description of another project you'd like to showcase.</p>
-            <p class="card__tags"><span>Tag</span><span>Tag</span></p>
-            <p class="card__link"><a href="#">View on GitHub →</a></p>
-          </article>
-        </div>
+        <h2 class="section__title">Honors &amp; Awards</h2>
+        <ul class="award-list">
+          <li><span class="award__year">2026</span> S.M. Sze Fellowship for Outstanding Doctoral Students</li>
+          <li><span class="award__year">2024</span> National Science and Technology Council (NSTC) Graduate Research Fellowship</li>
+          <li><span class="award__year">2023</span> Phi Tau Phi Scholastic Honor Society — Honorary Membership</li>
+        </ul>
+
+        <h2 class="section__title section__title--sub">Patents</h2>
+        <ul class="award-list">
+          <li><span class="award__year">US</span> Signal optimization with reconfigurable intelligent surfaces — <span class="patent-id">US 12,452,703 B2</span></li>
+          <li><span class="award__year">TW</span> Signal optimization with reconfigurable intelligent surfaces — <span class="patent-id">TWI887605B</span></li>
+        </ul>
       </div>
     </section>
 
     <!-- Contact -->
-    <section class="section section--alt" id="contact">
+    <section class="section" id="contact">
       <div class="section__inner section__inner--center">
         <h2 class="section__title">Get in Touch</h2>
         <p class="contact__lead">
-          Feel free to reach out for collaborations, research discussions, or just to say hi.
+          Feel free to reach out for research collaborations, discussions, or just to say hi.
         </p>
         <div class="contact__links">
           <a class="contact__link" href="mailto:peter94135@gmail.com">
@@ -149,7 +181,7 @@
           <a class="contact__link" href="https://github.com/peter94135" target="_blank" rel="noopener">
             <span class="contact__icon">🐙</span> GitHub
           </a>
-          <a class="contact__link" href="https://www.linkedin.com/" target="_blank" rel="noopener">
+          <a class="contact__link" href="https://www.linkedin.com/in/%E9%BB%83%E5%AD%90%E8%B1%AA-tzu-hao-huang-074002185/" target="_blank" rel="noopener">
             <span class="contact__icon">💼</span> LinkedIn
           </a>
           <a class="contact__link" href="https://scholar.google.com/" target="_blank" rel="noopener">
@@ -161,7 +193,7 @@
   </main>
 
   <footer class="site-footer">
-    <p>© <span id="year"></span> Tzu-Hao Huang · Built with HTML &amp; CSS · Hosted on GitHub Pages</p>
+    <p>© <span id="year"></span> Tzu-Hao Huang (黃子豪) · Built with HTML &amp; CSS · Hosted on GitHub Pages</p>
   </footer>
 
   <script src="script.js"></script>

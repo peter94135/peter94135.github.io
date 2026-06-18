@@ -130,9 +130,22 @@ h1, h2, h3 { line-height: 1.2; }
   font-weight: 600;
   margin: 0 0 0.4rem;
 }
-.hero__role {
+.hero__name-zh {
+  font-size: 0.55em;
+  font-weight: 500;
   color: var(--text-muted);
+  margin-left: 0.4rem;
+  white-space: nowrap;
+}
+.hero__role {
+  color: var(--text);
+  font-weight: 500;
   font-size: 1.05rem;
+  margin: 0 0 0.2rem;
+}
+.hero__affil {
+  color: var(--text-muted);
+  font-size: 0.98rem;
   margin: 0 0 1.2rem;
 }
 .hero__bio {
@@ -244,6 +257,60 @@ h1, h2, h3 { line-height: 1.2; }
 .pub__venue { font-style: italic; }
 .pub__links { margin: 0.4rem 0 0; font-size: 0.88rem; }
 
+.section__title--sub { margin-top: 2.8rem; }
+
+/* ===== Timeline (Education) ===== */
+.timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1.4rem;
+}
+.timeline__item {
+  display: flex;
+  gap: 1.4rem;
+  align-items: baseline;
+}
+.timeline__date {
+  flex-shrink: 0;
+  width: 110px;
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+.timeline__role { font-size: 1.05rem; margin: 0 0 0.15rem; }
+.timeline__org { margin: 0; color: var(--text-muted); font-size: 0.95rem; }
+
+/* ===== Awards & Patents ===== */
+.award-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.9rem;
+}
+.award-list li {
+  display: flex;
+  gap: 1rem;
+  align-items: baseline;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid var(--border);
+}
+.award-list li:last-child { border-bottom: none; padding-bottom: 0; }
+.award__year {
+  flex-shrink: 0;
+  width: 48px;
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+.patent-id {
+  color: var(--text-muted);
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.85rem;
+}
+
 /* ===== Contact ===== */
 .contact__lead {
   color: var(--text-muted);
@@ -290,4 +357,6 @@ h1, h2, h3 { line-height: 1.2; }
   .hero__actions { justify-content: center; }
   .hero__bio { margin-left: auto; margin-right: auto; }
   .hero__photo { width: 160px; height: 160px; }
+  .hero__name-zh { display: block; margin-left: 0; }
+  .timeline__item { flex-direction: column; gap: 0.2rem; }
 }
