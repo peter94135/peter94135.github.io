@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tzu-Hao Huang</title>
+  <meta name="description" content="Personal academic website of Tzu-Hao Huang — researcher in 5G MIMO, channel charting, and CSI feedback." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav">
+      <a class="nav__brand" href="#top">Tzu-Hao Huang</a>
+      <ul class="nav__links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#research">Research</a></li>
+        <li><a href="#publications">Publications</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+        <span class="theme-toggle__icon">🌙</span>
+      </button>
+    </nav>
+  </header>
+
+  <main id="top">
+    <!-- Hero / About -->
+    <section class="hero" id="about">
+      <div class="hero__inner">
+        <div class="hero__text">
+          <p class="hero__eyebrow">Hello, I'm</p>
+          <h1 class="hero__name">Tzu-Hao Huang</h1>
+          <p class="hero__role">M.S. Student · Wireless Communications &amp; Deep Learning</p>
+          <p class="hero__bio">
+            I am a graduate researcher working at the intersection of
+            <strong>5G/6G wireless communications</strong> and
+            <strong>deep learning</strong>. My current research focuses on
+            massive MIMO, channel charting, and CSI feedback compression.
+            I enjoy turning hard signal-processing problems into elegant,
+            data-driven solutions.
+          </p>
+          <div class="hero__actions">
+            <a class="btn btn--primary" href="#contact">Get in touch</a>
+            <a class="btn btn--ghost" href="assets/cv.pdf">Download CV</a>
+          </div>
+        </div>
+        <div class="hero__photo">
+          <img src="assets/profile.jpg" alt="Tzu-Hao Huang" onerror="this.classList.add('is-placeholder');this.alt='Add assets/profile.jpg';" />
+        </div>
+      </div>
+    </section>
+
+    <!-- Research Interests -->
+    <section class="section" id="research">
+      <div class="section__inner">
+        <h2 class="section__title">Research Interests</h2>
+        <div class="cards">
+          <article class="card">
+            <h3 class="card__title">Massive MIMO</h3>
+            <p>Beamforming, precoding, and signal processing for large-scale antenna systems in 5G/6G networks.</p>
+          </article>
+          <article class="card">
+            <h3 class="card__title">Channel Charting</h3>
+            <p>Unsupervised learning of low-dimensional channel representations for localization and mobility.</p>
+          </article>
+          <article class="card">
+            <h3 class="card__title">CSI Feedback</h3>
+            <p>Deep-learning-based compression and reconstruction of channel state information.</p>
+          </article>
+          <article class="card">
+            <h3 class="card__title">Deep Learning</h3>
+            <p>Neural architectures, representation learning, and their application to physical-layer problems.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Publications -->
+    <section class="section section--alt" id="publications">
+      <div class="section__inner">
+        <h2 class="section__title">Publications</h2>
+        <ol class="pub-list">
+          <li class="pub">
+            <p class="pub__title">Paper title goes here.</p>
+            <p class="pub__authors"><strong>T.-H. Huang</strong>, A. Coauthor, and B. Advisor.</p>
+            <p class="pub__venue">Conference / Journal Name, Year.</p>
+            <p class="pub__links">
+              <a href="#">PDF</a> ·
+              <a href="#">Code</a> ·
+              <a href="#">DOI</a>
+            </p>
+          </li>
+          <li class="pub">
+            <p class="pub__title">Another paper title.</p>
+            <p class="pub__authors"><strong>T.-H. Huang</strong> and B. Advisor.</p>
+            <p class="pub__venue">Conference / Journal Name, Year.</p>
+            <p class="pub__links">
+              <a href="#">PDF</a> ·
+              <a href="#">DOI</a>
+            </p>
+          </li>
+        </ol>
+        <p class="muted">Replace these with your real publications, or remove the section if you don't have any yet.</p>
+      </div>
+    </section>
+
+    <!-- Projects -->
+    <section class="section" id="projects">
+      <div class="section__inner">
+        <h2 class="section__title">Projects</h2>
+        <div class="cards cards--projects">
+          <article class="card card--project">
+            <h3 class="card__title">Channel Charting Toolkit</h3>
+            <p>An end-to-end pipeline for learning channel charts from CSI data, with visualization tools.</p>
+            <p class="card__tags"><span>Python</span><span>PyTorch</span><span>Signal Processing</span></p>
+            <p class="card__link"><a href="#">View on GitHub →</a></p>
+          </article>
+          <article class="card card--project">
+            <h3 class="card__title">CSI-Net</h3>
+            <p>A neural network for CSI feedback compression evaluated on standard MIMO datasets.</p>
+            <p class="card__tags"><span>Python</span><span>Deep Learning</span></p>
+            <p class="card__link"><a href="#">View on GitHub →</a></p>
+          </article>
+          <article class="card card--project">
+            <h3 class="card__title">Your Next Project</h3>
+            <p>Short description of another project you'd like to showcase.</p>
+            <p class="card__tags"><span>Tag</span><span>Tag</span></p>
+            <p class="card__link"><a href="#">View on GitHub →</a></p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section class="section section--alt" id="contact">
+      <div class="section__inner section__inner--center">
+        <h2 class="section__title">Get in Touch</h2>
+        <p class="contact__lead">
+          Feel free to reach out for collaborations, research discussions, or just to say hi.
+        </p>
+        <div class="contact__links">
+          <a class="contact__link" href="mailto:peter94135@gmail.com">
+            <span class="contact__icon">✉️</span> Email
+          </a>
+          <a class="contact__link" href="https://github.com/peter94135" target="_blank" rel="noopener">
+            <span class="contact__icon">🐙</span> GitHub
+          </a>
+          <a class="contact__link" href="https://www.linkedin.com/" target="_blank" rel="noopener">
+            <span class="contact__icon">💼</span> LinkedIn
+          </a>
+          <a class="contact__link" href="https://scholar.google.com/" target="_blank" rel="noopener">
+            <span class="contact__icon">🎓</span> Scholar
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>© <span id="year"></span> Tzu-Hao Huang · Built with HTML &amp; CSS · Hosted on GitHub Pages</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
