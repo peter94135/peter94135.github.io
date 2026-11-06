@@ -15,6 +15,8 @@ My personal academic website, hosted on GitHub Pages → **https://peter94135.gi
 ├── defense.js / defense.css  # 每日軍武合約 (ported from hgvf.github.io defenseview.js)
 ├── intel.js / intel.css      # 產業情報站 (ported from hgvf.github.io intel.js + inteldesk.js)
 ├── strength.js / strength.css  # 題材強弱 (ported from hgvf.github.io strength.js)
+├── facts.js        # 事實追蹤 store (★ bookmarks; Firestore dashboards/facts)
+├── factsview.js / facts.css  # 事實追蹤 page (ported from hgvf.github.io factsview.js)
 ├── tools/news/     # Daily news job: ROUTINE.md (instructions), SCHEMA.md, validate.py, watchlist.json
 ├── assets/         # Images (profile.jpg, cv.pdf)
 └── .nojekyll        # Tells GitHub Pages to serve files as-is
@@ -67,7 +69,11 @@ Format: `tools/news/SCHEMA.md` (full example records in `tools/news/examples/`);
 `tools/news/watchlist.json` is a snapshot of the watchlist tickers — regenerate it when the watchlist changes.
 **產業情報站 (`#intel`)**: hand-written intel notes stored in Firestore `dashboards/intel` (public read; only the
 owner's saved Google session can add/edit — the 「＋ 新增情報」 button appears only then). Each ticker in a note adds to
-the 訊<n> badge on Watchlist cards. The ★ fact bookmarks stay in the browser (the facts page isn't ported).
+the 訊<n> badge on Watchlist cards; its ★ bookmarks go to 事實追蹤.
+
+**事實追蹤 (`#facts`)**: ★ on 財報電話會議分析 highlights / watch points and on 產業情報站 bullets saves a tracked
+fact to Firestore `dashboards/facts` (public read, owner-only writes, localStorage mirror). The page tracks each
+fact's state, progress updates, a verification checklist and the price since tracking began.
 
 **重點新聞 (`#highlights`)**: the 🔖 button on 供應鏈瓶頸新聞 / 產業消息 rows collects an item. The list lives in
 Firestore `dashboards/highlights` (public read), mirrored in localStorage; it is written to Firestore only when the

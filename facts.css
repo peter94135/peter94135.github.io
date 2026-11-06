@@ -213,3 +213,6 @@ select.fx-in { -webkit-appearance: none; appearance: none; padding-right: 1.6rem
 /* Fact link beside K線: dim + non-clickable until the ticker has facts. */
 .ec-factlink.disabled { opacity: 0.5; cursor: not-allowed; color: var(--text-muted); background: var(--glass-bg); border-color: var(--glass-border); }
 .ec-factlink.disabled:hover { background: var(--glass-bg); color: var(--text-muted); }
+
+/* local: keep the 公司 / 狀態 filter labels on one line */
+.fx-filters .fx-fl { white-space: nowrap; }
