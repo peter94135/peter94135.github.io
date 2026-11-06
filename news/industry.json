@@ -1,0 +1,206 @@
+{
+ "updated": "2026-11-06T13:27:06Z",
+ "items": [
+  {
+   "id": "SC-20261106-001",
+   "event_date": "2026-11-06",
+   "published_at": "2026-11-06",
+   "title_zh": "聯發科延攬前英特爾封裝主管Navid Shahriari，採CoWoS與EMIB雙封裝策略",
+   "title_original": "MediaTek Reportedly Taps Intel Packaging Veteran After TSMC Hire, Advances Dual CoWoS–EMIB Strategy",
+   "summary_zh": "TrendForce 引述自由時報等報導，前英特爾執行副總Navid Shahriari將於11月9日加入聯發科擔任資深副總，負責先進製程與良率平台、先進測試與封裝等。聯發科5月已延攬前台積電研發副總余振華為顧問。報導稱聯發科同時支援台積電CoWoS與英特爾EMIB，部分雲端ASIC專案與EMIB合作；公司9月開始出貨首款AI加速器ASIC，預期第四季相關營收約25億美元。",
+   "why_it_matters": "顯示ASIC業者分散先進封裝來源，EMIB可能分流部分CoWoS需求，對封裝產能吃緊的緩解與供應鏈布局有參考意義。",
+   "event_type": "strategic_investment",
+   "event_type_secondary": [
+    "supplier_change"
+   ],
+   "importance_tier": "relevant",
+   "importance_score": 55,
+   "evidence_level": "reported",
+   "tickers": [
+    "2454.TW",
+    "INTC",
+    "2330.TW"
+   ],
+   "companies": [
+    {
+     "name": "MediaTek",
+     "ticker": "2454.TW",
+     "exchange": "TWSE",
+     "country": "TW",
+     "role": "customer"
+    },
+    {
+     "name": "Intel",
+     "ticker": "INTC",
+     "exchange": "NASDAQ",
+     "country": "US",
+     "role": "supplier"
+    },
+    {
+     "name": "TSMC",
+     "ticker": "2330.TW",
+     "exchange": "TWSE",
+     "country": "TW",
+     "role": "supplier"
+    }
+   ],
+   "supply_chain": {
+    "component": "先進封裝 CoWoS / EMIB",
+    "supplier": [
+     "TSMC",
+     "Intel"
+    ],
+    "customer": [
+     "MediaTek"
+    ],
+    "end_market": [
+     "AI ASIC"
+    ]
+   },
+   "themes": [
+    "先進封裝",
+    "CoWoS",
+    "EMIB",
+    "AI ASIC"
+   ],
+   "regions": [
+    "TW",
+    "US"
+   ],
+   "products": [
+    "AI ASIC"
+   ],
+   "materials": [],
+   "search_keywords": [
+    "mediatek",
+    "聯發科",
+    "emib",
+    "cowos",
+    "intel",
+    "英特爾",
+    "tsmc",
+    "台積電",
+    "先進封裝",
+    "advanced packaging",
+    "asic",
+    "shahriari",
+    "余振華",
+    "2454.tw"
+   ],
+   "sources": [
+    {
+     "publisher": "TrendForce",
+     "url": "https://www.trendforce.com/news/2026/11/06/news-mediatek-reportedly-taps-intel-packaging-veteran-after-tsmc-hire-advances-dual-cowos-emib-strategy/",
+     "source_type": "news",
+     "is_primary": false
+    }
+   ],
+   "updated_at": "2026-11-06T09:00:00Z"
+  },
+  {
+   "id": "SC-20261104-001",
+   "event_date": "2026-11-04",
+   "published_at": "2026-11-04",
+   "title_zh": "傳三星泰勒2廠2奈米產能已被訂滿至2030年量產前，AMD為HBM基礎晶粒主要客戶",
+   "title_original": "Samsung's 2nm Taylor Fab 2 Reportedly Fully Booked Before 2030 Output, with AMD Leading HBM Base Die Orders",
+   "summary_zh": "TrendForce 引述韓國每日經濟新聞報導，三星德州泰勒第二座廠（2奈米、約270萬平方英尺，約為1廠1.5倍）訂單據稱已涵蓋全部規劃產能，AMD占多數，主要生產HBM基礎晶粒。該廠11月初全面動工，2029年2月裝機，2030年量產。Broadcom與經Faraday接洽的美系雲端客戶亦被點名，但訂單未獲證實；另傳輝達要求三大記憶體廠將NVHBM基礎晶粒交由台積電代工。",
+   "why_it_matters": "顯示HBM基礎晶粒走向先進邏輯製程代工，三星晶圓代工藉HBM與AI客戶爭取訂單；但消息來自媒體且輝達方面不確定性仍在。",
+   "event_type": "capacity",
+   "event_type_secondary": [
+    "supply_agreement"
+   ],
+   "importance_tier": "high",
+   "importance_score": 70,
+   "evidence_level": "reported",
+   "tickers": [
+    "005930.KS",
+    "AMD",
+    "AVGO",
+    "2330.TW"
+   ],
+   "companies": [
+    {
+     "name": "Samsung Electronics",
+     "ticker": "005930.KS",
+     "exchange": "KRX",
+     "country": "KR",
+     "role": "supplier"
+    },
+    {
+     "name": "AMD",
+     "ticker": "AMD",
+     "exchange": "NASDAQ",
+     "country": "US",
+     "role": "customer"
+    },
+    {
+     "name": "Broadcom",
+     "ticker": "AVGO",
+     "exchange": "NASDAQ",
+     "country": "US",
+     "role": "customer"
+    }
+   ],
+   "supply_chain": {
+    "component": "HBM 基礎晶粒",
+    "supplier": [
+     "Samsung Electronics"
+    ],
+    "customer": [
+     "AMD",
+     "Broadcom"
+    ],
+    "end_market": [
+     "AI infrastructure"
+    ]
+   },
+   "change": {
+    "type": "capacity_expansion",
+    "before": "泰勒1廠",
+    "after": "泰勒2廠 2奈米，2030年量產"
+   },
+   "financial_data": {
+    "effective_date": "2030-01-01"
+   },
+   "themes": [
+    "HBM",
+    "晶圓代工",
+    "2奈米"
+   ],
+   "regions": [
+    "US",
+    "KR"
+   ],
+   "products": [
+    "HBM base die"
+   ],
+   "materials": [],
+   "search_keywords": [
+    "samsung",
+    "三星",
+    "taylor",
+    "泰勒",
+    "hbm",
+    "base die",
+    "基礎晶粒",
+    "amd",
+    "2nm",
+    "2奈米",
+    "foundry",
+    "晶圓代工",
+    "broadcom",
+    "faraday",
+    "005930.ks"
+   ],
+   "sources": [
+    {
+     "publisher": "TrendForce",
+     "url": "https://www.trendforce.com/news/2026/11/04/news-samsungs-2nm-taylor-fab-2-reportedly-fully-booked-before-2030-output-with-amd-leading-hbm-base-die-orders/",
+     "source_type": "news",
+     "is_primary": false
+    }
+   ],
+   "updated_at": "2026-11-06T09:00:00Z"
+  }
+ ]
+}

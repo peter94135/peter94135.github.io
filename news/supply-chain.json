@@ -1,0 +1,57 @@
+{
+ "updated": "2026-11-06T13:27:06Z",
+ "items": [
+  {
+   "id": "2026-11-05-panasonic-hukou-ccl-fire",
+   "date": "2026-11-05",
+   "headline": "松下虎口廠爆炸起火，恐影響全球約4%高階CCL供給，AI伺服器銅箔基板交期承壓",
+   "content": "TrendForce 引述經濟日報與工商時報報導，松下工業元件材料台灣公司（PIDMTW）位於新竹湖口的工廠於11月4日發生爆炸與火災。經濟日報估計可能影響全球約4%的高階CCL供給；工商時報供應鏈人士指松下MEGTRON系列約占全球高階CCL市場20%，湖口廠約占MEGTRON全球產能20%，且以M6等級為主，M8可能仍在試產。分析指出無塵室與設備精度要求高，設備更換與客戶重新驗證恐使復產延後數月以上。",
+   "sentiment": "bearish",
+   "credibility": "中",
+   "tickers": [
+    "6752.T",
+    "2383.TW",
+    "6274.TWO",
+    "6213.TW"
+   ],
+   "tags": [
+    "CCL",
+    "銅箔基板",
+    "AI伺服器",
+    "松下",
+    "MEGTRON",
+    "工廠火災"
+   ],
+   "chain": {
+    "upstream": [
+     {
+      "name": "松下 MEGTRON 湖口廠",
+      "note": "約占全球高階CCL供給4%（媒體估計）"
+     }
+    ],
+    "midstream": [
+     {
+      "name": "台光電、台燿、聯茂等CCL廠",
+      "note": "可能承接轉單"
+     }
+    ],
+    "downstream": [
+     {
+      "name": "AI伺服器板與雲端業者",
+      "note": "CCL交期本已偏長"
+     }
+    ]
+   },
+   "effect": "高階低損耗CCL本已因NVIDIA與美系雲端業者拉貨而交期拉長，供給缺口可能促使客戶尋找替代來源或加速認證。",
+   "signals": "後續可觀察松下官方說明、復產時程，以及台光電、台燿等公司的法說會對轉單的說法。",
+   "advise": "持續追蹤復產時程與客戶驗證進度；目前損失規模與時程均屬媒體估計，尚待官方證實。",
+   "sources": [
+    {
+     "title": "TrendForce — Panasonic plant fire puts 4% of global high-end CCL supply at risk",
+     "url": "https://www.trendforce.com/news/2026/11/05/news-panasonic-plant-fire-reportedly-puts-4-of-global-high-end-ccl-supply-at-risk-taiwan-makers-eye-order-shifts/"
+    }
+   ],
+   "updated_at": "2026-11-06T09:00:00Z"
+  }
+ ]
+}
