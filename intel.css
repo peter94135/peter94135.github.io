@@ -214,6 +214,4 @@ a.id-src:hover { color: var(--intel); text-decoration: underline; }
   .id-newbtn { width: 100%; }
 }
 
-/* local: the 事實追蹤 (facts) page isn't part of this site */
-#page-intel .id-factlink { display: none !important; }
 #page-intel [hidden] { display: none !important; }

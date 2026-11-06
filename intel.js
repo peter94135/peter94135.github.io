@@ -1,8 +1,7 @@
 /* 產業情報站 (Intel Desk) — intel.js + inteldesk.js from hgvf.github.io, copied with the owner's
  * permission. Changes: classic script; notes live in ONE Firestore doc, dashboards/intel
  * ({ notes: { <id>: note } }, public read), mirrored in localStorage; only the site owner's saved
- * Google session can write (no sign-in UI). The separate 事實追蹤 (facts) page is not ported, so
- * the ★ bookmarks are kept in this browser only. */
+ * Google session can write (no sign-in UI). ★ bookmarks go to the shared 事實追蹤 store (facts.js). */
 (function () {
 "use strict";
 
@@ -122,26 +121,8 @@ function onIntelChange(cb) { window.addEventListener(EVT, e => cb(e.detail ? e.d
 // For the Watchlist 訊<n> badge (stocks.js).
 window.intelStore = { sync, counts: getCountsByTicker, EVT };
 
-// ─── facts (local only: the 事實追蹤 page is not ported) ─────────────────────
-const FKEY = "intel_facts_v1", FEVT = "intel-facts-change";
-let _facts = (() => { try { const a = JSON.parse(localStorage.getItem(FKEY) || "[]"); return Array.isArray(a) ? a : []; } catch (e) { return []; } })();
-const factId = (t, kind, text) => `${t}|${kind}|${String(text).slice(0, 200)}`;
-const isFactTracked = id => _facts.some(f => f.id === id);
-function saveFactsLocal() { try { localStorage.setItem(FKEY, JSON.stringify(_facts)); } catch (e) { /* quota */ } window.dispatchEvent(new CustomEvent(FEVT)); }
-function saveFact(seed) { const id = factId(seed.ticker, seed.kind, seed.title); _facts = [{ ...seed, id }, ..._facts.filter(f => f.id !== id)]; saveFactsLocal(); }
-function removeFact(id) { _facts = _facts.filter(f => f.id !== id); saveFactsLocal(); }
-const getFacts = () => _facts.slice();
-function onFactsChange(cb) { window.addEventListener(FEVT, cb); }
-
-// inteldesk.js — the 產業情報站 (Intel Desk) controller.
-//
-// A hand-curated monitoring dashboard for industry / community intel. There is
-// NO JSON schema here on purpose — the user fills plain form fields so they can
-// practise structuring trade-relevant information themselves. Each note is one
-// event / information unit; its content bullets and future watch points can be
-// bookmarked ("收藏") into the shared fact-tracking store, exactly like an
-// earnings-call highlight, and the watchlist ticker cards show a 訊<n> badge
-// counting the notes per symbol.
+// ─── facts: shared 事實追蹤 store (facts.js, Firestore dashboards/facts) ──────
+const { factId, isFactTracked, saveFact, removeFact, getFacts, onFactsChange } = window.factsStore;
 
 // ─── Fact-bookmark helpers (shared with the facts page) ───────────────────
 // A note may cover several tickers ("盡量一次一個" but multiple allowed). A
@@ -293,7 +274,7 @@ function mountIntelDesk({ root }) {
         ${collectBtn(n, "watch", w)}
       </li>`).join("");
     const factLink = (n.tickers || []).length
-      ? `<a class="id-factlink" href="../facts/index.html?ticker=${encodeURIComponent(n.tickers[0])}" title="查看 ${esc(n.tickers[0])} 事實追蹤">📌 事實追蹤</a>`
+      ? `<a class="id-factlink" href="#facts&ticker=${encodeURIComponent(n.tickers[0])}" title="查看 ${esc(n.tickers[0])} 事實追蹤">📌 事實追蹤</a>`
       : "";
     const srcHtml = n.source
       ? (n.source_url
@@ -531,6 +512,7 @@ let desk = null;
 const tickerFromHash = () => { const m = location.hash.match(/[#&]ticker=([^&]+)/); return m ? decodeURIComponent(m[1]) : ""; };
 function start() {
   sync();
+  window.factsStore.sync();
   if (desk) { const t = tickerFromHash(); if (t) desk.setTicker(t); return; }
   desk = mountIntelDesk({ root: document.getElementById("intelRoot") });
 }

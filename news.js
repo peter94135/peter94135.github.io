@@ -307,10 +307,19 @@
     (c.highlights || []).forEach(h => { if (h.sentiment === "bullish") b++; else if (h.sentiment === "bearish") r++; else n++; });
     return b > r + n ? "bullish" : r > b + n ? "bearish" : "neutral";
   }
-  function hlHTML(h) {
+  // ★ bookmark → shared 事實追蹤 store (facts.js); only the owner's session can write.
+  const fs = () => window.factsStore;
+  function fbmBtn(c, kind, idx, text) {
+    if (!fs()) return "";
+    const on = fs().isFactTracked(fs().factId(c.ticker, kind, text));
+    const dis = fs().canWrite() ? "" : " disabled";
+    return `<button class="ec-fbm${on ? " on" : ""}" type="button" data-fact-toggle data-kind="${kind}" data-idx="${idx}"${dis}`
+      + ` title="${dis ? "登入後可收藏" : on ? "已收藏至事實追蹤（再按取消）" : "收藏為追蹤事實"}">${on ? "★" : "☆"}</button>`;
+  }
+  function hlHTML(h, c, idx) {
     const hs = sent(h.sentiment);
     const icon = h.sentiment === "bullish" ? "▲" : h.sentiment === "bearish" ? "▼" : "—";
-    return `<div class="ec-hl ${hs.cls}"><span class="sent-tag ${hs.cls}">${icon}</span><span class="ec-hl-tx">${esc(h.text)}</span></div>`;
+    return `<div class="ec-hl ${hs.cls}"><span class="sent-tag ${hs.cls}">${icon}</span><span class="ec-hl-tx">${esc(h.text)}</span>${c ? fbmBtn(c, "fact", idx, h.text) : ""}</div>`;
   }
   function ecSources(c) {
     return (c.sources || []).length
@@ -319,9 +328,9 @@
   }
   function ecDetail(c) {
     const s = sent(overall(c));
-    const hls = (c.highlights || []).map(hlHTML).join("");
+    const hls = (c.highlights || []).map((h, i) => hlHTML(h, c, i)).join("");
     const watch = (c.watch || []).filter(Boolean);
-    return `<article class="rv-detail ${s.cls}">
+    return `<article class="rv-detail ${s.cls}" data-call="${esc(c.id)}">
       <div class="ec-head">
         <span class="ec-ticker">${esc(c.ticker)}</span>
         <span class="ec-company">${esc(c.company || "")}</span>
@@ -330,7 +339,8 @@
       </div>
       ${c.summary ? `<p class="ec-summary">${esc(c.summary)}</p>` : ""}
       ${hls ? `<div class="ec-hls">${hls}</div>` : ""}
-      ${watch.length ? `<div class="rp-subcard ec-watch"><div class="rp-subcard-head">🔮 未來重點看點</div><ul class="ec-watch-list">${watch.map(w => `<li><span class="ec-watch-tx">${esc(w)}</span></li>`).join("")}</ul></div>` : ""}
+      ${watch.length ? `<div class="rp-subcard ec-watch"><div class="rp-subcard-head">🔮 未來重點看點</div><ul class="ec-watch-list">${watch.map((w, i) => `<li><span class="ec-watch-tx">${esc(w)}</span>${fbmBtn(c, "watch", i, w)}</li>`).join("")}</ul></div>` : ""}
+      <a class="ec-kbtn ec-factlink" href="#facts&ticker=${encodeURIComponent(c.ticker)}">📌 事實追蹤</a>
       ${ecSources(c)}
     </article>`;
   }
@@ -340,7 +350,7 @@
     return `<div class="ec-cmp-card ${s.cls}">
       <div class="ec-cmp-top"><span class="ec-cmp-fy">${esc(c.year)} ${esc(c.quarter)}</span><span class="ec-cmp-date">${c.date ? esc(fmtDate(c.date)) : ""}</span></div>
       ${c.summary ? `<p class="ec-cmp-summary">${esc(c.summary)}</p>` : ""}
-      <div class="ec-hls">${(c.highlights || []).map(hlHTML).join("")}</div>
+      <div class="ec-hls">${(c.highlights || []).map(h => hlHTML(h)).join("")}</div>
       ${watch.length ? `<div class="ec-cmp-watch"><div class="ec-cmp-watch-h">🔮 未來看點</div><ul class="ec-watch-list">${watch.map(w => `<li>${esc(w)}</li>`).join("")}</ul></div>` : ""}
     </div>`;
   }
@@ -793,6 +803,22 @@
           cmpWrap.querySelector('[data-role="cmprow"]').innerHTML = calls.map(cmpCard).join(`<span class="ec-cmp-arrow">→</span>`);
         }
         if (cmpSel) { cmpSel.addEventListener("change", () => renderCompare(cmpSel.value)); renderCompare(items[0] ? items[0].ticker : tickers[0]); }
+        if (window.factsStore) {
+          window.factsStore.sync();
+          viewRoot.addEventListener("click", e => {
+            const b = e.target.closest("[data-fact-toggle]");
+            const art = b && b.closest("[data-call]");
+            const c = art && items.find(x => x.id === art.dataset.call);
+            if (!c || b.disabled) return;
+            const kind = b.dataset.kind, idx = +b.dataset.idx;
+            const h = kind === "watch" ? null : (c.highlights || [])[idx];
+            const text = kind === "watch" ? (c.watch || []).filter(Boolean)[idx] : h && h.text;
+            if (!text) return;
+            const on = window.factsStore.toggleFactBookmark({ ticker: c.ticker, company: c.company || c.ticker, kind, title: text,
+              source: { origin: "earnings", quarter: `${c.year} ${c.quarter}`, date: c.date || "", sentiment: (h && h.sentiment) || "" } });
+            b.classList.toggle("on", on); b.textContent = on ? "★" : "☆";
+          });
+        }
         return mountView(viewRoot, items, {
           dateOf: it => it.date,
           tickersOf: it => (it.ticker ? [it.ticker] : []),

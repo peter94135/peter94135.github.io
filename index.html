@@ -18,11 +18,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=20261106c" />
-  <link rel="stylesheet" href="news.css?v=20261106c" />
-  <link rel="stylesheet" href="defense.css?v=20261106c" />
-  <link rel="stylesheet" href="intel.css?v=20261106c" />
-  <link rel="stylesheet" href="strength.css?v=20261106c" />
+  <link rel="stylesheet" href="style.css?v=20261106d" />
+  <link rel="stylesheet" href="news.css?v=20261106d" />
+  <link rel="stylesheet" href="defense.css?v=20261106d" />
+  <link rel="stylesheet" href="intel.css?v=20261106d" />
+  <link rel="stylesheet" href="strength.css?v=20261106d" />
+  <link rel="stylesheet" href="facts.css?v=20261106d" />
 </head>
 <body>
   <!-- Mobile top bar -->
@@ -84,6 +85,9 @@
           </a>
           <a class="nav-item" href="#intel" data-page="intel">
             <span class="nav-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M11 8v6M8 11h6"/></svg></span>產業情報站
+          </a>
+          <a class="nav-item" href="#facts" data-page="facts">
+            <span class="nav-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>事實追蹤
           </a>
           <a class="nav-item" href="#highlights" data-page="highlights">
             <span class="nav-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3.5h12a1 1 0 0 1 1 1v16l-7-4.2L5 20.5v-16a1 1 0 0 1 1-1z"/></svg></span>重點新聞
@@ -446,6 +450,13 @@
       <div id="intelRoot"></div>
     </section>
 
+    <!-- ========== 事實追蹤 ========== -->
+    <section class="page page--wide" id="page-facts">
+      <div class="page-header"><h1 class="page-title">事實追蹤 · Fact Tracking</h1></div>
+      <p class="muted news-intro">把法說承諾與產業情報轉成可持續驗證的投資假設。在財報電話會議分析或產業情報站按 ★ 收藏。</p>
+      <div id="factsRoot"></div>
+    </section>
+
     <!-- ========== 重點新聞 ========== -->
     <section class="page page--wide" id="page-highlights">
       <div class="page-header">
@@ -502,19 +513,21 @@
     </footer>
   </main>
 
-  <!-- local assets carry ?v=20261106c: bump it on every deploy so browsers never mix old and new files -->
+  <!-- local assets carry ?v=20261106d: bump it on every deploy so browsers never mix old and new files -->
   <!-- Firebase (Firestore, read-only) for the watchlist data; marked renders the Markdown notes -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <!-- auth (no UI): lets the owner's saved Google session write the 重點新聞 list -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
-  <script src="script.js?v=20261106c"></script>
-  <script src="stocks.js?v=20261106c"></script>
-  <script src="news.js?v=20261106c"></script>
-  <script src="annual.js?v=20261106c"></script>
-  <script src="defense.js?v=20261106c"></script>
-  <script src="intel.js?v=20261106c"></script>
-  <script src="strength.js?v=20261106c"></script>
+  <script src="script.js?v=20261106d"></script>
+  <script src="stocks.js?v=20261106d"></script>
+  <script src="news.js?v=20261106d"></script>
+  <script src="annual.js?v=20261106d"></script>
+  <script src="defense.js?v=20261106d"></script>
+  <script src="facts.js?v=20261106d"></script>
+  <script src="intel.js?v=20261106d"></script>
+  <script src="factsview.js?v=20261106d"></script>
+  <script src="strength.js?v=20261106d"></script>
 </body>
 </html>
