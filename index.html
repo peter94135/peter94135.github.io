@@ -18,11 +18,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="news.css" />
-  <link rel="stylesheet" href="defense.css" />
-  <link rel="stylesheet" href="intel.css" />
-  <link rel="stylesheet" href="strength.css" />
+  <link rel="stylesheet" href="style.css?v=20261106c" />
+  <link rel="stylesheet" href="news.css?v=20261106c" />
+  <link rel="stylesheet" href="defense.css?v=20261106c" />
+  <link rel="stylesheet" href="intel.css?v=20261106c" />
+  <link rel="stylesheet" href="strength.css?v=20261106c" />
 </head>
 <body>
   <!-- Mobile top bar -->
@@ -502,18 +502,19 @@
     </footer>
   </main>
 
+  <!-- local assets carry ?v=20261106c: bump it on every deploy so browsers never mix old and new files -->
   <!-- Firebase (Firestore, read-only) for the watchlist data; marked renders the Markdown notes -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <!-- auth (no UI): lets the owner's saved Google session write the 重點新聞 list -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
-  <script src="script.js"></script>
-  <script src="stocks.js"></script>
-  <script src="news.js"></script>
-  <script src="annual.js"></script>
-  <script src="defense.js"></script>
-  <script src="intel.js"></script>
-  <script src="strength.js"></script>
+  <script src="script.js?v=20261106c"></script>
+  <script src="stocks.js?v=20261106c"></script>
+  <script src="news.js?v=20261106c"></script>
+  <script src="annual.js?v=20261106c"></script>
+  <script src="defense.js?v=20261106c"></script>
+  <script src="intel.js?v=20261106c"></script>
+  <script src="strength.js?v=20261106c"></script>
 </body>
 </html>

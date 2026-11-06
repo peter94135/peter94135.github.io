@@ -717,6 +717,9 @@ function mountStrength(opts) {
     updateBtn.disabled = true;
     setStatus("讀取 Watchlist…");
     try {
+      if (typeof window.siteTree !== "function" || typeof window.siteQuoteAll !== "function") {
+        throw new Error("網站剛更新，請重新整理頁面（Cmd/Ctrl + Shift + R）");
+      }
       const tree = await window.siteTree();
       const sectors = [], subsectors = [], tickers = [];
       (tree && tree.sectors || []).forEach(sec => {

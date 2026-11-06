@@ -22,6 +22,9 @@ My personal academic website, hosted on GitHub Pages → **https://peter94135.gi
 
 ## How to edit
 
+After changing any local `.js` / `.css` file, bump the `?v=` version on its tags in `index.html`
+(all local assets share one version), otherwise browsers may combine cached old files with new ones.
+
 All text lives in `index.html`. Each page is a `<section class="page" id="page-…">`;
 add a sidebar link with `data-page="…"` and register the id in `PAGES` in `script.js`.
 
