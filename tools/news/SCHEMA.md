@@ -1,6 +1,6 @@
 # News data — format and rules
 
-The site's three news pages read JSON files from the **`news-data`** branch of this repo:
+The site's news pages read JSON files from the **`news-data`** branch of this repo:
 
 | Page (site hash)              | File                     | Newest-first by |
 |-------------------------------|--------------------------|-----------------|
@@ -9,6 +9,8 @@ The site's three news pages read JSON files from the **`news-data`** branch of t
 | 財報電話會議分析 (`#earnings`)   | `news/earnings.json`     | `date`          |
 | 年報重點 (`#annual`)            | `news/annual-reports.json` | `_date`       |
 | 每日軍武合約 (`#defense`)        | `news/defense.json`      | `event_date`    |
+| 產業動態 (`#dynamics`)          | `news/industry-dynamics.json` | `event_date` |
+| 軍武動態 (`#military`)          | `news/military.json`     | `event_date`    |
 
 Each file is `{ "updated": "<ISO-8601 UTC>", "items": [ ... ] }`.
 The `news-data` branch holds **only** these files (it is an orphan branch, unrelated to `main`).
@@ -201,3 +203,117 @@ Taiwan MND / 國防部, Japan ATLA / MOD, Korea DAPA, UK MoD, NATO NSPA; media r
 `electronic_warfare`, `naval`, `submarine`, `shipbuilding`, `ground_vehicle`, `artillery`, `small_arms`, `space`,
 `satellite`, `cyber`, `c4isr`, `engine_propulsion`, `weapon_component`, `logistics`, `training`, `services`, `construction`, `unknown`.
 `contractor.ticker` must be a Yahoo symbol of the contractor (or its listed parent in `parent_ticker`), or `null` if private.
+
+## 6. `news/industry-dynamics.json` — 產業動態
+
+A complete record is in `tools/news/examples/industry-dynamics.example.json`.
+
+Major **industry events across technology sectors**, not only watchlist companies: contract awards, government
+funding, capacity expansions/cuts, commercial deployments, technology milestones, supply agreements, partnerships,
+M&A/investments, regulation, permits, production disruptions, pricing/supply shifts. This differs from `industry.json`
+(產業消息), which tracks supply-chain changes of watchlist companies. Do not put the same story in both files.
+
+```json
+{
+  "id": "IN-20261107-001",                           // IN-<YYYYMMDD of event_date>-<NNN>, unique
+  "event_date": "2026-11-07",
+  "published_at": "2026-11-07T09:00:00+08:00",       // source publication time
+  "industry": "data_center",                         // enum below
+  "industries_secondary": ["power_grid_utilities"],
+  "event_type": "capacity_expansion",                // enum below
+  "event_type_secondary": [],
+  "importance_score": 84,                            // 65–100; below 65 → leave the event out
+  "importance_tier": "high",                         // critical (≥90) | high (78–89) | relevant (65–77)
+  "evidence_level": "confirmed",                     // confirmed | reported | inferred | rumor
+  "title_zh": "…", "title_original": "…",
+  "summary_zh": "2–4 句事實摘要",
+  "why_it_matters": "1–2 句：對價值鏈 / 上市公司的影響",
+  "themes": ["AI data center", "liquid cooling"],     // short English or Chinese phrases
+  "regions": ["US"],
+  "tickers": ["VRT"],                                // Yahoo symbols of directly involved listed companies
+  "companies": [{ "name": "Vertiv", "ticker": "VRT", "country": "US", "role": "supplier",
+                  "impact_direction": "positive", "impact_mechanism": "一句話說明" }],
+  "content_nodes": [                                 // 3–6 nodes; node_type enum below
+    { "node_type": "event_facts", "title_zh": "事件核心", "summary_zh": "…", "bullets": ["…"], "evidence": "confirmed" }
+  ],
+  "supply_chain": { "upstream": [], "component": [], "supplier": [], "customer": [], "end_market": [] },
+  "products": [], "metrics": [{ "name": "…", "value": 120, "unit": "MW", "period": "2026" }],
+  "milestones": [{ "date": "2027-03", "label_zh": "…", "status": "planned" }],
+  "watch_items": [{ "question_zh": "…", "indicator": "…" }],
+  "financial_data": { "amount": 1500000000, "currency": "USD" },   // optional
+  "search_keywords": ["…"],
+  "sources": [{ "publisher": "Reuters", "url": "https://…", "is_primary": true }],
+  "updated_at": "2026-11-07T00:05:00Z"
+}
+```
+`industry` enum: `semiconductor_manufacturing`, `electronics_chip_design`, `data_center`, `robotics_automation`,
+`power_grid_utilities`, `power_generation`, `nuclear`, `solar_storage`, `ev_battery`, `space`, `mining`, `defense`,
+`telecom`, `other`.
+`event_type` enum: `contract_award`, `government_funding`, `capacity_expansion`, `capacity_reduction`,
+`commercial_deployment`, `technology_milestone`, `supply_agreement`, `partnership_joint_venture`,
+`merger_acquisition_investment`, `regulatory_policy`, `permit_authorization`, `production_disruption`, `pricing_supply_shift`.
+`content_nodes[].node_type` enum: `event_facts`, `technology_mechanism`, `value_chain_position`, `investment_impact`,
+`beneficiaries`, `affected_parties`, `timeline_milestones`, `kpi_watch`, `risks_unknowns`, `policy_mechanism`.
+`companies[].impact_direction`: `positive` | `negative` | `mixed` | `neutral`. Unlisted companies get `"ticker": null`.
+
+## 7. `news/military.json` — 軍武動態
+
+A complete record is in `tools/news/examples/military.example.json`.
+
+Global **military activity**: weapon unveilings, tests, first flights, sea trials, fielding, deployments, exercises,
+combat use/losses, program milestones/delays/cancellations, service entry/retirement, military cooperation,
+infrastructure, incidents. No contract money here — contracts go to `defense.json`.
+
+```json
+{
+  "id": "jp-2026-11-06-type-12-ssm-test",           // <country lowercased>-<YYYY-MM-DD>-<ascii-slug>, unique
+  "event_date": "2026-11-06",
+  "event_end_date": null,                            // multi-day events
+  "publication_date": "2026-11-06",
+  "country": "JP",                                   // acting country, ISO 3166-1 alpha-2
+  "countries_involved": ["JP"],
+  "service": "Army",                                 // Army | Navy | Air Force | Marine Corps | Space Force | Coast Guard | Joint | Other
+  "agency": "Japan Ground Self-Defense Force",
+  "event_type": "weapon_test",                       // enum below
+  "event_status": "completed",                       // planned | ongoing | completed
+  "event_phase": "test",
+  "theater": "Indo-Pacific",
+  "title": "English title", "title_zh": "中文標題", "title_original": "source-language title",
+  "summary": "1–3 sentences", "summary_zh": "1–3 句中文摘要；僅媒體來源者以「【未查證】」開頭",
+  "why_it_matters_zh": "1–2 句",
+  "systems": [{ "canonical_name": "Type 12 SSM (upgraded)", "name_zh": "12 式反艦飛彈（改良型）",
+                "category": "missile", "operator_country": "JP" }],
+  "programs": [], "units": [{ "name": "…", "country": "JP", "service": "Army" }],
+  "exercise":   { "exercise_name": "…", "host_country": "JP", "participant_countries": ["JP","US"],
+                  "start_date": "2026-11-01", "end_date": "2026-11-10", "scale": "…", "live_fire": true },
+  "deployment": { "deployment_type": "…", "destination": "…", "start_date": "…", "end_date": null, "stated_purpose": "…" },
+  "test":       { "test_type": "…", "result": "success|failure|partial|unknown", "objective_zh": "…" },
+  "locations": [{ "name": "Shizuoka (Higashi-Fuji)", "country_code": "JP", "precision": "facility",
+                  "geometry": { "type": "Point", "coordinates": [138.8, 35.3] },   // [lon, lat]
+                  "geocode_confidence": "high", "map_display_allowed": true }],
+  "map": { "marker_category": "weapon_test", "active_from": "2026-11-06", "active_until": "2026-11-06" },
+  "importance": { "score": 60 },                     // 0–100
+  "tags": ["type-12", "anti-ship-missile"],
+  "quality": { "verification_status": "official_confirmed", "needs_review": false, "issues": [] },
+  "sources": [{ "publisher": "Japan Ministry of Defense", "url": "https://…", "official": true }],
+  "updated_at": "2026-11-07T00:05:00Z"
+}
+```
+Only include the `exercise` / `deployment` / `test` / `combat` / `milestone` / `incident` blocks that apply.
+`event_type` enum: `weapon_unveiling`, `prototype_rollout`, `first_flight`, `sea_trial`, `weapon_test`, `evaluation_trial`,
+`certification`, `operational_fielding`, `readiness_milestone`, `deployment`, `exercise`, `combat_use`, `combat_loss`,
+`program_launch`, `program_milestone`, `program_delay`, `program_restructure`, `program_cancellation`, `service_entry`,
+`retirement`, `doctrine_strategy`, `military_cooperation`, `force_structure`, `military_infrastructure`,
+`intelligence_assessment`, `incident_accident`, `capability_acquisition`, `other_military_news`.
+`map.marker_category` uses the same enum (usually equal to `event_type`).
+`quality.verification_status`: `official_confirmed`, `multi_source_confirmed`, `single_reliable_source`, `claim_only`,
+`conflicting`, `unresolved`. Media-only items: `needs_review: true` and the 【未查證】 prefix.
+`systems[].category`: `aircraft`, `helicopter`, `missile`, `munition`, `air_defense`, `ground_vehicle`, `artillery`, `naval`,
+`submarine`, `drone`, `counter_uas`, `radar_sensor`, `electronic_warfare`, `space`, `cyber`, `c4isr`, `engine_propulsion`,
+`directed_energy`, `hypersonic`, `nuclear`, `small_arms`, `weapon_component`, `infrastructure`, `support`, `unknown`.
+**Locations:** only places the source discloses publicly (base, port, city, sea area); never estimate positions of
+units in the field. `precision`: `facility` | `city` | `admin1` | `country` | `sea_region` | `theater`. Coarse places
+(country / sea region / theater) get `geocode_confidence: "low"` and are drawn as a faded halo.
+Exercises and deployments must carry dates (`exercise.start_date`/`end_date` or `map.active_from`/`active_until`) so the
+map can tell 進行中 / 即將開始 / 已結束.
+

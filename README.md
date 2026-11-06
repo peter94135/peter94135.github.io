@@ -13,11 +13,16 @@ My personal academic website, hosted on GitHub Pages → **https://peter94135.gi
 ├── news.js / news.css  # News pages: 供應鏈瓶頸新聞 / 產業消息 / 重點新聞 / 財報電話會議分析
 ├── annual.js       # 年報重點 (ported from hgvf.github.io annualview.js)
 ├── defense.js / defense.css  # 每日軍武合約 (ported from hgvf.github.io defenseview.js)
+├── dynamics.js     # 產業動態 (ported from hgvf.github.io industrynews.js)
+├── military.js     # 軍武動態 with world map (ported from hgvf.github.io militarynews.js)
+├── facet.js        # 多維複選搜尋 shared by 產業動態 / 軍武動態 (from hgvf.github.io facetsearch.js)
+├── worldnews.css   # Styles for 產業動態 / 軍武動態 (from hgvf.github.io css/news.css)
+├── data/world-countries.json  # Simplified Natural Earth country outlines for the 軍武動態 map
 ├── intel.js / intel.css      # 產業情報站 (ported from hgvf.github.io intel.js + inteldesk.js)
 ├── strength.js / strength.css  # 題材強弱 (ported from hgvf.github.io strength.js)
 ├── facts.js        # 事實追蹤 store (★ bookmarks; Firestore dashboards/facts)
 ├── factsview.js / facts.css  # 事實追蹤 page (ported from hgvf.github.io factsview.js)
-├── tools/news/     # Daily news job: ROUTINE.md (instructions), SCHEMA.md, validate.py, watchlist.json
+├── tools/news/     # Daily news jobs: ROUTINE.md + ROUTINE-WORLD.md (instructions), SCHEMA.md, validate.py, merge.py, watchlist.json
 ├── assets/         # Images (profile.jpg, cv.pdf)
 └── .nojekyll        # Tells GitHub Pages to serve files as-is
 ```
@@ -58,12 +63,14 @@ ticker through the shared quote engine in `stocks.js` (`window.siteQuoteAll`, Ya
 Themes whose members appear in 供應鏈瓶頸新聞 (last 30 days) or 財報電話會議分析 (last 90 days) get a
 ⛓ / ▤ badge, red when any of those items is bearish.
 
-## News pages (供應鏈瓶頸新聞 / 產業消息 / 財報電話會議分析)
+## News pages (供應鏈瓶頸新聞 / 產業消息 / 產業動態 / 軍武動態 / 財報電話會議分析 / 年報重點 / 每日軍武合約)
 
 Layout copied with permission from hgvf.github.io. A Claude cloud routine runs every day, follows
 `tools/news/ROUTINE.md`, researches the news, appends items to `news/*.json` (supply-chain, industry, earnings,
 defense, annual-reports) on the orphan
-**`news-data`** branch and pushes it. The site reads those files from
+**`news-data`** branch and pushes it. A second routine (08:00 Taipei) follows `tools/news/ROUTINE-WORLD.md` and fills
+`industry-dynamics.json` (產業動態) and `military.json` (軍武動態, shown on a world map; exercises and deployments are
+marked 進行中 / 即將開始 / 已結束 against today's date). The site reads those files from
 `raw.githubusercontent.com/.../refs/heads/news-data/news/` (no Firestore, no secrets).
 Format: `tools/news/SCHEMA.md` (full example records in `tools/news/examples/`); check with `python3 tools/news/validate.py <dir> [--fix]`.
 `tools/news/watchlist.json` is a snapshot of the watchlist tickers — regenerate it when the watchlist changes.

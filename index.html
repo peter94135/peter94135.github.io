@@ -18,12 +18,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=20261107b" />
-  <link rel="stylesheet" href="news.css?v=20261107b" />
-  <link rel="stylesheet" href="defense.css?v=20261107b" />
-  <link rel="stylesheet" href="intel.css?v=20261107b" />
-  <link rel="stylesheet" href="strength.css?v=20261107b" />
-  <link rel="stylesheet" href="facts.css?v=20261107b" />
+  <link rel="stylesheet" href="style.css?v=20261107c" />
+  <link rel="stylesheet" href="news.css?v=20261107c" />
+  <link rel="stylesheet" href="defense.css?v=20261107c" />
+  <link rel="stylesheet" href="worldnews.css?v=20261107c" />
+  <link rel="stylesheet" href="intel.css?v=20261107c" />
+  <link rel="stylesheet" href="strength.css?v=20261107c" />
+  <link rel="stylesheet" href="facts.css?v=20261107c" />
 </head>
 <body>
   <!-- Mobile top bar -->
@@ -82,6 +83,12 @@
           </a>
           <a class="nav-item" href="#industry" data-page="industry">
             <span class="nav-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V9l5 3V9l5 3V5h4v16"/></svg></span>產業消息
+          </a>
+          <a class="nav-item" href="#dynamics" data-page="dynamics">
+            <span class="nav-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></svg></span>產業動態
+          </a>
+          <a class="nav-item" href="#military" data-page="military">
+            <span class="nav-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></span>軍武動態
           </a>
           <a class="nav-item" href="#intel" data-page="intel">
             <span class="nav-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M11 8v6M8 11h6"/></svg></span>產業情報站
@@ -441,6 +448,20 @@
       <div class="rv-root" id="news-industry"></div>
     </section>
 
+    <!-- ========== 產業動態 · Industry News ========== -->
+    <section class="page page--wide" id="page-dynamics">
+      <div class="page-header"><h1 class="page-title">產業動態 · Industry News</h1></div>
+      <p class="nm-sub">全球科技產業的重大動態：合約授予、政府補助、產能擴張、商業部署、技術里程碑、併購與法規政策，涵蓋半導體、資料中心、電網、核能、太空、機器人等產業。每筆事件拆成內容節點（事件核心、技術機制、價值鏈位置、投資傳導、後續觀察），每天由 AI 排程整理。</p>
+      <div id="news-dynamics"><p class="df-meta">載入中…</p></div>
+    </section>
+
+    <!-- ========== 軍武動態 · Military News ========== -->
+    <section class="page page--wide" id="page-military">
+      <div class="page-header"><h1 class="page-title">軍武動態 · Military News</h1></div>
+      <p class="nm-sub">全球軍武動態：新武器公開、測試、首飛、部署、演習、實戰、計畫里程碑與軍事設施。跟「每日軍武合約」的採購金額分開，聚焦哪個國家在何時、何地發展或使用什麼軍事能力，並在世界地圖上標出演習與部署的位置和時間。每天由 AI 排程整理。</p>
+      <div id="news-military"><p class="df-meta">載入中…</p></div>
+    </section>
+
     <!-- ========== 產業情報站 ========== -->
     <section class="page page--wide" id="page-intel">
       <div class="page-header">
@@ -513,21 +534,24 @@
     </footer>
   </main>
 
-  <!-- local assets carry ?v=20261107b: bump it on every deploy so browsers never mix old and new files -->
+  <!-- local assets carry ?v=20261107c: bump it on every deploy so browsers never mix old and new files -->
   <!-- Firebase (Firestore, read-only) for the watchlist data; marked renders the Markdown notes -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <!-- auth (no UI): lets the owner's saved Google session write the 重點新聞 list -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
-  <script src="script.js?v=20261107b"></script>
-  <script src="stocks.js?v=20261107b"></script>
-  <script src="news.js?v=20261107b"></script>
-  <script src="annual.js?v=20261107b"></script>
-  <script src="defense.js?v=20261107b"></script>
-  <script src="facts.js?v=20261107b"></script>
-  <script src="intel.js?v=20261107b"></script>
-  <script src="factsview.js?v=20261107b"></script>
-  <script src="strength.js?v=20261107b"></script>
+  <script src="script.js?v=20261107c"></script>
+  <script src="stocks.js?v=20261107c"></script>
+  <script src="news.js?v=20261107c"></script>
+  <script src="annual.js?v=20261107c"></script>
+  <script src="defense.js?v=20261107c"></script>
+  <script src="facet.js?v=20261107c"></script>
+  <script src="dynamics.js?v=20261107c"></script>
+  <script src="military.js?v=20261107c"></script>
+  <script src="facts.js?v=20261107c"></script>
+  <script src="intel.js?v=20261107c"></script>
+  <script src="factsview.js?v=20261107c"></script>
+  <script src="strength.js?v=20261107c"></script>
 </body>
 </html>

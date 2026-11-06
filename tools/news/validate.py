@@ -6,8 +6,9 @@ Usage:
     python3 tools/news/validate.py <data-dir> --fix    # also sort newest-first, drop exact
                                                        # duplicate ids, stamp "updated", rewrite
 
-<data-dir> is the folder that holds supply-chain.json, industry.json and earnings.json
-(e.g. the news/ folder of a news-data branch checkout), plus annual-reports.json and defense.json.
+<data-dir> is the folder that holds supply-chain.json, industry.json, earnings.json,
+annual-reports.json, defense.json, industry-dynamics.json and military.json
+(e.g. the news/ folder of a news-data branch checkout).
 Missing files are created empty.
 Exit code 1 if any error remains. Standard library only.
 """
@@ -33,10 +34,34 @@ FILES = {
     "earnings.json": "date",
     "annual-reports.json": "_date",
     "defense.json": "event_date",
+    "industry-dynamics.json": "event_date",
+    "military.json": "event_date",
 }
 DEF_TYPES = {"contract_award", "contract_modification", "foreign_military_sale", "procurement", "tender",
              "development", "production", "delivery", "upgrade", "sustainment", "program_decision", "test",
              "research", "rfp"}
+
+DYN_INDUSTRIES = {"semiconductor_manufacturing", "electronics_chip_design", "data_center", "robotics_automation",
+                  "power_grid_utilities", "power_generation", "nuclear", "solar_storage", "ev_battery", "space",
+                  "mining", "defense", "telecom", "other"}
+DYN_TYPES = {"contract_award", "government_funding", "capacity_expansion", "capacity_reduction",
+             "commercial_deployment", "technology_milestone", "supply_agreement", "partnership_joint_venture",
+             "merger_acquisition_investment", "regulatory_policy", "permit_authorization", "production_disruption",
+             "pricing_supply_shift"}
+DYN_NODES = {"event_facts", "technology_mechanism", "value_chain_position", "investment_impact", "beneficiaries",
+             "affected_parties", "timeline_milestones", "kpi_watch", "risks_unknowns", "policy_mechanism"}
+DIRECTIONS = {"positive", "negative", "mixed", "neutral"}
+MIL_TYPES = {"weapon_unveiling", "prototype_rollout", "first_flight", "sea_trial", "weapon_test", "evaluation_trial",
+             "certification", "operational_fielding", "readiness_milestone", "deployment", "exercise", "combat_use",
+             "combat_loss", "program_launch", "program_milestone", "program_delay", "program_restructure",
+             "program_cancellation", "service_entry", "retirement", "doctrine_strategy", "military_cooperation",
+             "force_structure", "military_infrastructure", "intelligence_assessment", "incident_accident",
+             "capability_acquisition", "other_military_news"}
+MIL_SERVICES = {"Army", "Navy", "Air Force", "Marine Corps", "Space Force", "Coast Guard", "Joint", "Other"}
+MIL_VERIFY = {"official_confirmed", "multi_source_confirmed", "single_reliable_source", "claim_only",
+              "conflicting", "unresolved"}
+PRECISIONS = {"facility", "city", "admin1", "country", "sea_region", "theater"}
+COUNTRY = re.compile(r"^[A-Z]{2}$")
 
 
 def req_str(it, key, errs, where):
@@ -196,8 +221,106 @@ def check_defense(it, errs, where):
     check_sources(it, errs, where)
 
 
+def check_dynamics(it, errs, where):
+    v = req_str(it, "id", errs, where)
+    d = it.get("event_date")
+    check_date(it, "event_date", errs, where)
+    if v and not re.match(r"^IN-\d{8}-\d{3}$", v):
+        errs.append(f"{where}: id must look like IN-YYYYMMDD-NNN")
+    elif v and isinstance(d, str) and DATE.match(d) and v[3:11] != d.replace("-", ""):
+        errs.append(f"{where}: id date part should match event_date ({d})")
+    req_str(it, "title_zh", errs, where)
+    req_str(it, "summary_zh", errs, where)
+    req_str(it, "why_it_matters", errs, where)
+    if it.get("industry") not in DYN_INDUSTRIES:
+        errs.append(f"{where}: industry must be one of {sorted(DYN_INDUSTRIES)}")
+    for x in it.get("industries_secondary", []) or []:
+        if x not in DYN_INDUSTRIES:
+            errs.append(f"{where}: bad industries_secondary {x!r}")
+    if it.get("event_type") not in DYN_TYPES:
+        errs.append(f"{where}: event_type must be one of {sorted(DYN_TYPES)}")
+    for x in it.get("event_type_secondary", []) or []:
+        if x not in DYN_TYPES:
+            errs.append(f"{where}: bad event_type_secondary {x!r}")
+    sc = it.get("importance_score")
+    if not (isinstance(sc, (int, float)) and 65 <= sc <= 100):
+        errs.append(f"{where}: importance_score must be a number 65-100 (leave weaker events out)")
+    if it.get("importance_tier") not in TIERS:
+        errs.append(f"{where}: importance_tier must be one of {sorted(TIERS)}")
+    if it.get("evidence_level") not in EVIDENCE:
+        errs.append(f"{where}: evidence_level must be one of {sorted(EVIDENCE)}")
+    check_tickers(it.get("tickers", []), errs, where)
+    for c in it.get("companies", []) or []:
+        if not isinstance(c, dict) or not c.get("name"):
+            errs.append(f"{where}: every company needs a name")
+            continue
+        if c.get("ticker") and not TICKER.match(c["ticker"]):
+            errs.append(f"{where}: bad company ticker {c['ticker']!r}")
+        if c.get("impact_direction") and c["impact_direction"] not in DIRECTIONS:
+            errs.append(f"{where}: bad impact_direction {c['impact_direction']!r}")
+    nodes = it.get("content_nodes")
+    if not isinstance(nodes, list) or not nodes:
+        errs.append(f"{where}: needs content_nodes")
+    else:
+        for n in nodes:
+            if not isinstance(n, dict) or n.get("node_type") not in DYN_NODES or not str(n.get("summary_zh", "")).strip():
+                errs.append(f"{where}: content node needs node_type (enum) + summary_zh: {str(n)[:80]}")
+    check_sources(it, errs, where)
+
+
+def check_military(it, errs, where):
+    v = req_str(it, "id", errs, where)
+    if v and not re.match(r"^[a-z]{2}-\d{4}-\d{2}-\d{2}-[a-z0-9-]+$", v):
+        errs.append(f"{where}: id must look like jp-2026-11-06-some-slug")
+    check_date(it, "event_date", errs, where)
+    for k in ("event_end_date", "publication_date"):
+        if it.get(k) is not None:
+            check_date(it, k, errs, where)
+    c = req_str(it, "country", errs, where)
+    if c and not COUNTRY.match(c):
+        errs.append(f"{where}: country must be an ISO alpha-2 code like US, got {c!r}")
+    for x in it.get("countries_involved", []) or []:
+        if not isinstance(x, str) or not COUNTRY.match(x):
+            errs.append(f"{where}: bad countries_involved entry {x!r}")
+    req_str(it, "title_zh", errs, where)
+    req_str(it, "summary_zh", errs, where)
+    if it.get("event_type") not in MIL_TYPES:
+        errs.append(f"{where}: event_type must be one of {sorted(MIL_TYPES)}")
+    if it.get("service") is not None and it["service"] not in MIL_SERVICES:
+        errs.append(f"{where}: service must be one of {sorted(MIL_SERVICES)}")
+    m = it.get("map") or {}
+    if m.get("marker_category") and m["marker_category"] not in MIL_TYPES:
+        errs.append(f"{where}: map.marker_category must use the event_type enum")
+    imp = it.get("importance") or {}
+    sc = imp.get("score") if isinstance(imp, dict) else None
+    if not (isinstance(sc, (int, float)) and 0 <= sc <= 100):
+        errs.append(f"{where}: importance.score must be a number 0-100")
+    q = it.get("quality") or {}
+    if q.get("verification_status") and q["verification_status"] not in MIL_VERIFY:
+        errs.append(f"{where}: bad quality.verification_status {q['verification_status']!r}")
+    for loc in it.get("locations", []) or []:
+        if not isinstance(loc, dict) or not loc.get("name"):
+            errs.append(f"{where}: every location needs a name")
+            continue
+        if loc.get("precision") and loc["precision"] not in PRECISIONS:
+            errs.append(f"{where}: bad location precision {loc['precision']!r}")
+        g = loc.get("geometry")
+        if g is None:
+            continue
+        pt = g.get("coordinates") if isinstance(g, dict) and g.get("type") == "Point" else None
+        if not (isinstance(pt, list) and len(pt) == 2 and all(isinstance(x, (int, float)) for x in pt)
+                and -180 <= pt[0] <= 180 and -90 <= pt[1] <= 90):
+            errs.append(f"{where}: location geometry must be {{'type': 'Point', 'coordinates': [lon, lat]}}: {loc['name']!r}")
+    if it.get("event_type") in ("exercise", "deployment"):
+        win = it.get("exercise") or it.get("deployment") or {}
+        if not (m.get("active_from") or win.get("start_date") or it.get("event_date")):
+            errs.append(f"{where}: exercises / deployments need a start date")
+    check_sources(it, errs, where)
+
+
 CHECKS = {"supply-chain.json": check_supply, "industry.json": check_industry, "earnings.json": check_earnings,
-          "annual-reports.json": check_annual, "defense.json": check_defense}
+          "annual-reports.json": check_annual, "defense.json": check_defense,
+          "industry-dynamics.json": check_dynamics, "military.json": check_military}
 
 
 def main():

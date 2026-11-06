@@ -3,6 +3,8 @@
 You are updating the news pages of https://peter94135.github.io — 供應鏈瓶頸新聞, 產業消息,
 財報電話會議分析, 每日軍武合約 and 年報重點 — for a Taiwan-based investor who follows the companies in `tools/news/watchlist.json`.
 The data format and writing rules are in `tools/news/SCHEMA.md`. Read both files first.
+`news/industry-dynamics.json` (產業動態) and `news/military.json` (軍武動態) belong to a second routine
+(`tools/news/ROUTINE-WORLD.md`); do not add items to them.
 
 ## Hard rules
 
