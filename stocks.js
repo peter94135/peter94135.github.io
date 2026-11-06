@@ -78,17 +78,19 @@
   }
 
   /* ---------- Firebase ---------- */
+  let fbInit = false;
   function initFirebase() {
-    if (typeof firebase === "undefined") return;
+    if (fbInit || typeof firebase === "undefined") return;
+    fbInit = true;
     try {
       firebase.initializeApp(FIREBASE_CONFIG);
       db = firebase.firestore();
       auth = firebase.auth();
       cloudReady = true;
-      auth.onAuthStateChanged(u => { user = u; updateAuthUI(); render(); });
+      auth.onAuthStateChanged(u => { user = u; updateAuthUI(); if (started) render(); });
       db.doc(CLOUD_DOC).onSnapshot(snap => {
         cloudLoaded = true;
-        if (!snap.exists) { updateAuthUI(); return; }
+        if (!snap.exists) { updateAuthUI(); if (stStarted) stOnThemes(); return; }
         const d = snap.data() || {};
         suppressCloud = true;
         if (d.themes) themes = d.themes;
@@ -96,10 +98,13 @@
         store(LS.themes, themes); store(LS.names, names);
         suppressCloud = false;
         updateAuthUI();
-        render();
-        const cur = activeTheme();
-        if (cur && themes[cur].some(s => !dataMap[s] || dataMap[s].last == null)) refresh();
-      }, err => console.warn("Firestore listen failed:", err.message));
+        if (started) {
+          render();
+          const cur = activeTheme();
+          if (cur && themes[cur].some(s => !dataMap[s] || dataMap[s].last == null)) refresh();
+        }
+        if (stStarted) stOnThemes();
+      }, err => { console.warn("Firestore listen failed:", err.message); if (stStarted) stOnThemes(); });
     } catch (e) { console.warn("Firebase init failed:", e.message); }
   }
 
@@ -455,7 +460,346 @@
     setupAuto();
   }
 
-  // Start the first time the Watchlist page is shown.
-  document.addEventListener("pagechange", e => { if (e.detail === "watchlist") start(); });
+  /* =====================================================================
+   * Theme Strength (題材強弱)
+   *   Ranks every watchlist theme by price momentum. Each theme's return over
+   *   a window is the MEDIAN of its members (robust to a single +300% name).
+   *   "綜合" = weighted percentile rank across windows; mid-term (week/month)
+   *   is weighted highest so rotation shows up, the 1-year window lowest.
+   *   Prices come from Yahoo's batch "spark" endpoint (20 symbols / request),
+   *   so all ~600 tickers update in a few seconds.
+   * ===================================================================== */
+  const ST_LS = { data: "st_data_v1", pref: "st_pref_v1" };
+  const DIMS = [
+    { key: "score", label: "綜合" },
+    { key: "d", label: "日" },
+    { key: "w", label: "週" },
+    { key: "m", label: "月" },
+    { key: "q", label: "季" },
+    { key: "y", label: "年" },
+  ];
+  const WINDOWS = ["d", "w", "m", "q", "y"];
+  const WEIGHTS = { d: 0.1, w: 0.3, m: 0.3, q: 0.2, y: 0.1 };
+  const ST_STALE = 15 * 60 * 1000;   // auto-update when cached prices are older than this
+  const QUADS = {
+    lead: { label: "強勢", en: "Leading", color: "var(--up)" },
+    improve: { label: "轉強", en: "Improving", color: "var(--accent-2)" },
+    weaken: { label: "轉弱", en: "Weakening", color: "var(--accent)" },
+    lag: { label: "弱勢", en: "Lagging", color: "var(--down)" },
+  };
+
+  let stData = load(ST_LS.data) || { t: 0, q: {} };
+  let stPref = Object.assign({ dim: "score", open: null }, load(ST_LS.pref) || {});
+  let stStarted = false, stBusy = false, stAutoDone = false, stRows = [];
+  const stSavePref = () => store(ST_LS.pref, stPref);
+
+  const median = a => {
+    if (!a.length) return null;
+    const s = a.slice().sort((x, y) => x - y), h = s.length >> 1;
+    return s.length % 2 ? s[h] : (s[h - 1] + s[h]) / 2;
+  };
+  const allSymbols = () => [...new Set(Object.values(themes).flat())];
+  const quadOf = r => (r.m >= 0 ? (r.w >= 0 ? "lead" : "weaken") : (r.w >= 0 ? "improve" : "lag"));
+
+  // Returns over each window from a daily close series (last bar = latest price).
+  function returnsFromSeries(ts, closes) {
+    const pts = [];
+    for (let i = 0; i < ts.length; i++) if (closes[i] != null && isFinite(closes[i])) pts.push([ts[i], closes[i]]);
+    if (pts.length < 2) return null;
+    const [tLast, last] = pts[pts.length - 1];
+    const ref = days => {
+      const target = tLast - days * 86400;
+      let best = pts[0][1];
+      for (const [t, c] of pts) { if (t <= target) best = c; else break; }
+      return best;
+    };
+    const r = base => (base ? last / base - 1 : null);
+    return { d: r(pts[pts.length - 2][1]), w: r(ref(7)), m: r(ref(30)), q: r(ref(91)), y: r(pts[0][1]) };
+  }
+
+  async function fetchSpark(syms) {
+    const j = await fetchJSON(`https://query1.finance.yahoo.com/v8/finance/spark?symbols=${encodeURIComponent(syms.join(","))}&range=1y&interval=1d`);
+    if (j && j.spark && j.spark.error) throw new Error(j.spark.error.description || "spark error");
+    const out = {};
+    for (const s of syms) {
+      const e = j && j[s];
+      if (!e || !e.timestamp || !e.close) continue;
+      const r = returnsFromSeries(e.timestamp, e.close);
+      if (r) out[s] = r;
+    }
+    return out;
+  }
+
+  async function stRefresh() {
+    if (stBusy) return;
+    const syms = allSymbols();
+    if (!syms.length) { $("stStatus").textContent = "No themes"; stRender(); return; }
+    stBusy = true;
+    $("stRefresh").disabled = true;
+    const chunks = [];
+    for (let i = 0; i < syms.length; i += 20) chunks.push(syms.slice(i, i + 20));
+    const q = {};
+    let done = 0, failed = 0;
+    const status = () => { $("stStatus").innerHTML = `<span class="loading">Updating … ${Math.min(done * 20, syms.length)}/${syms.length}</span>`; };
+    status();
+    const queue = [...chunks];
+    async function worker() {
+      while (queue.length) {
+        const c = queue.shift();
+        let res = null;
+        for (let attempt = 0; attempt < 2 && !res; attempt++) {
+          try { res = await fetchSpark(c); } catch (e) { /* retry once */ }
+        }
+        if (res) Object.assign(q, res); else failed++;
+        done++; status();
+      }
+    }
+    await Promise.all(Array.from({ length: 4 }, worker));
+    // Keep older quotes for anything that failed this round.
+    stData = { t: Date.now(), q: Object.assign({}, stData.q, q) };
+    store(ST_LS.data, stData);
+    stBusy = false;
+    $("stRefresh").disabled = false;
+    stRender();
+    const got = syms.filter(s => q[s]).length;
+    $("stStatus").textContent = `Updated ${new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })} · ${got}/${syms.length} tickers` + (failed ? ` · ${failed} batch(es) failed` : "");
+  }
+
+  function themeStats() {
+    const rows = themeKeys().map(name => {
+      const syms = [...new Set(themes[name])];
+      const vals = syms.map(s => stData.q[s]).filter(Boolean);
+      const r = { name, n: syms.length, got: vals.length };
+      for (const k of WINDOWS) {
+        const arr = vals.map(v => v[k]).filter(v => v != null && isFinite(v));
+        r[k] = median(arr);
+        r[k + "Up"] = arr.filter(v => v > 0).length;
+        r[k + "N"] = arr.length;
+      }
+      return r;
+    }).filter(r => r.got);
+    // 綜合: percentile rank of each window across themes, weighted.
+    const pct = {};
+    for (const k of WINDOWS) {
+      const list = rows.filter(r => r[k] != null).sort((a, b) => a[k] - b[k]);
+      list.forEach((r, i) => { (pct[r.name] || (pct[r.name] = {}))[k] = list.length > 1 ? i / (list.length - 1) : 0.5; });
+    }
+    for (const r of rows) {
+      let sum = 0, wsum = 0;
+      for (const k of WINDOWS) if (pct[r.name] && pct[r.name][k] != null) { sum += WEIGHTS[k] * pct[r.name][k]; wsum += WEIGHTS[k]; }
+      r.score = wsum ? (sum / wsum) * 100 : null;
+    }
+    return rows;
+  }
+
+  /* ---------- rendering ---------- */
+  const fmtPct1 = v => (v == null || isNaN(v) ? "—" : (v > 0 ? "+" : "") + (v * 100).toFixed(1) + "%");
+
+  function stRender() {
+    if (!stStarted) return;
+    stRows = themeStats();
+    $("stDims").innerHTML = DIMS.map(d => `<button class="seg__btn${d.key === stPref.dim ? " active" : ""}" data-dim="${d.key}" type="button">${d.label}</button>`).join("");
+    const meta = $("stMeta");
+    const nSym = allSymbols().length;
+    meta.textContent = stRows.length
+      ? `${stRows.length} 個題材 · ${nSym} 檔個股` + (stData.t ? ` · 價格時間 ${new Date(stData.t).toLocaleString("zh-TW", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit", hour12: false })}` : "")
+      : "";
+    stRenderQuad();
+    stRenderList();
+  }
+
+  function stRenderQuad() {
+    const box = $("stQuad");
+    const rows = stRows.filter(r => r.m != null && r.w != null);
+    if (!rows.length) { box.innerHTML = `<div class="wl-empty">${stBusy ? "Loading prices…" : "No price data yet — press Update."}</div>`; return; }
+    const W = Math.max(300, Math.round(box.clientWidth || 640));
+    const H = Math.round(Math.min(460, Math.max(300, W * 0.62)));
+    const pad = { l: 46, r: 16, t: 18, b: 34 };
+    // Fit the data (always keeping the 0 axes in view) instead of a symmetric range,
+    // so a market-wide move doesn't squash every theme into one corner.
+    const range = (vals, minSpan) => {
+      let lo = Math.min(0, ...vals), hi = Math.max(0, ...vals);
+      const span = Math.max(minSpan, hi - lo), padv = span * 0.12;
+      if (hi - lo < minSpan) { const mid = (lo + hi) / 2; lo = mid - minSpan / 2; hi = mid + minSpan / 2; }
+      return [Math.min(lo - padv, -padv * 0.6), Math.max(hi + padv, padv * 0.6)];
+    };
+    const [xLo, xHi] = range(rows.map(r => r.m), 0.04);
+    const [yLo, yHi] = range(rows.map(r => r.w), 0.02);
+    const X = v => pad.l + ((v - xLo) / (xHi - xLo)) * (W - pad.l - pad.r);
+    const Y = v => pad.t + ((yHi - v) / (yHi - yLo)) * (H - pad.t - pad.b);
+    const cx = X(0), cy = Y(0);
+    const fs = W < 480 ? 10 : 11.5;
+    const nMax = Math.max(...rows.map(r => r.n));
+    const rad = r => (W < 480 ? 3.5 : 4.5) + 4 * Math.sqrt(r.n / nMax);
+
+    let s = `<svg class="st-svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Theme momentum quadrant: month return vs week return">`;
+    // quadrant tints + corner labels
+    const qx0 = pad.l, qx1 = W - pad.r, qy0 = pad.t, qy1 = H - pad.b;
+    s += `<rect x="${cx}" y="${qy0}" width="${qx1 - cx}" height="${cy - qy0}" class="st-q st-q--lead"/>`;
+    s += `<rect x="${qx0}" y="${cy}" width="${cx - qx0}" height="${qy1 - cy}" class="st-q st-q--lag"/>`;
+    const corner = (x, y, anchor, q) => `<text x="${x}" y="${y}" text-anchor="${anchor}" class="st-corner" fill="${QUADS[q].color}">${QUADS[q].label} ${QUADS[q].en}</text>`;
+    s += corner(qx1 - 6, qy0 + 14, "end", "lead") + corner(qx0 + 6, qy0 + 14, "start", "improve");
+    s += corner(qx1 - 6, qy1 - 7, "end", "weaken") + corner(qx0 + 6, qy1 - 7, "start", "lag");
+    // axes
+    s += `<line x1="${qx0}" x2="${qx1}" y1="${cy}" y2="${cy}" class="st-axis"/><line x1="${cx}" x2="${cx}" y1="${qy0}" y2="${qy1}" class="st-axis"/>`;
+    s += `<text x="${qx0}" y="${H - 10}" class="st-tick">${fmtPct1(xLo)}</text><text x="${qx1}" y="${H - 10}" text-anchor="end" class="st-tick">${fmtPct1(xHi)}</text>`;
+    s += `<text x="${(qx0 + qx1) / 2}" y="${H - 10}" text-anchor="middle" class="st-axis-label">月漲跌（中期） →</text>`;
+    s += `<text x="${pad.l - 6}" y="${qy0 + 4}" text-anchor="end" class="st-tick">${fmtPct1(yHi)}</text><text x="${pad.l - 6}" y="${qy1}" text-anchor="end" class="st-tick">${fmtPct1(yLo)}</text>`;
+    s += `<text transform="translate(13 ${(qy0 + qy1) / 2}) rotate(-90)" text-anchor="middle" class="st-axis-label">週漲跌（短期） →</text>`;
+
+    // points, then labels with simple collision avoidance
+    const placed = [];
+    const textW = t => [...t].reduce((a, ch) => a + (ch.charCodeAt(0) > 255 ? fs : fs * 0.58), 0);
+    const hit = b => placed.some(p => b.x < p.x + p.w && b.x + b.w > p.x && b.y < p.y + p.h && b.y + b.h > p.y);
+    const sorted = rows.slice().sort((a, b) => b.n - a.n);
+    let dots = "", labels = "";
+    for (const r of sorted) {
+      const x = X(r.m), y = Y(r.w), q = quadOf(r), rr = rad(r);
+      const open = stPref.open === r.name ? " st-dot--open" : "";
+      dots += `<g class="st-dot${open}" data-theme="${esc(r.name)}"><title>${esc(r.name)}\n週 ${fmtPct1(r.w)} · 月 ${fmtPct1(r.m)} · ${r.n} 檔</title><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${rr.toFixed(1)}" fill="${QUADS[q].color}"/></g>`;
+      placed.push({ x: x - rr, y: y - rr, w: rr * 2, h: rr * 2 });
+    }
+    for (const r of sorted) {
+      const x = X(r.m), y = Y(r.w), rr = rad(r), w = textW(r.name), h = fs + 2;
+      const cands = [
+        { x: x + rr + 3, y: y - h / 2, a: "start" },
+        { x: x - rr - 3 - w, y: y - h / 2, a: "end" },
+        { x: x - w / 2, y: y - rr - 2 - h, a: "middle" },
+        { x: x - w / 2, y: y + rr + 2, a: "middle" },
+      ];
+      let c = cands.find(b => !hit({ x: b.x, y: b.y, w, h }) && b.x >= 2 && b.x + w <= W - 2 && b.y >= 2 && b.y + h <= H - 2);
+      if (!c) continue;   // too crowded: name still shown on hover / in the ranking
+      placed.push({ x: c.x, y: c.y, w, h });
+      const tx = c.a === "start" ? c.x : c.a === "end" ? c.x + w : c.x + w / 2;
+      labels += `<text x="${tx.toFixed(1)}" y="${(c.y + h - 3).toFixed(1)}" text-anchor="${c.a}" class="st-label" data-theme="${esc(r.name)}" style="font-size:${fs}px">${esc(r.name)}</text>`;
+    }
+    s += dots + labels + `</svg>`;
+    box.innerHTML = s;
+  }
+
+  function barHTML(r, dim, maxAbs) {
+    const v = r[dim];
+    if (v == null) return `<div class="st-bar"></div>`;
+    if (dim === "score") {
+      return `<div class="st-bar st-bar--score"><span style="width:${v.toFixed(1)}%"></span></div>`;
+    }
+    const w = Math.min(50, (Math.abs(v) / maxAbs) * 50);
+    const side = v >= 0 ? `left:50%` : `right:50%`;
+    return `<div class="st-bar st-bar--div"><i></i><span class="${v >= 0 ? "up" : "down"}" style="${side};width:${w.toFixed(1)}%"></span></div>`;
+  }
+
+  function stRenderList() {
+    const box = $("stList");
+    if (!stRows.length) { box.innerHTML = ""; return; }
+    const dim = stPref.dim;
+    const rows = stRows.slice().sort((a, b) => (b[dim] ?? -Infinity) - (a[dim] ?? -Infinity));
+    const maxAbs = dim === "score" ? 100 : Math.max(1e-6, ...rows.map(r => Math.abs(r[dim] ?? 0)));
+    const bk = dim === "score" ? "w" : dim;   // breadth window
+    const dimLabel = DIMS.find(d => d.key === dim).label;
+    const head = `<div class="st-row st-row--head">
+      <span>#</span><span>題材</span><span>${dimLabel}${dim === "score" ? "分數" : "漲跌（中位數）"}</span>
+      <span class="st-num">上漲比例</span>
+      ${WINDOWS.map(k => `<span class="st-num st-c-win st-c-${k}${k === dim ? " is-sel" : ""}">${DIMS.find(d => d.key === k).label}</span>`).join("")}
+      <span class="st-num st-c-win st-c-score${dim === "score" ? " is-sel" : ""}">綜合</span></div>`;
+    const body = rows.map((r, i) => {
+      const q = quadOf(r);
+      const val = dim === "score" ? (r.score == null ? "—" : r.score.toFixed(0)) : fmtPct1(r[dim]);
+      const valCls = dim === "score" ? "" : dir(r[dim]);
+      const open = stPref.open === r.name;
+      const breadth = r[bk + "N"] ? `${r[bk + "Up"]}/${r[bk + "N"]}` : "—";
+      return `<div class="st-item${open ? " open" : ""}" data-row="${esc(r.name)}">
+        <button class="st-row" type="button" data-toggle="${esc(r.name)}" aria-expanded="${open}">
+          <span class="st-rank">${i + 1}</span>
+          <span class="st-name"><i class="st-qdot" style="background:${QUADS[q].color}" title="${QUADS[q].label}"></i>${esc(r.name)}<small>${r.n}</small></span>
+          <span class="st-barcell">${barHTML(r, dim, maxAbs)}<b class="${valCls}">${val}</b></span>
+          <span class="st-num st-breadth">${breadth}</span>
+          ${WINDOWS.map(k => `<span class="st-num st-c-win st-c-${k} ${dir(r[k])}${k === dim ? " is-sel" : ""}">${fmtPct1(r[k])}</span>`).join("")}
+          <span class="st-num st-c-win st-c-score${dim === "score" ? " is-sel" : ""}">${r.score == null ? "—" : r.score.toFixed(0)}</span>
+        </button>
+        ${open ? stMembersHTML(r.name, dim) : ""}
+      </div>`;
+    }).join("");
+    box.innerHTML = head + body;
+  }
+
+  function stMembersHTML(theme, dim) {
+    const k = dim === "score" ? "w" : dim;
+    const list = [...new Set(themes[theme] || [])].map(sym => ({ sym, v: stData.q[sym] || {} }))
+      .sort((a, b) => (b.v[k] ?? -Infinity) - (a.v[k] ?? -Infinity));
+    const rows = list.map(({ sym, v }) => {
+      const nm = (names[sym] && names[sym].name) || "";
+      return `<tr><td class="left"><a class="sym" href="${tvUrl(sym)}" target="_blank" rel="noopener">${esc(sym)}</a><span class="cname">${esc(nm && nm !== sym ? nm : "")}</span></td>
+        ${WINDOWS.map(w => `<td class="${dir(v[w])}">${fmtPct1(v[w])}</td>`).join("")}</tr>`;
+    }).join("");
+    return `<div class="st-members">
+      <div class="tscroll"><table class="wl-table st-table"><thead><tr><th class="left">個股（依${k === "w" && dim === "score" ? "週" : DIMS.find(d => d.key === k).label}漲跌排序）</th>${WINDOWS.map(w => `<th>${DIMS.find(d => d.key === w).label}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table></div>
+      <a class="text-link st-open-wl" href="#watchlist" data-wl="${esc(theme)}">在 Watchlist 開啟「${esc(theme)}」 →</a>
+    </div>`;
+  }
+
+  function stToggle(name, scroll) {
+    stPref.open = stPref.open === name ? null : name; stSavePref();
+    stRenderQuad(); stRenderList();
+    if (scroll && stPref.open) {
+      const el = document.querySelector(`.st-item[data-row="${CSS.escape(name)}"]`);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+
+  // Called when the cloud copy of the themes arrives (or fails to).
+  function stOnThemes() {
+    stRender();
+    if (!stAutoDone) {
+      const syms = allSymbols();
+      const missing = syms.some(s => !stData.q[s]);
+      if (Date.now() - stData.t > ST_STALE || missing) { stAutoDone = true; stRefresh(); }
+      else stAutoDone = true;
+    }
+  }
+
+  function stWire() {
+    $("stRefresh").addEventListener("click", stRefresh);
+    $("stDims").addEventListener("click", e => {
+      const b = e.target.closest("[data-dim]");
+      if (!b) return;
+      stPref.dim = b.dataset.dim; stSavePref(); stRender();
+    });
+    $("stQuad").addEventListener("click", e => {
+      const g = e.target.closest("[data-theme]");
+      if (g) stToggle(g.dataset.theme, true);
+    });
+    $("stList").addEventListener("click", e => {
+      const wl = e.target.closest("[data-wl]");
+      if (wl) {
+        const t = wl.dataset.wl;
+        if (started) selectTheme(t); else { pref.active = t; savePref(); }
+        return;   // the href navigates to #watchlist
+      }
+      const row = e.target.closest("[data-toggle]");
+      if (row) stToggle(row.dataset.toggle, false);
+    });
+    let rz = null;
+    window.addEventListener("resize", () => {
+      clearTimeout(rz);
+      rz = setTimeout(() => { if (location.hash === "#strength") stRenderQuad(); }, 150);
+    });
+  }
+
+  function stStart() {
+    if (stStarted) { stRenderQuad(); return; }   // re-measure width on revisit
+    stStarted = true;
+    stWire();
+    stRender();
+    initFirebase();
+    if (cloudLoaded || !cloudReady) stOnThemes();
+    else setTimeout(() => { if (!stAutoDone) stOnThemes(); }, 5000);   // Firestore slow: use cached themes
+  }
+
+  /* ---------- lazy start ---------- */
+  document.addEventListener("pagechange", e => {
+    if (e.detail === "watchlist") start();
+    if (e.detail === "strength") stStart();
+  });
   if (location.hash === "#watchlist") start();
+  if (location.hash === "#strength") stStart();
 })();
