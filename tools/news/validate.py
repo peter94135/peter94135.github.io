@@ -7,7 +7,8 @@ Usage:
                                                        # duplicate ids, stamp "updated", rewrite
 
 <data-dir> is the folder that holds supply-chain.json, industry.json and earnings.json
-(e.g. the news/ folder of a news-data branch checkout). Missing files are created empty.
+(e.g. the news/ folder of a news-data branch checkout), plus annual-reports.json and defense.json.
+Missing files are created empty.
 Exit code 1 if any error remains. Standard library only.
 """
 import json
@@ -30,7 +31,12 @@ FILES = {
     "supply-chain.json": "date",
     "industry.json": "event_date",
     "earnings.json": "date",
+    "annual-reports.json": "_date",
+    "defense.json": "event_date",
 }
+DEF_TYPES = {"contract_award", "contract_modification", "foreign_military_sale", "procurement", "tender",
+             "development", "production", "delivery", "upgrade", "sustainment", "program_decision", "test",
+             "research", "rfp"}
 
 
 def req_str(it, key, errs, where):
@@ -132,7 +138,66 @@ def check_earnings(it, errs, where):
     check_sources(it, errs, where)
 
 
-CHECKS = {"supply-chain.json": check_supply, "industry.json": check_industry, "earnings.json": check_earnings}
+def check_annual(it, errs, where):
+    v = req_str(it, "id", errs, where)
+    t = req_str(it, "_ticker", errs, where)
+    if t:
+        check_tickers([t], errs, where)
+    y = req_str(it, "_year", errs, where)
+    if v and t and y and v != f"{t.lower().replace('.', '-')}-{y}":
+        errs.append(f"{where}: id should be {t.lower().replace('.', '-')}-{y}")
+    req_str(it, "_company", errs, where)
+    check_date(it, "_date", errs, where)
+    if it.get("_stance") not in (None, "bullish", "slightly_bullish", "neutral", "slightly_bearish", "bearish"):
+        errs.append(f"{where}: bad _stance {it.get('_stance')!r}")
+    d = it.get("data")
+    if not isinstance(d, dict):
+        errs.append(f"{where}: missing 'data' object")
+        return
+    h = d.get("headline") or {}
+    if not isinstance(h, dict) or not str(h.get("title", "")).strip() or not str(h.get("one_sentence_summary", "")).strip():
+        errs.append(f"{where}: data.headline.title and data.headline.one_sentence_summary are required")
+    iv = d.get("investment_view") or {}
+    if not isinstance(iv, dict) or not str(iv.get("core_thesis", "")).strip():
+        errs.append(f"{where}: data.investment_view.core_thesis is required")
+    if not (d.get("business_segments") or d.get("revenue_mix")):
+        errs.append(f"{where}: needs data.business_segments or data.revenue_mix")
+    for key in ("business_segments", "revenue_mix", "growth_drivers", "risks", "financial_and_accounting_flags", "governance_flags"):
+        if key in d and not isinstance(d[key], list):
+            errs.append(f"{where}: data.{key} must be a list")
+    check_sources(it, errs, where)
+
+
+def check_defense(it, errs, where):
+    v = req_str(it, "id", errs, where)
+    if v and not re.match(r"^[a-z]{2}-\d{4}-\d{2}-\d{2}-[a-z0-9-]+$", v):
+        errs.append(f"{where}: id must look like us-2026-11-05-some-slug")
+    check_date(it, "event_date", errs, where)
+    req_str(it, "country", errs, where)
+    req_str(it, "title_zh", errs, where)
+    req_str(it, "summary_zh", errs, where)
+    if it.get("event_type") not in DEF_TYPES:
+        errs.append(f"{where}: event_type must be one of {sorted(DEF_TYPES)}")
+    c = it.get("contractor")
+    if not isinstance(c, dict) or not c.get("name"):
+        errs.append(f"{where}: contractor.name is required")
+    else:
+        for k in ("ticker", "parent_ticker"):
+            if c.get(k) and not TICKER.match(c[k]):
+                errs.append(f"{where}: bad contractor.{k} {c[k]!r}")
+    ct = it.get("contract")
+    if ct is not None and not isinstance(ct, dict):
+        errs.append(f"{where}: contract must be an object")
+    elif ct and ct.get("amount") is not None and not isinstance(ct["amount"], (int, float)):
+        errs.append(f"{where}: contract.amount must be a number or null")
+    sc = it.get("importance_score")
+    if sc is not None and not (isinstance(sc, (int, float)) and 0 <= sc <= 100):
+        errs.append(f"{where}: importance_score must be a number 0-100")
+    check_sources(it, errs, where)
+
+
+CHECKS = {"supply-chain.json": check_supply, "industry.json": check_industry, "earnings.json": check_earnings,
+          "annual-reports.json": check_annual, "defense.json": check_defense}
 
 
 def main():

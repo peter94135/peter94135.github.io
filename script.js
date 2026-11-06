@@ -21,7 +21,7 @@ document.getElementById("themeToggle").addEventListener("click", () => {
 syncThemeButton();
 
 // ===== Page routing (hash-based, like a single-page app) =====
-const PAGES = ["home", "experience", "publications", "awards", "watchlist", "strength", "supply", "industry", "highlights", "earnings"];
+const PAGES = ["home", "experience", "publications", "awards", "watchlist", "strength", "supply", "industry", "highlights", "earnings", "annual", "defense"];
 
 function showPage(id) {
   if (!PAGES.includes(id)) id = "home";

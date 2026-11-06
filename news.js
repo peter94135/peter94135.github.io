@@ -53,6 +53,9 @@
     return loaded[file];
   }
 
+  // Shared with annual.js / defense.js (ported pages).
+  window.newsLib = { esc, chartUrl, loadItems };
+
   // For the Watchlist ticker cards (供 / 產 / 法 tags): symbol → latest related item per page.
   // { "NVDA": { supply: { id, date }, industry: {...}, earnings: {...} } }
   window.newsTickerIndex = async function () {

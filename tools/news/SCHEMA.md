@@ -7,6 +7,8 @@ The site's three news pages read JSON files from the **`news-data`** branch of t
 | 供應鏈瓶頸新聞 (`#supply`)       | `news/supply-chain.json` | `date`          |
 | 產業消息 (`#industry`)          | `news/industry.json`     | `event_date`    |
 | 財報電話會議分析 (`#earnings`)   | `news/earnings.json`     | `date`          |
+| 年報重點 (`#annual`)            | `news/annual-reports.json` | `_date`       |
+| 每日軍武合約 (`#defense`)        | `news/defense.json`      | `event_date`    |
 
 Each file is `{ "updated": "<ISO-8601 UTC>", "items": [ ... ] }`.
 The `news-data` branch holds **only** these files (it is an orphan branch, unrelated to `main`).
@@ -123,3 +125,79 @@ One item per company per quarter, for **watchlist companies** that held an earni
   "updated_at": "2026-11-06T23:05:00Z"
 }
 ```
+
+## 4. `news/annual-reports.json` — 年報重點
+
+One deep read of a company's **annual report** (年報 / 10-K / 20-F / 有価証券報告書 / 사업보고서) per item.
+Work only from the filing itself (open the PDF/HTML) and cite page numbers in every `source_reference`.
+
+**Follow `tools/news/examples/annual-report.example.json` exactly** — it is a complete real record (SK hynix FY2025)
+and the page renders that shape. Top level:
+
+```json
+{
+  "id": "000660-ks-2025",              // <_ticker lowercased, "." → "-">-<_year>, unique
+  "_ticker": "000660.KS",              // Yahoo symbol
+  "_company": "SK海力士股份有限公司",     // zh name
+  "_company_en": "SK hynix Inc.",
+  "_market": "KR",                     // US | TW | JP | KR | HK | CN | EU ...
+  "_industry": "半導體",
+  "_year": "2025",                     // fiscal year
+  "_date": "2026-03-17",               // filing date (YYYY-MM-DD)
+  "_stance": "bullish",                // = data.headline.stance: bullish | slightly_bullish | neutral | slightly_bearish | bearish
+  "data": { ...same sections as the example... },
+  "sources": [{ "title": "2025 사업보고서 (DART)", "url": "https://..." }],
+  "updated_at": "2026-11-06T23:05:00Z"
+}
+```
+
+`data` sections (all from the example; leave a field `null` / `[]` rather than guess, numbers as numbers or numeric strings):
+`schema_version`, `document`, `headline` (title, one_sentence_summary, stance, confidence, main_investment_question,
+key_change_vs_prior_year), `company`, `financial_highlights` (income_statement, balance_sheet, cash_flow, liquidity,
+capex, dividends), `business_segments`, `revenue_mix`, `product_portfolio`, `customers`, `supply_chain`, `competition`,
+`industry_and_market`, `operating_review`, `growth_drivers`, `research_and_development`, `future_strategy`,
+`company_challenges`, `risks`, `financial_and_accounting_flags`, `governance_flags`, `investment_view`,
+`source_evidence`, `tags`, `data_quality`.
+
+## 5. `news/defense.json` — 每日軍武合約
+
+A complete real record is in `tools/news/examples/defense.example.json`.
+
+Defense **contract events** (awards, modifications, FMS notifications, tenders, deliveries).
+Prefer official sources: U.S. DoD daily contracts (defense.gov/News/Contracts), DSCA major arms sales,
+Taiwan MND / 國防部, Japan ATLA / MOD, Korea DAPA, UK MoD, NATO NSPA; media reports are allowed but must be flagged.
+
+```json
+{
+  "id": "us-2026-11-05-lockheed-pac3-mse",           // <country lowercased>-<YYYY-MM-DD>-<ascii-slug>, unique
+  "event_date": "2026-11-05",
+  "publication_date": "2026-11-05",
+  "country": "US",                                   // buyer country, ISO code
+  "service": "Army",                                 // Army | Navy | Air Force | Marine Corps | Space Force | Joint | Coast Guard
+  "agency": "U.S. Army Contracting Command",
+  "event_type": "contract_award",                    // see enum below
+  "title": "Lockheed Martin awarded $9.8B for PAC-3 MSE",
+  "title_zh": "洛克希德馬丁獲 98 億美元 PAC-3 MSE 飛彈合約",
+  "summary": "1–3 sentences (source language ok)",
+  "summary_zh": "1–3 句中文摘要；未經官方來源證實的事件以「【未查證】」開頭",
+  "contractor": { "name": "Lockheed Martin", "name_raw": "Lockheed Martin Corp., Grand Prairie, Texas",
+                  "ticker": "LMT", "public_company": true, "exchange": "NYSE", "parent_company": null,
+                  "parent_ticker": null, "country": "US" },
+  "contract": { "amount": 9800000000, "currency": "USD", "amount_type": "ceiling|obligated|estimated|unknown",
+                "contract_number": "W31P4Q-25-C-0001", "quantity": null, "quantity_unit": null },
+  "programs": [{ "canonical_name": "PAC-3 MSE", "name_zh": "愛國者三型飛彈段強化型", "category": "missile" }],
+  "action": { "type": "new_procurement", "description_zh": "多年期量產合約" },
+  "importance_score": 85,                            // 0–100
+  "tags": ["patriot", "missile", "lockheed"],
+  "quality": { "needs_review": false, "issues": [] }, // e.g. ["media_only_source", "amount_undisclosed"]
+  "sources": [{ "publisher": "U.S. Department of Defense", "url": "https://www.defense.gov/News/Contracts/...",
+                "source_type": "official|media_report", "official": true }],
+  "updated_at": "2026-11-06T23:05:00Z"
+}
+```
+`event_type` enum: `contract_award`, `contract_modification`, `foreign_military_sale`, `procurement`, `tender`,
+`development`, `production`, `delivery`, `upgrade`, `sustainment`, `program_decision`, `test`, `research`, `rfp`.
+`programs[].category` (snake_case): `aircraft`, `helicopter`, `drone`, `missile`, `munition`, `air_defense`, `radar_sensor`,
+`electronic_warfare`, `naval`, `submarine`, `shipbuilding`, `ground_vehicle`, `artillery`, `small_arms`, `space`,
+`satellite`, `cyber`, `c4isr`, `engine_propulsion`, `weapon_component`, `logistics`, `training`, `services`, `construction`, `unknown`.
+`contractor.ticker` must be a Yahoo symbol of the contractor (or its listed parent in `parent_ticker`), or `null` if private.

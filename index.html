@@ -20,6 +20,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="news.css" />
+  <link rel="stylesheet" href="defense.css" />
 </head>
 <body>
   <!-- Mobile top bar -->
@@ -84,6 +85,12 @@
           </a>
           <a class="nav-item" href="#earnings" data-page="earnings">
             <span class="nav-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3z"/><path d="M19 11a7 7 0 0 1-14 0M12 18v3"/></svg></span>財報電話會議分析
+          </a>
+          <a class="nav-item" href="#annual" data-page="annual">
+            <span class="nav-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M8 7h8M8 11h6"/></svg></span>年報重點
+          </a>
+          <a class="nav-item" href="#defense" data-page="defense">
+            <span class="nav-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/></svg></span>每日軍武合約
           </a>
         </div>
       </div>
@@ -464,6 +471,34 @@
       <div class="rv-root" id="news-earnings"></div>
     </section>
 
+    <!-- ========== 年報重點 ========== -->
+    <section class="page page--wide" id="page-annual">
+      <div class="page-header"><h1 class="page-title">年報重點 · Annual Report Highlights</h1></div>
+      <div class="ar-sources">
+        <span class="ar-sources-label">年報來源</span>
+        <a class="ar-src" href="https://mops.twse.com.tw/mops/#/web/t57sb01_q1" target="_blank" rel="noopener"><span class="ar-src-mk">台股</span><span class="ar-src-nm">MOPS</span><span class="ar-src-path">股東會年報</span></a>
+        <a class="ar-src" href="https://www.sec.gov/edgar/search/" target="_blank" rel="noopener"><span class="ar-src-mk">美股</span><span class="ar-src-nm">SEC EDGAR</span><span class="ar-src-path">10-K</span></a>
+        <a class="ar-src" href="https://disclosure2.edinet-fsa.go.jp/WEEK0010.aspx" target="_blank" rel="noopener"><span class="ar-src-mk">日股</span><span class="ar-src-nm">EDINET</span><span class="ar-src-path">有価証券報告書</span></a>
+        <a class="ar-src" href="https://dart.fss.or.kr/" target="_blank" rel="noopener"><span class="ar-src-mk">韓股</span><span class="ar-src-nm">DART</span><span class="ar-src-path">사업보고서</span></a>
+      </div>
+      <p class="muted news-intro">每天由 AI 排程挑一家 Watchlist 公司，直接讀最新年報並整理成重點（事業結構、營收組成、客戶、成長動能、研發、風險與多空情境）。</p>
+      <div id="news-annual" class="ar-root"></div>
+      <section class="ar-compare" hidden>
+        <div class="ar-compare-head">
+          <h3 class="ar-compare-title">單一公司 · 多年度比較</h3>
+          <label class="rv-ctl">公司 <span class="rv-sel-wrap"><select class="rv-select" id="arCmpCompany"></select></span></label>
+        </div>
+        <div class="ar-compare-row" id="arCompareRow"></div>
+      </section>
+    </section>
+
+    <!-- ========== 每日軍武合約 ========== -->
+    <section class="page page--wide" id="page-defense">
+      <div class="page-header"><h1 class="page-title">每日軍武合約 · Defense Contracts</h1></div>
+      <p class="df-sub">各國官方採購與合約公告（DoD / DSCA / ATLA / DAPA / 國防部等），每天由 AI 排程整理。保留合約編號、金額與來源連結；承包商標註對應上市股票，僅有媒體報導者標示【未查證】。</p>
+      <div id="news-defense"><p class="df-meta">載入中…</p></div>
+    </section>
+
     <footer class="site-footer">
       © <span id="year"></span> Tzu-Hao Huang (黃子豪) · Hosted on GitHub Pages
     </footer>
@@ -478,5 +513,7 @@
   <script src="script.js"></script>
   <script src="stocks.js"></script>
   <script src="news.js"></script>
+  <script src="annual.js"></script>
+  <script src="defense.js"></script>
 </body>
 </html>

@@ -824,3 +824,5 @@ a.rp-ticker:hover { background: var(--accent); color: var(--text-on-accent); }
   .hl-bar .rv-sel-wrap { flex: 1 1 0; width: auto; }
   .hl-bar .hl-ctl .rv-select, .hl-bar .hl-ctl:first-child .rv-select { width: 100%; min-width: 0; max-width: 100%; }
 }
+#page-annual .news-intro { margin: 0.4rem 0 1rem; }
+.ar-compare[hidden] { display: none !important; }

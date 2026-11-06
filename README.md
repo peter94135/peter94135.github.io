@@ -10,7 +10,9 @@ My personal academic website, hosted on GitHub Pages → **https://peter94135.gi
 ├── style.css       # Wood-tone glassmorphism theme (light + dark tokens at the top)
 ├── script.js       # Hash routing (#home, #watchlist …), sidebar folders, theme toggle
 ├── stocks.js       # Stock Watchlist + Theme Strength (themes from Firestore, quotes via Cloudflare Worker → Yahoo Finance)
-├── news.js / news.css  # News pages: 供應鏈瓶頸新聞 / 產業消息 / 財報電話會議分析
+├── news.js / news.css  # News pages: 供應鏈瓶頸新聞 / 產業消息 / 重點新聞 / 財報電話會議分析
+├── annual.js       # 年報重點 (ported from hgvf.github.io annualview.js)
+├── defense.js / defense.css  # 每日軍武合約 (ported from hgvf.github.io defenseview.js)
 ├── tools/news/     # Daily news job: ROUTINE.md (instructions), SCHEMA.md, validate.py, watchlist.json
 ├── assets/         # Images (profile.jpg, cv.pdf)
 └── .nojekyll        # Tells GitHub Pages to serve files as-is
@@ -51,10 +53,11 @@ The quadrant chart plots month return (x) vs week return (y): Leading / Improvin
 ## News pages (供應鏈瓶頸新聞 / 產業消息 / 財報電話會議分析)
 
 Layout copied with permission from hgvf.github.io. A Claude cloud routine runs every day, follows
-`tools/news/ROUTINE.md`, researches the news, appends items to `news/*.json` on the orphan
+`tools/news/ROUTINE.md`, researches the news, appends items to `news/*.json` (supply-chain, industry, earnings,
+defense, annual-reports) on the orphan
 **`news-data`** branch and pushes it. The site reads those files from
 `raw.githubusercontent.com/.../refs/heads/news-data/news/` (no Firestore, no secrets).
-Format: `tools/news/SCHEMA.md`; check with `python3 tools/news/validate.py <dir> [--fix]`.
+Format: `tools/news/SCHEMA.md` (full example records in `tools/news/examples/`); check with `python3 tools/news/validate.py <dir> [--fix]`.
 `tools/news/watchlist.json` is a snapshot of the watchlist tickers — regenerate it when the watchlist changes.
 **重點新聞 (`#highlights`)**: the 🔖 button on 供應鏈瓶頸新聞 / 產業消息 rows collects an item. The list lives in
 Firestore `dashboards/highlights` (public read), mirrored in localStorage; it is written to Firestore only when the
