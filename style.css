@@ -252,7 +252,7 @@ strong { font-weight: 600; }
   content: ""; position: absolute; left: 0.25rem; top: 0.4rem; bottom: 0.4rem;
   width: 2px; background: var(--accent-line); border-radius: 2px;
 }
-.timeline__item { position: relative; display: grid; grid-template-columns: 110px 1fr; gap: 1rem; padding: 0.55rem 0; }
+.timeline__item { position: relative; display: grid; grid-template-columns: 148px 1fr; gap: 1rem; padding: 0.55rem 0; }
 .timeline__item::before {
   content: ""; position: absolute; left: -1.2rem; top: 0.95rem;
   width: 10px; height: 10px; border-radius: 50%;
@@ -261,6 +261,28 @@ strong { font-weight: 600; }
 .timeline__date { font-family: var(--mono); font-size: 0.78rem; color: var(--text-3); padding-top: 0.15rem; }
 .timeline__role { font-size: 0.95rem; font-weight: 600; }
 .timeline__org { font-size: 0.85rem; color: var(--text-2); }
+
+.timeline__desc { font-size: 0.82rem; color: var(--text-2); margin-top: 0.15rem; }
+.tag {
+  display: inline-block; vertical-align: 2px; margin-left: 0.35rem; padding: 0 0.45rem; border-radius: 999px;
+  font-size: 0.66rem; font-weight: 500; letter-spacing: 0.02em;
+  background: var(--accent-soft); color: var(--text-2); border: 1px solid var(--accent-line);
+}
+.tag--accent { background: var(--accent); color: #fff; border-color: var(--accent); margin-left: 0.2rem; }
+
+.link-row { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 1rem; }
+.chip-row--tight { margin-top: 0.6rem; }
+.chip-row--flush { margin-top: 0; }
+
+.project-list { display: grid; gap: 0.75rem; }
+.project {
+  padding: 0.95rem 1.05rem; border-radius: var(--radius-md);
+  background: var(--tile-bg); border: 1px solid var(--glass-border);
+}
+.project__head { display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 0.3rem; }
+.project h3 { font-size: 0.92rem; font-weight: 600; color: var(--accent); }
+.project__date { font-family: var(--mono); font-size: 0.74rem; color: var(--text-3); white-space: nowrap; }
+.project p { font-size: 0.85rem; color: var(--text-2); }
 
 /* ===== Publications & awards ===== */
 .pub-list { counter-reset: pub; margin-bottom: 0.9rem; }
@@ -273,14 +295,21 @@ strong { font-weight: 600; }
   content: counter(pub) "."; position: absolute; left: 0.3rem; top: 0.55rem;
   font-weight: 600; color: var(--accent);
 }
+.pub-list li { line-height: 1.6; }
+.pub-list strong { color: var(--text-1); }
 .pub__title { font-weight: 600; color: var(--accent); }
-.pub__authors, .pub__venue { margin-left: 0.25rem; }
 .pub__venue { font-style: italic; color: var(--text-2); }
+.pub__link { font-size: 0.78rem; color: var(--accent); margin-left: 0.15rem; }
+.pub__link:hover { text-decoration: underline; }
+.pub-list--plain li { padding-left: 0; }
+.pub-list--plain li::before { content: none; }
 
-.award-list li { display: flex; align-items: baseline; gap: 0.7rem; padding: 0.5rem 0; font-size: 0.9rem; }
+.award-list li { display: flex; align-items: baseline; gap: 0.7rem; padding: 0.55rem 0; font-size: 0.9rem; }
+.award__meta { display: block; font-size: 0.76rem; color: var(--text-3); margin-top: 0.1rem; }
+.patent-note { margin-top: 0.7rem; }
 .award-list li + li { border-top: 1px dashed var(--accent-line); }
 .award__tag {
-  flex-shrink: 0; min-width: 3rem; text-align: center;
+  flex-shrink: 0; min-width: 4.4rem; text-align: center;
   font-family: var(--mono); font-size: 0.74rem; font-weight: 600;
   padding: 0.1rem 0.5rem; border-radius: 6px;
   background: var(--accent-soft); color: var(--accent);
