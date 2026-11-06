@@ -36,13 +36,42 @@
   const sent = v => SENT[v] || SENT.neutral;
   const tickerLink = t => `<a class="rp-ticker" href="${esc(chartUrl(t))}" target="_blank" rel="noopener" title="在 TradingView 看 ${esc(t)} 線圖">${esc(t)}</a>`;
 
-  async function loadItems(file) {
-    const bucket = Math.floor(Date.now() / 600000);   // 10-min cache buckets
-    const r = await fetch(`${DATA_BASE}${file}.json?t=${bucket}`, { cache: "no-store" });
-    if (r.status === 404) return { updated: null, items: [] };
-    if (!r.ok) throw new Error("HTTP " + r.status);
-    const j = await r.json();
-    return { updated: j.updated || null, items: Array.isArray(j.items) ? j.items : [] };
+  const loaded = {};
+  function loadItems(file) {
+    if (!loaded[file]) {
+      const bucket = Math.floor(Date.now() / 600000);   // 10-min cache buckets
+      loaded[file] = fetch(`${DATA_BASE}${file}.json?t=${bucket}`, { cache: "no-store" }).then(async r => {
+        if (r.status === 404) return { updated: null, items: [] };
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        const j = await r.json();
+        const items = Array.isArray(j.items) ? j.items : [];
+        items.forEach((it, i) => { if (!it.id) it.id = `${file}-${i}`; });
+        return { updated: j.updated || null, items };
+      });
+      loaded[file].catch(() => { delete loaded[file]; });
+    }
+    return loaded[file];
+  }
+
+  // For the Watchlist ticker cards (供 / 產 / 法 tags): symbol → latest related item per page.
+  // { "NVDA": { supply: { id, date }, industry: {...}, earnings: {...} } }
+  window.newsTickerIndex = async function () {
+    const idx = {};
+    const add = (sym, kind, it, date) => {
+      if (!sym) return;
+      const e = idx[sym] || (idx[sym] = {});
+      if (!e[kind] || String(date) > String(e[kind].date)) e[kind] = { id: it.id, date: String(date || "") };
+    };
+    const [sc, ind, ec] = await Promise.all(["supply-chain", "industry", "earnings"].map(f => loadItems(f).catch(() => ({ items: [] }))));
+    sc.items.forEach(it => (it.tickers || []).forEach(t => add(t, "supply", it, it.date)));
+    ind.items.forEach(it => new Set([...(it.tickers || []), ...((it.companies || []).map(c => c.ticker))]).forEach(t => add(t, "industry", it, it.event_date)));
+    ec.items.forEach(it => add(it.ticker, "earnings", it, it.date));
+    return idx;
+  };
+
+  function deepLink() {
+    const p = new URLSearchParams(location.hash.slice(1).split("&").slice(1).join("&"));
+    return { item: p.get("item"), ticker: p.get("ticker") };
   }
 
   /* ---------------- 供應鏈瓶頸新聞 detail (scdetail) ---------------- */
@@ -393,7 +422,21 @@
     setDefaultCalMonth();
     rightEl.innerHTML = emptyRight();
     renderLeft();
-    return { selectItem };
+    // Deep link: show everything, open item `id` (or filter by ticker), scroll its row into view.
+    function focus({ item, ticker }) {
+      if (item && items.some(x => x.id === item)) {
+        filters.forEach(x => { f[x.key] = "__all__"; sel(x.key).value = "__all__"; });
+        f.q = ""; if (sel("q")) sel("q").value = "";
+        if (view === "calendar") setDefaultCalMonth();
+        renderLeft();
+        selectItem(item);
+        const row = leftEl.querySelector(`[data-id="${CSS.escape(item)}"]`);
+        if (row && window.innerWidth > 900) row.scrollIntoView({ block: "center" });
+      } else if (ticker && items.some(x => (cfg.tickersOf(x) || []).includes(ticker))) {
+        f.ticker = ticker; sel("ticker").value = ticker; onFilterChange();
+      }
+    }
+    return { selectItem, focus };
   }
 
   /* ---------------- pages ---------------- */
@@ -402,7 +445,7 @@
     supply: {
       file: "supply-chain",
       mount(root, items) {
-        mountView(root, items, {
+        return mountView(root, items, {
           dateOf: it => it.date,
           tickersOf: it => it.tickers || [],
           nodeTitle: it => it.headline || "",
@@ -415,7 +458,7 @@
     industry: {
       file: "industry",
       mount(root, items) {
-        mountView(root, items, {
+        return mountView(root, items, {
           dateOf: it => it.event_date,
           tickersOf: it => it.tickers || [],
           nodeTitle: it => it.title_zh || it.title_original || it.id,
@@ -469,7 +512,7 @@
           cmpWrap.querySelector('[data-role="cmprow"]').innerHTML = calls.map(cmpCard).join(`<span class="ec-cmp-arrow">→</span>`);
         }
         if (cmpSel) { cmpSel.addEventListener("change", () => renderCompare(cmpSel.value)); renderCompare(items[0] ? items[0].ticker : tickers[0]); }
-        mountView(viewRoot, items, {
+        return mountView(viewRoot, items, {
           dateOf: it => it.date,
           tickersOf: it => (it.ticker ? [it.ticker] : []),
           nodeTitle: it => `${it.ticker} ${it.company || ""} · ${it.year} ${it.quarter}`,
@@ -482,7 +525,7 @@
     },
   };
 
-  const started = {};
+  const started = {}, views = {};
   async function start(page) {
     const p = PAGES[page];
     if (!p || started[page]) return;
@@ -492,15 +535,18 @@
     root.innerHTML = `<div class="rv-empty">Loading…</div>`;
     try {
       const { updated, items } = await loadItems(p.file);
-      items.forEach((it, i) => { if (!it.id) it.id = `${p.file}-${i}`; });
       if (upd) upd.textContent = updated ? `更新：${new Date(updated).toLocaleString("zh-TW", { hour12: false })}` : "尚無資料";
-      p.mount(root, items);
+      views[page] = p.mount(root, items);
+      if (views[page]) views[page].focus(deepLink());
     } catch (e) {
       started[page] = false;
       root.innerHTML = `<div class="rv-empty">載入失敗，請稍後再試。（${esc(e.message)}）</div>`;
     }
   }
 
-  document.addEventListener("pagechange", e => start(e.detail));
-  start(location.hash.slice(1));
+  document.addEventListener("pagechange", e => {
+    if (views[e.detail]) views[e.detail].focus(deepLink());   // already mounted: just follow the link
+    else start(e.detail);
+  });
+  start(location.hash.slice(1).split("&")[0]);
 })();

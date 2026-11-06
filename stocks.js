@@ -41,6 +41,7 @@
   let fund = load(LS.fund) || {};           // sym → { pe, cap, cur, vol, name, t }
   let pref = Object.assign({ active: null, view: "change", collapsed: [] }, load(LS.pref) || {});
   let tickerNames = {};                     // sym → name from the tree
+  let newsIdx = {};                         // sym → { supply, industry, earnings } latest news item (news.js)
 
   let db = null, cloudReady = false, cloudLoaded = false;
   let started = false, refreshSeq = 0;
@@ -214,12 +215,23 @@
     ).join("");
   }
 
+  // 供 / 產 / 法 tags → the latest related item on each news page (as on hgvf.github.io).
+  const NEWS_TAGS = [
+    ["supply", "供", "tg-supply", "相關供應鏈瓶頸新聞，前往最新一篇"],
+    ["industry", "產", "tg-industry", "相關產業消息，前往最新一則"],
+    ["earnings", "法", "tg-earnings", "法說會（財報電話會議）紀錄，前往最新一季"],
+  ];
   function tickerCardHTML(sym) {
     const q = quoteOf(sym);
     const cls = changeClass(q.d);
-    return `<a class="ticker-card" style="--indicator-color:${INDICATOR[cls]}" href="${tradingViewUrl(sym)}" target="_blank" rel="noopener" title="Open in TradingView">
-      <span class="tc-symbol">${esc(sym)}</span><span class="tc-name">${esc(nameOf(sym))}&nbsp;</span>
-      <span class="tc-price">${formatPrice(q.last, sym)}</span><span class="tc-change ${cls}">${fmtChg(q.d)}</span></a>`;
+    const ev = newsIdx[sym] || {};
+    const tags = NEWS_TAGS.filter(([k]) => ev[k]).map(([k, label, tcls, tip]) =>
+      `<a class="tc-tag ${tcls}" href="#${k}&item=${encodeURIComponent(ev[k].id)}" title="${tip}${ev[k].date ? `（最新：${esc(ev[k].date)}）` : ""}">${label}</a>`).join("");
+    return `<div class="ticker-card" style="--indicator-color:${INDICATOR[cls]}">
+      <a class="tc-main" href="${tradingViewUrl(sym)}" target="_blank" rel="noopener" title="Open in TradingView">
+        <span class="tc-symbol">${esc(sym)}</span><span class="tc-name">${esc(nameOf(sym))}&nbsp;</span>
+        <span class="tc-price">${formatPrice(q.last, sym)}</span><span class="tc-change ${cls}">${fmtChg(q.d)}</span></a>
+      ${tags ? `<div class="tc-tags">${tags}</div>` : ""}</div>`;
   }
 
   function renderBar() {
@@ -238,6 +250,13 @@
       <span class="ts-stat ts-up">上漲 <strong>${up}</strong></span>
       <span class="ts-stat ts-down">下跌 <strong>${down}</strong></span>
       ${flat ? `<span class="ts-stat ts-flat">平盤 <strong>${flat}</strong></span>` : ""}
+      ${unique.length ? `<div class="ticker-legend">
+        <button class="tl-btn" data-action="toggle-legend" type="button" aria-label="標籤說明" title="標籤說明">ⓘ 標籤</button>
+        <div class="tl-pop">
+          <span class="tl-row"><span class="tc-tag tg-supply">供</span> 相關供應鏈瓶頸新聞 · 點擊前往最新一篇</span>
+          <span class="tl-row"><span class="tc-tag tg-industry">產</span> 相關產業消息 · 點擊前往最新一則</span>
+          <span class="tl-row"><span class="tc-tag tg-earnings">法</span> 法說會紀錄 · 點擊前往最新一季</span>
+        </div></div>` : ""}
       ${unique.length ? `<div class="ticker-viewtoggle" role="tablist">
         <button class="tvt-btn${view === "change" ? " active" : ""}" data-view="change" type="button">依漲跌</button>
         <button class="tvt-btn${view === "subsector" ? " active" : ""}" data-view="subsector" type="button">依題材</button></div>` : ""}
@@ -337,6 +356,8 @@
       if (b) selectSector(b.dataset.sector);
     });
     $("wlBar").addEventListener("click", e => {
+      const lg = e.target.closest('[data-action="toggle-legend"]');
+      if (lg) { lg.parentElement.classList.toggle("open"); return; }
       const v = e.target.closest("[data-view]");
       if (v) { pref.view = v.dataset.view; savePref(); renderBar(); return; }
       const head = e.target.closest(".tz-head");
@@ -353,6 +374,9 @@
       if (h) h.closest(".research-card").classList.toggle("open");
     };
     $("wlContent").addEventListener("click", toggleResearch);
+    document.addEventListener("click", e => {
+      if (!e.target.closest(".ticker-legend")) document.querySelectorAll(".ticker-legend.open").forEach(x => x.classList.remove("open"));
+    });
     $("wlContent").addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleResearch(e); } });
   }
 
@@ -363,6 +387,12 @@
     renderAll();
     initFirebase();
     refresh();
+    // news.js loads after this file, so wait for the DOM before asking it for the tag index.
+    const loadNewsIdx = () => {
+      if (window.newsTickerIndex) window.newsTickerIndex().then(m => { newsIdx = m; renderBar(); }).catch(() => {});
+    };
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", loadNewsIdx);
+    else loadNewsIdx();
   }
 
   /* =====================================================================

@@ -28,11 +28,13 @@ function showPage(id) {
   document.querySelectorAll(".page").forEach(p => p.classList.toggle("active", p.id === "page-" + id));
   document.querySelectorAll(".nav-item[data-page]").forEach(n => n.classList.toggle("active", n.dataset.page === id));
   document.body.classList.remove("sidebar-open");
-  window.scrollTo(0, 0);
+  if (!location.hash.includes("&")) window.scrollTo(0, 0);
   document.dispatchEvent(new CustomEvent("pagechange", { detail: id }));
 }
-window.addEventListener("hashchange", () => showPage(location.hash.slice(1)));
-showPage(location.hash.slice(1));
+// "#supply&item=<id>" / "#industry&ticker=NVDA": the page id is the part before "&".
+const pageFromHash = () => location.hash.slice(1).split("&")[0];
+window.addEventListener("hashchange", () => showPage(pageFromHash()));
+showPage(pageFromHash());
 
 // ===== Sidebar folders (expand / collapse) =====
 document.querySelectorAll(".nav-folder-header").forEach(h =>
