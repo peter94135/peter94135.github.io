@@ -56,6 +56,10 @@ Layout copied with permission from hgvf.github.io. A Claude cloud routine runs e
 `raw.githubusercontent.com/.../refs/heads/news-data/news/` (no Firestore, no secrets).
 Format: `tools/news/SCHEMA.md`; check with `python3 tools/news/validate.py <dir> [--fix]`.
 `tools/news/watchlist.json` is a snapshot of the watchlist tickers — regenerate it when the watchlist changes.
+**重點新聞 (`#highlights`)**: the 🔖 button on 供應鏈瓶頸新聞 / 產業消息 rows collects an item. The list lives in
+Firestore `dashboards/highlights` (public read), mirrored in localStorage; it is written to Firestore only when the
+owner's saved Google session is present in the browser (the auth SDK is loaded without any sign-in UI).
+
 Local preview with other data: `http://localhost:8000/?newsdata=/some-folder/#supply`.
 
 ## Deploy

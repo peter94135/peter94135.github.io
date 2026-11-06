@@ -74,6 +74,14 @@
     return s;
   }
 
+  // Shared with news.js (重點新聞 collection + names on trend cards).
+  window.siteFirestore = () => {
+    if (typeof firebase === "undefined") return null;
+    if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+    return firebase.firestore();
+  };
+  window.siteTickerName = sym => nameOf(sym);
+
   /* ---------- Firebase (read-only) ---------- */
   let fbInit = false;
   function initFirebase() {

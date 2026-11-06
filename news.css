@@ -815,3 +815,12 @@ a.rp-ticker:hover { background: var(--accent); color: var(--text-on-accent); }
 .news-intro { margin: -0.6rem 0 1.1rem; font-size: 0.86rem; }
 .news-updated { font-size: 0.78rem; color: var(--text-muted); }
 .rv-row:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+/* the 選新聞 select holds long headlines — never let it widen the page */
+.hl-bar .hl-ctl { min-width: 0; max-width: 100%; }
+.hl-bar .rv-sel-wrap { min-width: 0; max-width: 100%; }
+.hl-bar .rv-select { max-width: min(100%, 520px); text-overflow: ellipsis; }
+@media (max-width: 900px) {
+  .hl-bar .hl-ctl { flex: 1 1 100%; white-space: nowrap; }
+  .hl-bar .rv-sel-wrap { flex: 1 1 0; width: auto; }
+  .hl-bar .hl-ctl .rv-select, .hl-bar .hl-ctl:first-child .rv-select { width: 100%; min-width: 0; max-width: 100%; }
+}
