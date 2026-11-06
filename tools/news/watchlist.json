@@ -1397,6 +1397,13 @@
    ]
   },
   {
+   "symbol": "3718.TWO",
+   "name": "中光電投控 CoreIntelligence",
+   "sectors": [
+    "軍工 / 軍用軟體 / 國防 IT / 情報分析"
+   ]
+  },
+  {
    "symbol": "373220.KS",
    "name": "LG Energy Solution",
    "sectors": [
@@ -1716,13 +1723,6 @@
    "name": "鈺創 Etron Technology",
    "sectors": [
     "記憶體/SSD/HDD / DRAM (設計＋製造為主)"
-   ]
-  },
-  {
-   "symbol": "5371.TWO",
-   "name": "中光電 Coretronic",
-   "sectors": [
-    "軍工 / 軍用軟體 / 國防 IT / 情報分析"
    ]
   },
   {
