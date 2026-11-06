@@ -1,8 +1,7 @@
 /* =====================================================================
  * Stock Watchlist
- * Ported from the "Stock Theme Dashboard" (peter94135/stock-dashboard):
- *   - themes + ticker lists live in Firestore  dashboards/main  (shared with
- *     the full dashboard, so editing either one updates both)
+ * (Merged in from the former stand-alone "Stock Theme Dashboard".)
+ *   - themes + ticker lists live in Firestore  dashboards/main
  *   - quotes come from Yahoo Finance through the Cloudflare Worker proxy
  *     (falls back to public CORS proxies)
  *   - only the selected theme is fetched; quotes are cached in localStorage
@@ -46,11 +45,11 @@
   let themes = load(LS.themes) || structuredClone(FALLBACK_THEMES);
   let names = load(LS.names) || {};
   let dataMap = load(LS.data) || {};
-  let pref = Object.assign({ active: null, view: "cards", sort: { key: "day", dir: -1 }, collapsed: {} }, load(LS.pref) || {});
+  let pref = Object.assign({ active: null, view: "cards", sort: { key: "day", dir: -1 }, collapsed: {}, auto: false, interval: 60 }, load(LS.pref) || {});
 
   let db = null, auth = null, user = null;
   let cloudReady = false, cloudLoaded = false, suppressCloud = false, cloudTimer = null;
-  let started = false, refreshSeq = 0;
+  let started = false, refreshSeq = 0, autoTimer = null;
 
   const $ = id => document.getElementById(id);
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -105,13 +104,14 @@
   }
 
   function updateAuthUI() {
-    const inb = $("wlLogin"), outb = $("wlLogout"), info = $("wlAuth");
-    if (!cloudReady) { inb.hidden = outb.hidden = true; info.textContent = ""; return; }
+    const inb = $("wlLogin"), outb = $("wlLogout"), uidb = $("wlUid"), info = $("wlAuth");
+    if (!cloudReady) { inb.hidden = outb.hidden = uidb.hidden = true; info.textContent = ""; return; }
     if (user) {
       inb.hidden = true; outb.hidden = false;
+      uidb.hidden = canEdit();   // non-editors can look up their UID to request access
       info.textContent = (user.displayName || user.email || "Signed in") + (canEdit() ? " · Editor" : " · Read-only");
     } else {
-      inb.hidden = false; outb.hidden = true; info.textContent = "";
+      inb.hidden = false; outb.hidden = uidb.hidden = true; info.textContent = "";
     }
   }
 
@@ -384,6 +384,24 @@
     delete themes[t]; pref.active = null; savePref(); saveThemes(); render(); refresh();
   }
 
+  /* ---------- auto-refresh (only while the Watchlist page is visible) ---------- */
+  function setupAuto() {
+    if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
+    if (pref.auto) {
+      autoTimer = setInterval(() => {
+        if (document.hidden || location.hash !== "#watchlist") return;
+        refresh();
+      }, pref.interval * 1000);
+    }
+  }
+
+  function showUid() {
+    if (!user) return;
+    const uid = user.uid;
+    if (navigator.clipboard) navigator.clipboard.writeText(uid).catch(() => {});
+    prompt("Your UID (copied). Send it to the site owner to be added as an editor:", uid);
+  }
+
   /* ---------- wiring ---------- */
   function wire() {
     $("wlTabs").addEventListener("click", e => {
@@ -420,6 +438,11 @@
       if (auth) auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e => alert("Sign-in failed: " + e.message));
     });
     $("wlLogout").addEventListener("click", () => { if (auth) auth.signOut(); });
+    $("wlUid").addEventListener("click", showUid);
+    $("wlAuto").checked = !!pref.auto;
+    $("wlInterval").value = String(pref.interval);
+    $("wlAuto").addEventListener("change", e => { pref.auto = e.target.checked; savePref(); setupAuto(); });
+    $("wlInterval").addEventListener("change", e => { pref.interval = +e.target.value; savePref(); setupAuto(); });
   }
 
   function start() {
@@ -429,6 +452,7 @@
     render();
     initFirebase();
     refresh();
+    setupAuto();
   }
 
   // Start the first time the Watchlist page is shown.

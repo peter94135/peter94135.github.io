@@ -24,8 +24,8 @@ add a sidebar link with `data-page="…"` and register the id in `PAGES` in `scr
 
 ## Stock Watchlist
 
-`stocks.js` reads the same Firestore document (`dashboards/main`) as the
-[stock-dashboard](https://github.com/peter94135/stock-dashboard), so themes edited in either place stay in sync.
+`stocks.js` keeps the themes and tickers in Firestore (`dashboards/main`, project `stock-dashboard-c595d`).
+The former stand-alone stock dashboard is merged into this page (auto-refresh, card / table views, theme editing).
 Signing in with a Google account listed in `OWNER_UIDS` unlocks add/remove ticker and theme editing.
 Quotes go through the Cloudflare Worker `yf-proxy` (fallback: public CORS proxies); only the selected theme is fetched.
 

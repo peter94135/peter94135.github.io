@@ -69,9 +69,6 @@
           <a class="nav-item" href="#watchlist" data-page="watchlist">
             <span class="nav-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 17 6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></span>Stock Watchlist
           </a>
-          <a class="nav-item" href="https://peter94135.github.io/stock-dashboard/" target="_blank" rel="noopener">
-            <span class="nav-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></span>Full Dashboard
-          </a>
         </div>
       </div>
 
@@ -252,9 +249,17 @@
         <h1 class="page-title">Stock Watchlist</h1>
         <div class="page-header-actions">
           <span class="wl-status" id="wlStatus">Loading…</span>
+          <label class="wl-auto"><input type="checkbox" id="wlAuto" /> Auto</label>
+          <select class="wl-select" id="wlInterval" title="Auto-refresh interval">
+            <option value="30">30s</option>
+            <option value="60">1 min</option>
+            <option value="180">3 min</option>
+            <option value="300">5 min</option>
+          </select>
           <button class="pill-btn" id="wlRefresh" type="button">↺ Refresh</button>
           <button class="pill-btn" id="wlAddTheme" type="button" data-edit>＋ Theme</button>
           <span class="wl-auth" id="wlAuth"></span>
+          <button class="pill-btn pill-btn--ghost" id="wlUid" type="button" hidden title="Show your UID (to be added as an editor)">🔑 UID</button>
           <button class="pill-btn" id="wlLogin" type="button" hidden>Sign in</button>
           <button class="pill-btn pill-btn--ghost" id="wlLogout" type="button" hidden>Sign out</button>
         </div>
@@ -281,7 +286,7 @@
           <button class="pill-btn pill-btn--ghost" id="wlDelTheme" type="button">🗑 Delete theme</button>
         </div>
       </div>
-      <p class="muted wl-note">Data from Yahoo Finance, ~15-min intraday delay. Only the selected theme is fetched; quotes are cached in your browser. Themes sync with the <a class="text-link" href="https://peter94135.github.io/stock-dashboard/" target="_blank" rel="noopener">full dashboard</a>.</p>
+      <p class="muted wl-note">Data from Yahoo Finance, ~15-min intraday delay. Only the selected theme is fetched; quotes are cached in your browser. Tickers: US <code>NVDA</code>, Japan <code>6146.T</code>, Korea <code>000660.KS</code>, Taiwan <code>2330.TW</code> (TWSE) / <code>3455.TWO</code> (TPEx).</p>
     </section>
 
     <footer class="site-footer">
@@ -289,7 +294,7 @@
     </footer>
   </main>
 
-  <!-- Firebase (themes are read from the same Firestore doc as the stock dashboard) -->
+  <!-- Firebase: watchlist themes (Firestore) + Google sign-in for editing -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
