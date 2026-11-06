@@ -485,6 +485,13 @@ a.tc-tag:hover { filter: brightness(0.94) saturate(1.15); transform: translateY(
 [data-theme="dark"] .tc-tag.tg-supply { color: #93B4F8; }
 [data-theme="dark"] .tc-tag.tg-industry { color: #F2B866; }
 [data-theme="dark"] .tc-tag.tg-earnings { color: #C4A8F5; }
+.tc-tag.tg-intel { background: rgba(13, 148, 136, 0.16); color: #0F766E; display: inline-flex; align-items: center; gap: 0.16rem; }
+.tc-tag.tg-intel .tc-tag-n {
+  font-family: var(--font-mono); font-size: 0.58rem; font-weight: 700; min-width: 0.85rem; height: 0.85rem;
+  padding: 0 0.12rem; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center;
+  background: #0F766E; color: #fff;
+}
+[data-theme="dark"] .tc-tag.tg-intel { color: #5EEAD4; }
 .ticker-legend { position: relative; display: inline-flex; margin-left: auto; }
 .ticker-legend + .ticker-viewtoggle { margin-left: 0.5rem; }
 .tl-btn {

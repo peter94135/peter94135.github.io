@@ -13,6 +13,7 @@ My personal academic website, hosted on GitHub Pages → **https://peter94135.gi
 ├── news.js / news.css  # News pages: 供應鏈瓶頸新聞 / 產業消息 / 重點新聞 / 財報電話會議分析
 ├── annual.js       # 年報重點 (ported from hgvf.github.io annualview.js)
 ├── defense.js / defense.css  # 每日軍武合約 (ported from hgvf.github.io defenseview.js)
+├── intel.js / intel.css      # 產業情報站 (ported from hgvf.github.io intel.js + inteldesk.js)
 ├── tools/news/     # Daily news job: ROUTINE.md (instructions), SCHEMA.md, validate.py, watchlist.json
 ├── assets/         # Images (profile.jpg, cv.pdf)
 └── .nojekyll        # Tells GitHub Pages to serve files as-is
@@ -59,6 +60,10 @@ defense, annual-reports) on the orphan
 `raw.githubusercontent.com/.../refs/heads/news-data/news/` (no Firestore, no secrets).
 Format: `tools/news/SCHEMA.md` (full example records in `tools/news/examples/`); check with `python3 tools/news/validate.py <dir> [--fix]`.
 `tools/news/watchlist.json` is a snapshot of the watchlist tickers — regenerate it when the watchlist changes.
+**產業情報站 (`#intel`)**: hand-written intel notes stored in Firestore `dashboards/intel` (public read; only the
+owner's saved Google session can add/edit — the 「＋ 新增情報」 button appears only then). Each ticker in a note adds to
+the 訊<n> badge on Watchlist cards. The ★ fact bookmarks stay in the browser (the facts page isn't ported).
+
 **重點新聞 (`#highlights`)**: the 🔖 button on 供應鏈瓶頸新聞 / 產業消息 rows collects an item. The list lives in
 Firestore `dashboards/highlights` (public read), mirrored in localStorage; it is written to Firestore only when the
 owner's saved Google session is present in the browser (the auth SDK is loaded without any sign-in UI).

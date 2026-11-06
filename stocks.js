@@ -42,6 +42,7 @@
   let pref = Object.assign({ active: null, view: "change", collapsed: [] }, load(LS.pref) || {});
   let tickerNames = {};                     // sym → name from the tree
   let newsIdx = {};                         // sym → { supply, industry, earnings } latest news item (news.js)
+  let intelCounts = {};                     // sym → number of 產業情報站 notes (intel.js)
 
   let db = null, cloudReady = false, cloudLoaded = false;
   let started = false, refreshSeq = 0;
@@ -233,8 +234,10 @@
     const q = quoteOf(sym);
     const cls = changeClass(q.d);
     const ev = newsIdx[sym] || {};
+    const intelN = intelCounts[sym] || 0;
     const tags = NEWS_TAGS.filter(([k]) => ev[k]).map(([k, label, tcls, tip]) =>
-      `<a class="tc-tag ${tcls}" href="#${k}&item=${encodeURIComponent(ev[k].id)}" title="${tip}${ev[k].date ? `（最新：${esc(ev[k].date)}）` : ""}">${label}</a>`).join("");
+      `<a class="tc-tag ${tcls}" href="#${k}&item=${encodeURIComponent(ev[k].id)}" title="${tip}${ev[k].date ? `（最新：${esc(ev[k].date)}）` : ""}">${label}</a>`).join("")
+      + (intelN ? `<a class="tc-tag tg-intel" href="#intel&ticker=${encodeURIComponent(sym)}" title="我記錄的產業情報 ${intelN} 則，前往查看">訊<span class="tc-tag-n">${intelN}</span></a>` : "");
     return `<div class="ticker-card" style="--indicator-color:${INDICATOR[cls]}">
       <a class="tc-main" href="${tradingViewUrl(sym)}" target="_blank" rel="noopener" title="Open in TradingView">
         <span class="tc-symbol">${esc(sym)}</span><span class="tc-name">${esc(nameOf(sym))}&nbsp;</span>
@@ -264,6 +267,7 @@
           <span class="tl-row"><span class="tc-tag tg-supply">供</span> 相關供應鏈瓶頸新聞 · 點擊前往最新一篇</span>
           <span class="tl-row"><span class="tc-tag tg-industry">產</span> 相關產業消息 · 點擊前往最新一則</span>
           <span class="tl-row"><span class="tc-tag tg-earnings">法</span> 法說會紀錄 · 點擊前往最新一季</span>
+          <span class="tl-row"><span class="tc-tag tg-intel">訊</span> 我手動記錄的產業情報 · 數字為則數</span>
         </div></div>` : ""}
       ${unique.length ? `<div class="ticker-viewtoggle" role="tablist">
         <button class="tvt-btn${view === "change" ? " active" : ""}" data-view="change" type="button">依漲跌</button>
@@ -398,6 +402,11 @@
     // news.js loads after this file, so wait for the DOM before asking it for the tag index.
     const loadNewsIdx = () => {
       if (window.newsTickerIndex) window.newsTickerIndex().then(m => { newsIdx = m; renderBar(); }).catch(() => {});
+      if (window.intelStore) {
+        intelCounts = window.intelStore.counts();
+        window.addEventListener(window.intelStore.EVT, () => { intelCounts = window.intelStore.counts(); renderBar(); });
+        window.intelStore.sync();
+      }
     };
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", loadNewsIdx);
     else loadNewsIdx();
