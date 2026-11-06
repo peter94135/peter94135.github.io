@@ -214,17 +214,34 @@ strong { font-weight: 600; }
   border-left: 1px solid var(--accent-line);
   transition: max-height var(--t);
 }
-.nav-folder.open > .nav-folder-children { max-height: 400px; }
+.nav-folder.open > .nav-folder-children { max-height: 1000px; }
 .nav-folder-children .nav-item { font-size: 0.82rem; }
 
 .sidebar-footer { padding-top: 0.9rem; margin-top: 0.9rem; border-top: 1px solid var(--accent-line); }
-.theme-toggle {
-  display: flex; align-items: center; gap: 0.55rem; width: 100%;
-  padding: 0.5rem 0.75rem; border: 1px solid var(--accent-line); border-radius: 999px;
-  background: transparent; color: var(--text-2); font-size: 0.8rem; cursor: pointer;
-  transition: background var(--t), color var(--t);
+/* Light / Dark segmented switch; the pill slides to the active side */
+.theme-switch {
+  position: relative; display: grid; grid-template-columns: 1fr 1fr;
+  padding: 3px; border: 1px solid var(--accent-line); border-radius: 999px;
+  background: var(--accent-soft);
 }
-.theme-toggle:hover { background: var(--accent-soft); color: var(--accent); }
+.theme-switch::before {
+  content: ""; position: absolute; top: 3px; bottom: 3px; left: 3px; width: calc(50% - 3px);
+  border-radius: 999px; background: var(--glass-bg-solid);
+  box-shadow: 0 1px 4px rgba(60, 35, 15, 0.16), inset 0 0 0 1px var(--accent-line);
+  transition: transform var(--t);
+}
+[data-theme="dark"] .theme-switch::before { transform: translateX(100%); }
+.theme-switch button {
+  position: relative; z-index: 1;
+  display: flex; align-items: center; justify-content: center; gap: 0.4rem;
+  padding: 0.42rem 0.5rem; border: 0; border-radius: 999px; background: transparent;
+  color: var(--text-3); font: inherit; font-size: 0.78rem; cursor: pointer;
+  transition: color var(--t);
+}
+.theme-switch button:hover { color: var(--text-1); }
+.theme-switch button[aria-pressed="true"] { color: var(--accent); font-weight: 600; }
+.theme-switch button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+@media (prefers-reduced-motion: reduce) { .theme-switch::before { transition: none; } }
 
 /* ===== Main ===== */
 .main-content {

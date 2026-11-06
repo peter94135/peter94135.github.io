@@ -3,21 +3,19 @@ document.getElementById("year").textContent = new Date().getFullYear();
 
 // ===== Theme toggle (light / dark), saved in localStorage =====
 const root = document.documentElement;
-const themeIcon = document.getElementById("themeIcon");
-const themeLabel = document.getElementById("themeLabel");
+const themeButtons = document.querySelectorAll("#themeSwitch [data-theme-choice]");
 
 function syncThemeButton() {
-  const dark = root.getAttribute("data-theme") === "dark";
-  themeIcon.textContent = dark ? "☀️" : "🌙";
-  themeLabel.textContent = dark ? "Light mode" : "Dark mode";
+  const current = root.getAttribute("data-theme") === "dark" ? "dark" : "light";
+  themeButtons.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.themeChoice === current)));
 }
-document.getElementById("themeToggle").addEventListener("click", () => {
-  const next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+themeButtons.forEach(b => b.addEventListener("click", () => {
+  const next = b.dataset.themeChoice;
   if (next === "dark") root.setAttribute("data-theme", "dark");
   else root.removeAttribute("data-theme");
   try { localStorage.setItem("theme", next); } catch (e) {}
   syncThemeButton();
-});
+}));
 syncThemeButton();
 
 // ===== Page routing (hash-based, like a single-page app) =====

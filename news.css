@@ -39,7 +39,7 @@
 .rv-month { margin-bottom: 1rem; }
 .rv-month-h { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; gap: 0.5rem;
   font-size: 0.82rem; font-weight: 700; color: var(--text-secondary); padding: 0.4rem 0.3rem;
-  background: linear-gradient(var(--bg-base), rgba(245,237,224,0.75)); backdrop-filter: blur(4px); }
+  background: linear-gradient(var(--bg-base), color-mix(in srgb, var(--bg-base) 75%, transparent)); backdrop-filter: blur(4px); }
 .rv-month-n { font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted); background: var(--accent-light); padding: 0.05rem 0.4rem; border-radius: 999px; }
 .rv-rows { display: flex; flex-direction: column; gap: 0.3rem; }
 .rv-row { display: flex; align-items: center; gap: 0.6rem; width: 100%; text-align: left; padding: 0.55rem 0.6rem;
