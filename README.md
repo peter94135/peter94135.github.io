@@ -6,21 +6,28 @@ My personal academic website, hosted on GitHub Pages → **https://peter94135.gi
 
 ```
 .
-├── index.html      # All page content (About / Research / Publications / Projects / Contact)
-├── style.css       # Styling + light/dark theme tokens
-├── script.js       # Theme toggle + footer year
+├── index.html      # Single-page site: sidebar nav + pages (Home / Experience / Publications / Awards / Stock Watchlist)
+├── style.css       # Wood-tone glassmorphism theme (light + dark tokens at the top)
+├── script.js       # Hash routing (#home, #watchlist …), sidebar folders, theme toggle
+├── stocks.js       # Stock Watchlist (themes from Firestore, quotes via Cloudflare Worker → Yahoo Finance)
 ├── assets/         # Images (profile.jpg, cv.pdf)
 └── .nojekyll        # Tells GitHub Pages to serve files as-is
 ```
 
 ## How to edit
 
-All text lives in `index.html`. Search for the section you want to change
-(`<!-- Publications -->`, `<!-- Projects -->`, etc.) and edit the text directly.
+All text lives in `index.html`. Each page is a `<section class="page" id="page-…">`;
+add a sidebar link with `data-page="…"` and register the id in `PAGES` in `script.js`.
 
-- **Profile photo:** put a square image at `assets/profile.jpg`.
-- **CV:** put a PDF at `assets/cv.pdf` (or remove the "Download CV" button).
-- **Colors:** edit the `--accent` variable near the top of `style.css`.
+- **Profile photo:** put a square image at `assets/profile.jpg` (falls back to "TH" initials).
+- **Colors:** edit the tokens at the top of `style.css` (`:root` = light, `[data-theme="dark"]` = dark).
+
+## Stock Watchlist
+
+`stocks.js` reads the same Firestore document (`dashboards/main`) as the
+[stock-dashboard](https://github.com/peter94135/stock-dashboard), so themes edited in either place stay in sync.
+Signing in with a Google account listed in `OWNER_UIDS` unlocks add/remove ticker and theme editing.
+Quotes go through the Cloudflare Worker `yf-proxy` (fallback: public CORS proxies); only the selected theme is fetched.
 
 ## Deploy
 

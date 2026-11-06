@@ -5,79 +5,188 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tzu-Hao Huang | 黃子豪</title>
   <meta name="description" content="Tzu-Hao Huang (黃子豪) — Ph.D. student at National Yang Ming Chiao Tung University working on 5G/6G wireless communications, ISAC, CSI feedback, and reconfigurable intelligent surfaces." />
+  <script>
+    // Apply saved / system theme before paint to avoid a flash.
+    (function () {
+      try {
+        var t = localStorage.getItem("theme");
+        if (!t) t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        if (t === "dark") document.documentElement.setAttribute("data-theme", "dark");
+      } catch (e) {}
+    })();
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header class="site-header">
-    <nav class="nav">
-      <a class="nav__brand" href="#top">Tzu-Hao Huang</a>
-      <ul class="nav__links">
-        <li><a href="#about">About</a></li>
-        <li><a href="#research">Research</a></li>
-        <li><a href="#publications">Publications</a></li>
-        <li><a href="#awards">Awards</a></li>
-        <li><a href="#contact">Contact</a></li>
-      </ul>
-      <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
-        <span class="theme-toggle__icon">🌙</span>
-      </button>
-    </nav>
+  <!-- Mobile top bar -->
+  <header class="mobile-bar">
+    <button class="icon-btn" id="sidebarOpen" aria-label="Open menu">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+    <span class="mobile-bar__title">Tzu-Hao Huang</span>
   </header>
+  <div class="sidebar-scrim" id="sidebarScrim"></div>
 
-  <main id="top">
-    <!-- Hero / About -->
-    <section class="hero" id="about">
-      <div class="hero__inner">
-        <div class="hero__text">
-          <p class="hero__eyebrow">Hello, I'm</p>
-          <h1 class="hero__name">Tzu-Hao Huang <span class="hero__name-zh">黃子豪</span></h1>
-          <p class="hero__role">Ph.D. Student · Wireless Communications &amp; Deep Learning</p>
-          <p class="hero__affil">National Yang Ming Chiao Tung University (NYCU), Taiwan</p>
-          <p class="hero__bio">
-            I am a Ph.D. student working at the intersection of
-            <strong>5G/6G wireless communications</strong> and
-            <strong>deep learning</strong>. My research spans
-            integrated sensing and communication (ISAC), deep-learning-based
-            CSI feedback for MIMO systems, reconfigurable intelligent
-            surfaces (RIS), and mmWave/THz communications. I enjoy turning
-            hard signal-processing problems into elegant, data-driven solutions.
-          </p>
-          <div class="hero__actions">
-            <a class="btn btn--primary" href="#contact">Get in touch</a>
-            <a class="btn btn--ghost" href="https://github.com/peter94135" target="_blank" rel="noopener">GitHub</a>
-          </div>
+  <!-- ===================== Sidebar ===================== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="avatar-ring">
+        <img class="avatar" src="assets/profile.jpg" alt="Tzu-Hao Huang"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+        <div class="avatar-fallback">TH</div>
+      </div>
+      <div class="profile-name">Tzu-Hao Huang</div>
+      <div class="profile-name-zh">黃子豪</div>
+      <div class="profile-title">Ph.D. Student · Wireless &amp; Deep Learning</div>
+      <div class="profile-org">NYCU, Taiwan</div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">PAGES</div>
+      <a class="nav-item" href="#home" data-page="home">
+        <span class="nav-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg></span>Home
+      </a>
+      <a class="nav-item" href="#experience" data-page="experience">
+        <span class="nav-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/></svg></span>Experience
+      </a>
+      <a class="nav-item" href="#publications" data-page="publications">
+        <span class="nav-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h11l5 5v11a1 1 0 0 1-1 1H4z"/><path d="M14 4v6h6M8 13h8M8 17h6"/></svg></span>Publications
+      </a>
+      <a class="nav-item" href="#awards" data-page="awards">
+        <span class="nav-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="6"/><path d="m8.5 14-1.5 7 5-3 5 3-1.5-7"/></svg></span>Awards &amp; Patents
+      </a>
+
+      <div class="nav-folder open">
+        <button class="nav-folder-header" type="button">
+          <span class="folder-chevron"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></span>
+          <span class="nav-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6a1 1 0 0 1 1-1h5l2 2h9a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/></svg></span>
+          <span class="folder-name">Stock</span>
+        </button>
+        <div class="nav-folder-children">
+          <a class="nav-item" href="#watchlist" data-page="watchlist">
+            <span class="nav-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 17 6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></span>Stock Watchlist
+          </a>
+          <a class="nav-item" href="https://peter94135.github.io/stock-dashboard/" target="_blank" rel="noopener">
+            <span class="nav-icon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></span>Full Dashboard
+          </a>
         </div>
-        <div class="hero__photo">
-          <img src="assets/profile.jpg" alt="Tzu-Hao Huang" onerror="this.classList.add('is-placeholder');this.alt='Add assets/profile.jpg';" />
+      </div>
+
+      <div class="nav-section-label nav-section-label--gap">CONTACT</div>
+      <a class="nav-item" href="mailto:peter94135@gmail.com">
+        <span class="nav-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span>Email
+      </a>
+      <a class="nav-item" href="https://github.com/peter94135" target="_blank" rel="noopener">
+        <span class="nav-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg></span>GitHub
+      </a>
+      <a class="nav-item" href="https://www.linkedin.com/in/%E9%BB%83%E5%AD%90%E8%B1%AA-tzu-hao-huang-074002185/" target="_blank" rel="noopener">
+        <span class="nav-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 0 1 4 0v4M12 10v7"/></svg></span>LinkedIn
+      </a>
+      <a class="nav-item" href="https://scholar.google.com/" target="_blank" rel="noopener">
+        <span class="nav-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 9l10 6 10-6z"/><circle cx="12" cy="17" r="4"/></svg></span>Scholar
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle dark mode">
+        <span class="theme-toggle__icon" id="themeIcon">🌙</span><span id="themeLabel">Dark mode</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ===================== Main ===================== -->
+  <main class="main-content">
+
+    <!-- ========== Home ========== -->
+    <section class="page" id="page-home">
+      <h1 class="page-title">Welcome</h1>
+
+      <div class="glass-card card hero-card">
+        <div class="card-title">About Me</div>
+        <p class="lead">Hi, I'm <strong>Tzu-Hao Huang (黃子豪)</strong>.</p>
+        <p>
+          I am a Ph.D. student at <strong>National Yang Ming Chiao Tung University (NYCU)</strong>, working at the
+          intersection of <strong>5G/6G wireless communications</strong> and <strong>deep learning</strong>.
+          My research spans integrated sensing and communication (ISAC), deep-learning-based CSI feedback for MIMO
+          systems, reconfigurable intelligent surfaces (RIS), and mmWave/THz communications. I enjoy turning hard
+          signal-processing problems into elegant, data-driven solutions.
+        </p>
+        <div class="chip-row">
+          <span class="chip-label">INTERESTS</span>
+          <span class="chip">5G / 6G</span>
+          <span class="chip">ISAC</span>
+          <span class="chip">CSI Feedback</span>
+          <span class="chip">RIS</span>
+          <span class="chip">mmWave &amp; THz</span>
+          <span class="chip">Deep Learning</span>
         </div>
+      </div>
+
+      <div class="glass-card card">
+        <div class="card-title">Research Interests</div>
+        <div class="interest-grid">
+          <article class="interest">
+            <h3>5G / 6G Communications</h3>
+            <p>Physical-layer design and signal processing for next-generation wireless networks.</p>
+          </article>
+          <article class="interest">
+            <h3>Integrated Sensing &amp; Communication</h3>
+            <p>ISAC systems that jointly perform sensing, localization, and data transmission.</p>
+          </article>
+          <article class="interest">
+            <h3>CSI Feedback</h3>
+            <p>Deep-learning-based compression and reconstruction of channel state information for MIMO.</p>
+          </article>
+          <article class="interest">
+            <h3>Reconfigurable Intelligent Surfaces</h3>
+            <p>Signal optimization and beamforming with RIS to reshape the wireless propagation environment.</p>
+          </article>
+          <article class="interest">
+            <h3>mmWave &amp; THz</h3>
+            <p>Beamforming and channel modeling for millimeter-wave and terahertz frequency bands.</p>
+          </article>
+          <article class="interest">
+            <h3>Digital Twin &amp; AI</h3>
+            <p>Leveraging digital twins and deep learning for AI-native wireless system design.</p>
+          </article>
+        </div>
+      </div>
+
+      <div class="glass-card card">
+        <div class="card-title-row">
+          <div class="card-title">Market Snapshot</div>
+          <a class="text-link" href="#watchlist">Stock Watchlist →</a>
+        </div>
+        <p class="muted">A themed watchlist of US, Japan, Korea and Taiwan equities — semiconductors, power, optics, robotics and more. Quotes from Yahoo Finance (~15-min delay).</p>
       </div>
     </section>
 
-    <!-- Education -->
-    <section class="section" id="education">
-      <div class="section__inner">
-        <h2 class="section__title">Education</h2>
+    <!-- ========== Experience ========== -->
+    <section class="page" id="page-experience">
+      <h1 class="page-title">Experience &amp; Education</h1>
+      <div class="glass-card card">
+        <div class="card-title">Education</div>
         <ul class="timeline">
           <li class="timeline__item">
             <span class="timeline__date">2024 – 2028</span>
-            <div class="timeline__body">
+            <div>
               <h3 class="timeline__role">Ph.D. in Electrical Engineering / Communications</h3>
               <p class="timeline__org">National Yang Ming Chiao Tung University (NYCU)</p>
             </div>
           </li>
           <li class="timeline__item">
             <span class="timeline__date">2021 – 2023</span>
-            <div class="timeline__body">
+            <div>
               <h3 class="timeline__role">M.S. in Electrical Engineering / Communications</h3>
               <p class="timeline__org">National Yang Ming Chiao Tung University (NYCU)</p>
             </div>
           </li>
           <li class="timeline__item">
             <span class="timeline__date">2017 – 2021</span>
-            <div class="timeline__body">
+            <div>
               <h3 class="timeline__role">B.S. in Electrical Engineering</h3>
               <p class="timeline__org">National Yang Ming Chiao Tung University (NYCU)</p>
             </div>
@@ -86,116 +195,105 @@
       </div>
     </section>
 
-    <!-- Research Interests -->
-    <section class="section section--alt" id="research">
-      <div class="section__inner">
-        <h2 class="section__title">Research Interests</h2>
-        <div class="cards">
-          <article class="card">
-            <h3 class="card__title">5G / 6G Communications</h3>
-            <p>Physical-layer design and signal processing for next-generation wireless networks.</p>
-          </article>
-          <article class="card">
-            <h3 class="card__title">Integrated Sensing &amp; Communication</h3>
-            <p>ISAC systems that jointly perform sensing, localization, and data transmission.</p>
-          </article>
-          <article class="card">
-            <h3 class="card__title">CSI Feedback</h3>
-            <p>Deep-learning-based compression and reconstruction of channel state information for MIMO.</p>
-          </article>
-          <article class="card">
-            <h3 class="card__title">Reconfigurable Intelligent Surfaces</h3>
-            <p>Signal optimization and beamforming with RIS to reshape the wireless propagation environment.</p>
-          </article>
-          <article class="card">
-            <h3 class="card__title">mmWave &amp; THz</h3>
-            <p>Beamforming and channel modeling for millimeter-wave and terahertz frequency bands.</p>
-          </article>
-          <article class="card">
-            <h3 class="card__title">Digital Twin &amp; AI</h3>
-            <p>Leveraging digital twins and deep learning for AI-native wireless system design.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- Publications -->
-    <section class="section" id="publications">
-      <div class="section__inner">
-        <h2 class="section__title">Publications</h2>
+    <!-- ========== Publications ========== -->
+    <section class="page" id="page-publications">
+      <h1 class="page-title">Publications</h1>
+      <div class="glass-card card">
+        <div class="card-title">Selected Work</div>
         <ol class="pub-list">
-          <li class="pub">
-            <p class="pub__title">UAV localization for next-generation wireless networks.</p>
-            <p class="pub__authors"><strong>T.-H. Huang</strong>, et al.</p>
-            <p class="pub__venue">IEEE Journal / Conference, Year.</p>
+          <li>
+            <span class="pub__title">UAV localization for next-generation wireless networks.</span>
+            <span class="pub__authors"><strong>T.-H. Huang</strong>, et al.</span>
+            <span class="pub__venue">IEEE Journal / Conference, Year.</span>
           </li>
-          <li class="pub">
-            <p class="pub__title">Cross-band signal prediction for wireless systems.</p>
-            <p class="pub__authors"><strong>T.-H. Huang</strong>, et al.</p>
-            <p class="pub__venue">IEEE Journal / Conference, Year.</p>
+          <li>
+            <span class="pub__title">Cross-band signal prediction for wireless systems.</span>
+            <span class="pub__authors"><strong>T.-H. Huang</strong>, et al.</span>
+            <span class="pub__venue">IEEE Journal / Conference, Year.</span>
           </li>
-          <li class="pub">
-            <p class="pub__title">Collaborative MIMO systems.</p>
-            <p class="pub__authors"><strong>T.-H. Huang</strong>, et al.</p>
-            <p class="pub__venue">IEEE Journal / Conference, Year.</p>
+          <li>
+            <span class="pub__title">Collaborative MIMO systems.</span>
+            <span class="pub__authors"><strong>T.-H. Huang</strong>, et al.</span>
+            <span class="pub__venue">IEEE Journal / Conference, Year.</span>
           </li>
-          <li class="pub">
-            <p class="pub__title">Throughput prediction using geographic data.</p>
-            <p class="pub__authors"><strong>T.-H. Huang</strong>, et al.</p>
-            <p class="pub__venue">IEEE Journal / Conference, Year.</p>
+          <li>
+            <span class="pub__title">Throughput prediction using geographic data.</span>
+            <span class="pub__authors"><strong>T.-H. Huang</strong>, et al.</span>
+            <span class="pub__venue">IEEE Journal / Conference, Year.</span>
           </li>
         </ol>
-        <p class="muted">Placeholder list based on your research topics — send me the exact titles, authors, venues, years, and DOI/PDF links and I'll format them properly. A Google Scholar link is in the Contact section.</p>
+        <p class="muted">Placeholder list based on research topics — exact titles, venues and DOI links to be filled in.</p>
       </div>
     </section>
 
-    <!-- Honors, Awards & Patents -->
-    <section class="section section--alt" id="awards">
-      <div class="section__inner">
-        <h2 class="section__title">Honors &amp; Awards</h2>
+    <!-- ========== Awards & Patents ========== -->
+    <section class="page" id="page-awards">
+      <h1 class="page-title">Awards &amp; Patents</h1>
+      <div class="glass-card card">
+        <div class="card-title">Honors &amp; Awards</div>
         <ul class="award-list">
-          <li><span class="award__year">2026</span> S.M. Sze Fellowship for Outstanding Doctoral Students</li>
-          <li><span class="award__year">2024</span> National Science and Technology Council (NSTC) Graduate Research Fellowship</li>
-          <li><span class="award__year">2023</span> Phi Tau Phi Scholastic Honor Society — Honorary Membership</li>
+          <li><span class="award__tag">2026</span> S.M. Sze Fellowship for Outstanding Doctoral Students</li>
+          <li><span class="award__tag">2024</span> National Science and Technology Council (NSTC) Graduate Research Fellowship</li>
+          <li><span class="award__tag">2023</span> Phi Tau Phi Scholastic Honor Society — Honorary Membership</li>
         </ul>
-
-        <h2 class="section__title section__title--sub">Patents</h2>
+      </div>
+      <div class="glass-card card">
+        <div class="card-title">Patents</div>
         <ul class="award-list">
-          <li><span class="award__year">US</span> Signal optimization with reconfigurable intelligent surfaces — <span class="patent-id">US 12,452,703 B2</span></li>
-          <li><span class="award__year">TW</span> Signal optimization with reconfigurable intelligent surfaces — <span class="patent-id">TWI887605B</span></li>
+          <li><span class="award__tag">US</span> Signal optimization with reconfigurable intelligent surfaces — <span class="mono">US 12,452,703 B2</span></li>
+          <li><span class="award__tag">TW</span> Signal optimization with reconfigurable intelligent surfaces — <span class="mono">TWI887605B</span></li>
         </ul>
       </div>
     </section>
 
-    <!-- Contact -->
-    <section class="section" id="contact">
-      <div class="section__inner section__inner--center">
-        <h2 class="section__title">Get in Touch</h2>
-        <p class="contact__lead">
-          Feel free to reach out for research collaborations, discussions, or just to say hi.
-        </p>
-        <div class="contact__links">
-          <a class="contact__link" href="mailto:peter94135@gmail.com">
-            <span class="contact__icon">✉️</span> Email
-          </a>
-          <a class="contact__link" href="https://github.com/peter94135" target="_blank" rel="noopener">
-            <span class="contact__icon">🐙</span> GitHub
-          </a>
-          <a class="contact__link" href="https://www.linkedin.com/in/%E9%BB%83%E5%AD%90%E8%B1%AA-tzu-hao-huang-074002185/" target="_blank" rel="noopener">
-            <span class="contact__icon">💼</span> LinkedIn
-          </a>
-          <a class="contact__link" href="https://scholar.google.com/" target="_blank" rel="noopener">
-            <span class="contact__icon">🎓</span> Scholar
-          </a>
+    <!-- ========== Stock Watchlist ========== -->
+    <section class="page page--wide" id="page-watchlist">
+      <div class="page-header">
+        <h1 class="page-title">Stock Watchlist</h1>
+        <div class="page-header-actions">
+          <span class="wl-status" id="wlStatus">Loading…</span>
+          <button class="pill-btn" id="wlRefresh" type="button">↺ Refresh</button>
+          <button class="pill-btn" id="wlAddTheme" type="button" data-edit>＋ Theme</button>
+          <span class="wl-auth" id="wlAuth"></span>
+          <button class="pill-btn" id="wlLogin" type="button" hidden>Sign in</button>
+          <button class="pill-btn pill-btn--ghost" id="wlLogout" type="button" hidden>Sign out</button>
         </div>
       </div>
+
+      <div class="sector-tabbar" id="wlTabs"></div>
+
+      <div class="glass-card wl-panel">
+        <div class="wl-summary">
+          <span class="ts-label">總覽</span>
+          <span class="ts-stat ts-up">上漲 <strong id="wlUp">0</strong></span>
+          <span class="ts-stat ts-down">下跌 <strong id="wlDown">0</strong></span>
+          <span class="ts-stat ts-flat">平盤 <strong id="wlFlat">0</strong></span>
+          <div class="seg" role="tablist">
+            <button class="seg__btn active" data-view="cards" type="button">卡片</button>
+            <button class="seg__btn" data-view="table" type="button">表格</button>
+          </div>
+        </div>
+        <div id="wlBody"></div>
+        <div class="wl-add" data-edit>
+          <input id="wlAddInput" placeholder="Add ticker — NVDA, 6146.T, 2330.TW, 3455.TWO" />
+          <button class="pill-btn pill-btn--accent" id="wlAddBtn" type="button">＋ Add</button>
+          <button class="pill-btn pill-btn--ghost" id="wlRename" type="button">✎ Rename theme</button>
+          <button class="pill-btn pill-btn--ghost" id="wlDelTheme" type="button">🗑 Delete theme</button>
+        </div>
+      </div>
+      <p class="muted wl-note">Data from Yahoo Finance, ~15-min intraday delay. Only the selected theme is fetched; quotes are cached in your browser. Themes sync with the <a class="text-link" href="https://peter94135.github.io/stock-dashboard/" target="_blank" rel="noopener">full dashboard</a>.</p>
     </section>
+
+    <footer class="site-footer">
+      © <span id="year"></span> Tzu-Hao Huang (黃子豪) · Hosted on GitHub Pages
+    </footer>
   </main>
 
-  <footer class="site-footer">
-    <p>© <span id="year"></span> Tzu-Hao Huang (黃子豪) · Built with HTML &amp; CSS · Hosted on GitHub Pages</p>
-  </footer>
-
+  <!-- Firebase (themes are read from the same Firestore doc as the stock dashboard) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="script.js"></script>
+  <script src="stocks.js"></script>
 </body>
 </html>

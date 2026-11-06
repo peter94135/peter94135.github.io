@@ -1,29 +1,44 @@
-// Footer year
+// ===== Footer year =====
 document.getElementById("year").textContent = new Date().getFullYear();
 
-// Theme toggle with localStorage persistence
-const toggle = document.getElementById("themeToggle");
-const icon = toggle.querySelector(".theme-toggle__icon");
+// ===== Theme toggle (light / dark), saved in localStorage =====
 const root = document.documentElement;
+const themeIcon = document.getElementById("themeIcon");
+const themeLabel = document.getElementById("themeLabel");
 
-function applyTheme(theme) {
-  if (theme === "dark") {
-    root.setAttribute("data-theme", "dark");
-    icon.textContent = "☀️";
-  } else {
-    root.removeAttribute("data-theme");
-    icon.textContent = "🌙";
-  }
+function syncThemeButton() {
+  const dark = root.getAttribute("data-theme") === "dark";
+  themeIcon.textContent = dark ? "☀️" : "🌙";
+  themeLabel.textContent = dark ? "Light mode" : "Dark mode";
 }
-
-// Initialize from saved preference or system setting
-const saved = localStorage.getItem("theme");
-const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-applyTheme(saved || (prefersDark ? "dark" : "light"));
-
-toggle.addEventListener("click", () => {
-  const isDark = root.getAttribute("data-theme") === "dark";
-  const next = isDark ? "light" : "dark";
-  applyTheme(next);
-  localStorage.setItem("theme", next);
+document.getElementById("themeToggle").addEventListener("click", () => {
+  const next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+  if (next === "dark") root.setAttribute("data-theme", "dark");
+  else root.removeAttribute("data-theme");
+  try { localStorage.setItem("theme", next); } catch (e) {}
+  syncThemeButton();
 });
+syncThemeButton();
+
+// ===== Page routing (hash-based, like a single-page app) =====
+const PAGES = ["home", "experience", "publications", "awards", "watchlist"];
+
+function showPage(id) {
+  if (!PAGES.includes(id)) id = "home";
+  document.querySelectorAll(".page").forEach(p => p.classList.toggle("active", p.id === "page-" + id));
+  document.querySelectorAll(".nav-item[data-page]").forEach(n => n.classList.toggle("active", n.dataset.page === id));
+  document.body.classList.remove("sidebar-open");
+  window.scrollTo(0, 0);
+  document.dispatchEvent(new CustomEvent("pagechange", { detail: id }));
+}
+window.addEventListener("hashchange", () => showPage(location.hash.slice(1)));
+showPage(location.hash.slice(1));
+
+// ===== Sidebar folders (expand / collapse) =====
+document.querySelectorAll(".nav-folder-header").forEach(h =>
+  h.addEventListener("click", () => h.closest(".nav-folder").classList.toggle("open"))
+);
+
+// ===== Mobile sidebar =====
+document.getElementById("sidebarOpen").addEventListener("click", () => document.body.classList.add("sidebar-open"));
+document.getElementById("sidebarScrim").addEventListener("click", () => document.body.classList.remove("sidebar-open"));
