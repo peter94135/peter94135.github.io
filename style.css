@@ -335,13 +335,7 @@ strong { font-weight: 600; }
 }
 
 /* ===== Watchlist ===== */
-.wl-status, .wl-auth { font-size: 0.78rem; color: var(--text-3); }
-.wl-auto { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.78rem; color: var(--text-2); cursor: pointer; }
-.wl-auto input { accent-color: var(--accent); }
-.wl-select {
-  padding: 0.3rem 0.55rem; border-radius: 999px; font: inherit; font-size: 0.78rem;
-  border: 1px solid var(--accent-line); background: var(--tile-bg); color: var(--text-2); outline: none;
-}
+.wl-status { font-size: 0.78rem; color: var(--text-3); }
 .wl-note code { font-family: var(--mono); font-size: 0.72rem; padding: 0 0.3rem; border-radius: 4px; background: var(--accent-soft); color: var(--text-2); }
 .wl-status .loading { font-style: italic; }
 

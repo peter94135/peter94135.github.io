@@ -45,11 +45,11 @@
   let themes = load(LS.themes) || structuredClone(FALLBACK_THEMES);
   let names = load(LS.names) || {};
   let dataMap = load(LS.data) || {};
-  let pref = Object.assign({ active: null, view: "cards", sort: { key: "day", dir: -1 }, collapsed: {}, auto: false, interval: 60 }, load(LS.pref) || {});
+  let pref = Object.assign({ active: null, view: "cards", sort: { key: "day", dir: -1 }, collapsed: {} }, load(LS.pref) || {});
 
   let db = null, auth = null, user = null;
   let cloudReady = false, cloudLoaded = false, suppressCloud = false, cloudTimer = null;
-  let started = false, refreshSeq = 0, autoTimer = null;
+  let started = false, refreshSeq = 0;
 
   const $ = id => document.getElementById(id);
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -87,17 +87,17 @@
       db = firebase.firestore();
       auth = firebase.auth();
       cloudReady = true;
-      auth.onAuthStateChanged(u => { user = u; updateAuthUI(); if (started) render(); });
+      // Editing works when a signed-in owner session persists in this browser.
+      auth.onAuthStateChanged(u => { user = u; if (started) render(); });
       db.doc(CLOUD_DOC).onSnapshot(snap => {
         cloudLoaded = true;
-        if (!snap.exists) { updateAuthUI(); if (stStarted) stOnThemes(); return; }
+        if (!snap.exists) { if (stStarted) stOnThemes(); return; }
         const d = snap.data() || {};
         suppressCloud = true;
         if (d.themes) themes = d.themes;
         if (d.names) names = Object.assign({}, names, d.names);
         store(LS.themes, themes); store(LS.names, names);
         suppressCloud = false;
-        updateAuthUI();
         if (started) {
           render();
           const cur = activeTheme();
@@ -106,18 +106,6 @@
         if (stStarted) stOnThemes();
       }, err => { console.warn("Firestore listen failed:", err.message); if (stStarted) stOnThemes(); });
     } catch (e) { console.warn("Firebase init failed:", e.message); }
-  }
-
-  function updateAuthUI() {
-    const inb = $("wlLogin"), outb = $("wlLogout"), uidb = $("wlUid"), info = $("wlAuth");
-    if (!cloudReady) { inb.hidden = outb.hidden = uidb.hidden = true; info.textContent = ""; return; }
-    if (user) {
-      inb.hidden = true; outb.hidden = false;
-      uidb.hidden = canEdit();   // non-editors can look up their UID to request access
-      info.textContent = (user.displayName || user.email || "Signed in") + (canEdit() ? " · Editor" : " · Read-only");
-    } else {
-      inb.hidden = false; outb.hidden = uidb.hidden = true; info.textContent = "";
-    }
   }
 
   /* ---------- fetching ---------- */
@@ -200,11 +188,8 @@
   async function refresh() {
     const cur = activeTheme();
     const all = cur ? [...new Set(themes[cur])] : [];
-    if (!all.length) { $("wlStatus").textContent = cur ? "No stocks in this theme" : "No themes"; render(); return; }
+    if (!all.length) { render(); return; }
     const myId = ++refreshSeq;
-    let done = 0;
-    const status = () => { $("wlStatus").innerHTML = `<span class="loading">Updating ${esc(cur)} … ${done}/${all.length}</span>`; };
-    status();
     const fundP = fetchFundamentals(all);
     const queue = [...all];
     async function worker() {
@@ -213,8 +198,7 @@
         const sym = queue.shift();
         const prevPE = dataMap[sym] || {};
         dataMap[sym] = Object.assign(await fetchChart(sym), { pe: prevPE.pe, cap: prevPE.cap });
-        done++;
-        if (myId === refreshSeq) { status(); render(); }
+        if (myId === refreshSeq) render();
       }
     }
     await Promise.all(Array.from({ length: 6 }, worker));
@@ -223,7 +207,6 @@
     store(LS.data, dataMap); store(LS.names, names);
     if (myId !== refreshSeq) return;
     render();
-    $("wlStatus").textContent = "Updated " + new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
   }
 
   /* ---------- formatting ---------- */
@@ -266,7 +249,7 @@
     renderTabs();
     const body = $("wlBody");
     const cur = activeTheme();
-    document.querySelectorAll(".seg__btn").forEach(b => b.classList.toggle("active", b.dataset.view === pref.view));
+    document.querySelectorAll("#page-watchlist .seg__btn").forEach(b => b.classList.toggle("active", b.dataset.view === pref.view));
     if (!cur) { body.innerHTML = `<div class="wl-empty">No themes yet.</div>`; setSummary([]); return; }
     const rows = themes[cur].map(s => ({ sym: s, d: dataMap[s] || { symbol: s } }));
     setSummary(rows);
@@ -364,14 +347,6 @@
     themes[cur] = themes[cur].filter(x => x !== sym); saveThemes(); render();
   }
 
-  function addTheme() {
-    if (!canEdit()) return;
-    const n = (prompt("New theme name (Chinese OK), e.g. AI 伺服器") || "").trim();
-    if (!n) return;
-    if (themes[n]) { alert("A theme with that name already exists."); return; }
-    themes[n] = []; pref.active = n; savePref(); saveThemes(); render();
-  }
-
   function renameTheme() {
     const old = activeTheme();
     if (!old || !canEdit()) return;
@@ -387,24 +362,6 @@
     const t = activeTheme();
     if (!t || !canEdit() || !confirm(`Delete theme “${t}”?`)) return;
     delete themes[t]; pref.active = null; savePref(); saveThemes(); render(); refresh();
-  }
-
-  /* ---------- auto-refresh (only while the Watchlist page is visible) ---------- */
-  function setupAuto() {
-    if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
-    if (pref.auto) {
-      autoTimer = setInterval(() => {
-        if (document.hidden || location.hash !== "#watchlist") return;
-        refresh();
-      }, pref.interval * 1000);
-    }
-  }
-
-  function showUid() {
-    if (!user) return;
-    const uid = user.uid;
-    if (navigator.clipboard) navigator.clipboard.writeText(uid).catch(() => {});
-    prompt("Your UID (copied). Send it to the site owner to be added as an editor:", uid);
   }
 
   /* ---------- wiring ---------- */
@@ -430,24 +387,13 @@
         savePref(); render();
       }
     });
-    document.querySelectorAll(".seg__btn").forEach(b => b.addEventListener("click", () => {
+    document.querySelectorAll("#page-watchlist .seg__btn").forEach(b => b.addEventListener("click", () => {
       pref.view = b.dataset.view; savePref(); render();
     }));
-    $("wlRefresh").addEventListener("click", refresh);
-    $("wlAddTheme").addEventListener("click", addTheme);
     $("wlAddBtn").addEventListener("click", addTicker);
     $("wlAddInput").addEventListener("keydown", e => { if (e.key === "Enter") addTicker(); });
     $("wlRename").addEventListener("click", renameTheme);
     $("wlDelTheme").addEventListener("click", deleteTheme);
-    $("wlLogin").addEventListener("click", () => {
-      if (auth) auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e => alert("Sign-in failed: " + e.message));
-    });
-    $("wlLogout").addEventListener("click", () => { if (auth) auth.signOut(); });
-    $("wlUid").addEventListener("click", showUid);
-    $("wlAuto").checked = !!pref.auto;
-    $("wlInterval").value = String(pref.interval);
-    $("wlAuto").addEventListener("change", e => { pref.auto = e.target.checked; savePref(); setupAuto(); });
-    $("wlInterval").addEventListener("change", e => { pref.interval = +e.target.value; savePref(); setupAuto(); });
   }
 
   function start() {
@@ -457,7 +403,6 @@
     render();
     initFirebase();
     refresh();
-    setupAuto();
   }
 
   /* =====================================================================
