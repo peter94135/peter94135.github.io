@@ -95,7 +95,7 @@
   const canWrite = () => { try { return !!(firebase.auth && firebase.auth().currentUser); } catch (e) { return false; } };
   function hlWrite(snap) {
     if (!hlRef || !canWrite()) return;
-    const { _source, _collected_at, _trend_tickers, ...item } = snap;
+    const { _source, _collected_at, _trend_tickers, _cloud, ...item } = snap;
     const rec = { item, source: _source || "supply-chain", collected_at: _collected_at || Date.now() };
     if (Array.isArray(_trend_tickers)) rec.trend_tickers = _trend_tickers;
     hlRef.set({ items: { [hlKey(snap.id)]: rec } }, { merge: true }).catch(e => console.warn("collect save failed:", e.message));
@@ -114,16 +114,18 @@
     hlRef.onSnapshot(snap => {
       const recs = (snap.exists && snap.data().items) || {};
       const cloud = Object.values(recs).map(d => Object.assign({}, d.item || {}, {
-        _source: d.source || "supply-chain", _collected_at: d.collected_at || 0,
+        _source: d.source || "supply-chain", _collected_at: d.collected_at || 0, _cloud: true,
       }, Array.isArray(d.trend_tickers) ? { _trend_tickers: d.trend_tickers } : {}));
       hlCloudIds = new Set(cloud.map(x => x.id));
-      const localOnly = hlCache.filter(x => !hlCloudIds.has(x.id));
+      // Items that came from the cloud carry _cloud; if one is gone from the cloud it was deleted elsewhere,
+      // so drop it. Only items never synced (no _cloud) stay as local-only drafts.
+      const localOnly = hlCache.filter(x => !hlCloudIds.has(x.id) && !x._cloud);
       hlCache = [...cloud, ...localOnly];
       hlBroadcast();
       localOnly.forEach(hlWrite);
     }, e => console.warn("collect sync failed:", e.message));
     try {
-      firebase.auth().onAuthStateChanged(u => { if (u) hlCache.filter(x => !hlCloudIds.has(x.id)).forEach(hlWrite); });
+      firebase.auth().onAuthStateChanged(u => { if (u) hlCache.filter(x => !hlCloudIds.has(x.id) && !x._cloud).forEach(hlWrite); });
     } catch (e) { /* auth SDK not loaded */ }
   }
   const isCollected = id => hlCache.some(x => x.id === id);

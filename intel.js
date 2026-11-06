@@ -56,15 +56,17 @@ function sync() {
   synced = true;
   ref = db.doc(INTEL_DOC);
   ref.onSnapshot(snap => {
-    const cloud = Object.values((snap.exists && snap.data().notes) || {});
+    const cloud = Object.values((snap.exists && snap.data().notes) || {}).map(n => ({ ...n, _cloud: true }));
     _cloudIds = new Set(cloud.map(n => n.id));
-    const localOnly = _cache.filter(n => !_cloudIds.has(n.id));
+    // Items that came from the cloud carry _cloud; if one is gone from the cloud it was deleted elsewhere,
+    // so drop it. Only items never synced (no _cloud) stay as local-only drafts.
+    const localOnly = _cache.filter(n => !_cloudIds.has(n.id) && !n._cloud);
     _cache = [...cloud, ...localOnly];
     sortCache();
     broadcast();
     localOnly.forEach(n => writeCloud(n).catch(() => {}));
   }, e => console.warn("intel sync failed:", e.message));
-  onAuth(({ isAdmin }) => { if (isAdmin) _cache.filter(n => !_cloudIds.has(n.id)).forEach(n => writeCloud(n).catch(() => {})); });
+  onAuth(({ isAdmin }) => { if (isAdmin) _cache.filter(n => !_cloudIds.has(n.id) && !n._cloud).forEach(n => writeCloud(n).catch(() => {})); });
 }
 function normTickers(list) {
   const seen = new Set(), out = [];

@@ -74,9 +74,11 @@ function sync() {
   synced = true;
   ref = db.doc(FACTS_DOC);
   ref.onSnapshot(snap => {
-    const cloud = Object.values((snap.exists && snap.data().facts) || {});
+    const cloud = Object.values((snap.exists && snap.data().facts) || {}).map(x => ({ ...x, _cloud: true }));
     _cloudIds = new Set(cloud.map(x => x.id));
-    const localOnly = _cache.filter(x => !_cloudIds.has(x.id));
+    // Items that came from the cloud carry _cloud; if one is gone from the cloud it was deleted elsewhere,
+    // so drop it. Only items never synced (no _cloud) stay as local-only drafts.
+    const localOnly = _cache.filter(x => !_cloudIds.has(x.id) && !x._cloud);
     _cache = [...cloud, ...localOnly];
     sortCache();
     broadcast();
@@ -84,7 +86,7 @@ function sync() {
   }, e => console.warn("facts sync failed:", e.message));
   try {
     firebase.auth().onAuthStateChanged(u => {
-      if (isOwner(u)) _cache.filter(x => !_cloudIds.has(x.id)).forEach(x => writeCloud(x).catch(() => {}));
+      if (isOwner(u)) _cache.filter(x => !_cloudIds.has(x.id) && !x._cloud).forEach(x => writeCloud(x).catch(() => {}));
       window.dispatchEvent(new CustomEvent(EVT, { detail: { items: _cache } }));
     });
   } catch (e) { /* auth SDK missing */ }
