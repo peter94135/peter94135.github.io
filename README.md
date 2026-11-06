@@ -10,6 +10,8 @@ My personal academic website, hosted on GitHub Pages → **https://peter94135.gi
 ├── style.css       # Wood-tone glassmorphism theme (light + dark tokens at the top)
 ├── script.js       # Hash routing (#home, #watchlist …), sidebar folders, theme toggle
 ├── stocks.js       # Stock Watchlist + Theme Strength (themes from Firestore, quotes via Cloudflare Worker → Yahoo Finance)
+├── news.js / news.css  # News pages: 供應鏈瓶頸新聞 / 產業消息 / 財報電話會議分析
+├── tools/news/     # Daily news job: ROUTINE.md (instructions), SCHEMA.md, validate.py, watchlist.json
 ├── assets/         # Images (profile.jpg, cv.pdf)
 └── .nojekyll        # Tells GitHub Pages to serve files as-is
 ```
@@ -45,6 +47,16 @@ Yahoo's `v8/finance/spark` endpoint (≈30 requests for ~600 tickers) and cached
 A theme's return per window (day / week / month / quarter / year) is the **median** of its members;
 "綜合" is a weighted percentile rank across windows (10 / 30 / 30 / 20 / 10 %).
 The quadrant chart plots month return (x) vs week return (y): Leading / Improving / Weakening / Lagging.
+
+## News pages (供應鏈瓶頸新聞 / 產業消息 / 財報電話會議分析)
+
+Layout copied with permission from hgvf.github.io. A Claude cloud routine runs every day, follows
+`tools/news/ROUTINE.md`, researches the news, appends items to `news/*.json` on the orphan
+**`news-data`** branch and pushes it. The site reads those files from
+`raw.githubusercontent.com/.../refs/heads/news-data/news/` (no Firestore, no secrets).
+Format: `tools/news/SCHEMA.md`; check with `python3 tools/news/validate.py <dir> [--fix]`.
+`tools/news/watchlist.json` is a snapshot of the watchlist tickers — regenerate it when the watchlist changes.
+Local preview with other data: `http://localhost:8000/?newsdata=/some-folder/#supply`.
 
 ## Deploy
 

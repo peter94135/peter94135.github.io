@@ -58,9 +58,12 @@
   --font-sans: var(--sans);
   --font-mono: var(--mono);
   --transition: var(--t);
+  --glass-bg-solid: rgba(250, 243, 230, 0.92);
+  --bg-base: var(--bg-1);
 }
 
 [data-theme="dark"] {
+  --glass-bg-solid: rgba(44, 32, 22, 0.94);
   --bg-1: #1E1610;
   --bg-2: #241A12;
   --bg-3: #2C2016;
