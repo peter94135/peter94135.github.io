@@ -22,6 +22,7 @@
   <link rel="stylesheet" href="news.css" />
   <link rel="stylesheet" href="defense.css" />
   <link rel="stylesheet" href="intel.css" />
+  <link rel="stylesheet" href="strength.css" />
 </head>
 <body>
   <!-- Mobile top bar -->
@@ -410,26 +411,10 @@
       <div class="page-header">
         <h1 class="page-title">題材強弱 · Theme Strength</h1>
         <div class="page-header-actions">
-          <span class="wl-status" id="stStatus"></span>
           <a class="pill-btn pill-btn--ghost" href="#watchlist">← Watchlist</a>
-          <button class="pill-btn" id="stRefresh" type="button">↺ Update</button>
         </div>
       </div>
-
-      <div class="glass-card wl-panel">
-        <div class="wl-summary">
-          <span class="ts-label">動能四象限</span>
-          <span class="muted st-meta" id="stMeta"></span>
-          <div class="seg" id="stDims" role="tablist" aria-label="排序依據"></div>
-        </div>
-        <div class="st-quad" id="stQuad"></div>
-        <p class="muted st-hint">橫軸：題材成分股「近一月」漲跌中位數；縱軸：「近一週」漲跌中位數。右上強勢、左上轉強、右下轉弱、左下弱勢。點大小代表成分股數，點擊可展開題材。</p>
-      </div>
-
-      <div class="glass-card wl-panel st-list-card">
-        <div class="st-list" id="stList"></div>
-      </div>
-      <p class="muted wl-note">題材與個股來自 Stock Watchlist。每個題材的漲跌取成分股中位數，避免單一飆股主導；「上漲比例」為該期間上漲家數／有資料家數（綜合模式以週計）。「綜合」為各期間百分位排名加權（日 10%、週 30%、月 30%、季 20%、年 10%），0–100。資料來自 Yahoo Finance，約延遲 15 分鐘；價格快取在瀏覽器，超過 15 分鐘自動更新。</p>
+      <div id="strengthRoot"></div>
     </section>
 
     <!-- ========== 供應鏈瓶頸新聞 · Supply Chain Digest ========== -->
@@ -529,5 +514,6 @@
   <script src="annual.js"></script>
   <script src="defense.js"></script>
   <script src="intel.js"></script>
+  <script src="strength.js"></script>
 </body>
 </html>

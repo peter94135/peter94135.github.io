@@ -14,6 +14,7 @@ My personal academic website, hosted on GitHub Pages → **https://peter94135.gi
 ├── annual.js       # 年報重點 (ported from hgvf.github.io annualview.js)
 ├── defense.js / defense.css  # 每日軍武合約 (ported from hgvf.github.io defenseview.js)
 ├── intel.js / intel.css      # 產業情報站 (ported from hgvf.github.io intel.js + inteldesk.js)
+├── strength.js / strength.css  # 題材強弱 (ported from hgvf.github.io strength.js)
 ├── tools/news/     # Daily news job: ROUTINE.md (instructions), SCHEMA.md, validate.py, watchlist.json
 ├── assets/         # Images (profile.jpg, cv.pdf)
 └── .nojekyll        # Tells GitHub Pages to serve files as-is
@@ -45,11 +46,12 @@ P/E, market cap and volume from `v7/finance/quote`, both through the Cloudflare 
 
 ## Theme Strength (題材強弱)
 
-`#strength` ranks every watchlist theme by momentum. All tickers are fetched in batches of 20 with
-Yahoo's `v8/finance/spark` endpoint (≈30 requests for ~600 tickers) and cached in `localStorage` for 15 minutes.
-A theme's return per window (day / week / month / quarter / year) is the **median** of its members;
-"綜合" is a weighted percentile rank across windows (10 / 30 / 30 / 20 / 10 %).
-The quadrant chart plots month return (x) vs week return (y): Leading / Improving / Weakening / Lagging.
+`strength.js` (ported with permission from hgvf.github.io) ranks the watchlist's **126 subsectors** by the median
+day / week / month / quarter / year return of their members, plus a weighted "綜合" (15 / 35 / 35 / 15 % of
+day / week / month / year); the quadrant chart uses an outlier-trimmed mean. ↻ Update fetches every watchlist
+ticker through the shared quote engine in `stocks.js` (`window.siteQuoteAll`, Yahoo spark, 20 per request).
+Themes whose members appear in 供應鏈瓶頸新聞 (last 30 days) or 財報電話會議分析 (last 90 days) get a
+⛓ / ▤ badge, red when any of those items is bearish.
 
 ## News pages (供應鏈瓶頸新聞 / 產業消息 / 財報電話會議分析)
 
