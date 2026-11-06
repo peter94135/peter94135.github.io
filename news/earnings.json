@@ -1,4 +1,58 @@
 {
- "updated": "2026-11-06T13:27:06Z",
- "items": []
+ "updated": "2026-11-06T23:05:19Z",
+ "items": [
+  {
+   "id": "amd-2026-q3",
+   "ticker": "AMD",
+   "company": "Advanced Micro Devices",
+   "year": "2026",
+   "quarter": "Q3",
+   "date": "2026-11-03",
+   "summary": "AMD第三季營收創134億美元…紀錄，資料中心年增97%，並預期第四季營收約170億美元。",
+   "highlights": [
+    {
+     "text": "第三季營收134億美元，年增45%、季增16%，創公司紀錄，高於財測上緣。",
+     "sentiment": "bullish"
+    },
+    {
+     "text": "資料中心營收85億美元，年增97%，由EPYC處理器與Instinct MI450 GPU帶動。",
+     "sentiment": "bullish"
+    },
+    {
+     "text": "GAAP毛利率54%、非GAAP 56%；GAAP EPS 1.46美元、非GAAP 2.09美元（年增74%）。",
+     "sentiment": "bullish"
+    },
+    {
+     "text": "客戶端與遊戲營收37億美元，年減8%；其中遊戲年減40%至7.73億美元，客戶端年增7%至29億美元。",
+     "sentiment": "bearish"
+    },
+    {
+     "text": "嵌入式營收11億美元，年增29%。",
+     "sentiment": "bullish"
+    },
+    {
+     "text": "第四季財測營收約170億美元（±3%），中位數年增約66%、季增約27%；非GAAP毛利率約55%。",
+     "sentiment": "bullish"
+    },
+    {
+     "text": "Anthropic、Meta、Microsoft、OpenAI與Oracle Cloud Infrastructure已在首批Helios機櫃式系統上執行工作負載；AMD並同意收購World Labs與Taalas。",
+     "sentiment": "neutral"
+    }
+   ],
+   "watch": [
+    "Helios機櫃與Venice處理器量產爬坡進度是否支撐第四季財測",
+    "遊戲與客戶端業務的下滑幅度",
+    "MI450出貨與主要雲端客戶的採用規模",
+    "毛利率能否維持在55%上下",
+    "World Labs與Taalas收購案的完成與整合"
+   ],
+   "sources": [
+    {
+     "title": "AMD Form 8-K — Q3 2026 results (SEC)",
+     "url": "https://www.sec.gov/Archives/edgar/data/0000002488/000000248826000188/q32026991.htm"
+    }
+   ],
+   "updated_at": "2026-11-06T23:30:00Z"
+  }
+ ]
 }

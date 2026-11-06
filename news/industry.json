@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-06T13:27:06Z",
+ "updated": "2026-11-06T23:05:19Z",
  "items": [
   {
    "id": "SC-20261106-001",
@@ -96,6 +96,117 @@
     }
    ],
    "updated_at": "2026-11-06T09:00:00Z"
+  },
+  {
+   "id": "SC-20261106-002",
+   "event_date": "2026-11-05",
+   "published_at": "2026-11-05",
+   "title_zh": "英特爾稱EMIB晶圓利用率逾90%，傳Google、Amazon規劃採用EMIB-T，作為CoWoS以外的選項",
+   "title_original": "Intel Reportedly Touts 90% Wafer Utilization with Interposer-Free EMIB, Eyes 70 Bridges per Future AI Chip",
+   "summary_zh": "英特爾晶圓代工封裝部門主管Lee Kyu-oh在韓國釜山ISMP 2026表示，EMIB僅在需要處放置小型矽橋，晶圓利用率逾90%，傳統矽中介層約60%。目前商用AI晶片封裝最大約120×120mm、12組HBM、20餘座矽橋；開發中產品至少120×180mm、16組以上HBM、38座以上矽橋；未來目標240×240mm、32組以上HBM、70座以上矽橋。韓媒與TrendForce報導稱Google與Amazon規劃在AI晶片採用EMIB-T，但報導並未取得相關公司證實；UMC據傳以成熟12吋製程代工矽橋。",
+   "why_it_matters": "台積電CoWoS產能吃緊，EMIB若獲雲端ASIC客戶採用，可能分流部分先進封裝需求，並帶動UMC等成熟製程矽橋供應；但客戶採用仍屬未證實說法。",
+   "event_type": "capacity",
+   "event_type_secondary": [
+    "supplier_change"
+   ],
+   "importance_tier": "relevant",
+   "importance_score": 55,
+   "evidence_level": "reported",
+   "tickers": [
+    "INTC",
+    "2330.TW",
+    "2303.TW"
+   ],
+   "companies": [
+    {
+     "name": "Intel",
+     "ticker": "INTC",
+     "exchange": "NASDAQ",
+     "country": "US",
+     "role": "supplier"
+    },
+    {
+     "name": "TSMC",
+     "ticker": "2330.TW",
+     "exchange": "TWSE",
+     "country": "TW",
+     "role": "incumbent_supplier"
+    },
+    {
+     "name": "UMC",
+     "ticker": "2303.TW",
+     "exchange": "TWSE",
+     "country": "TW",
+     "role": "supplier"
+    }
+   ],
+   "supply_chain": {
+    "component": "先進封裝 EMIB / CoWoS",
+    "supplier": [
+     "Intel",
+     "UMC"
+    ],
+    "customer": [
+     "Google",
+     "Amazon"
+    ],
+    "end_market": [
+     "AI ASIC"
+    ]
+   },
+   "themes": [
+    "先進封裝",
+    "EMIB",
+    "CoWoS",
+    "AI ASIC"
+   ],
+   "regions": [
+    "US",
+    "TW",
+    "KR"
+   ],
+   "products": [
+    "EMIB-T",
+    "AI加速器"
+   ],
+   "materials": [
+    "矽橋"
+   ],
+   "search_keywords": [
+    "intel",
+    "英特爾",
+    "emib",
+    "emib-t",
+    "cowos",
+    "台積電",
+    "tsmc",
+    "umc",
+    "聯電",
+    "先進封裝",
+    "advanced packaging",
+    "矽橋",
+    "google",
+    "amazon",
+    "tpu",
+    "intc",
+    "2303.tw",
+    "2330.tw"
+   ],
+   "sources": [
+    {
+     "publisher": "TrendForce",
+     "url": "https://www.trendforce.com/news/2026/11/05/news-intel-reportedly-touts-90-wafer-utilization-with-interposer-free-emib-eyes-70-bridges-per-future-ai-chip/",
+     "source_type": "news",
+     "is_primary": false
+    },
+    {
+     "publisher": "ZDNet Korea",
+     "url": "https://zdnet.co.kr/view/?no=20261104165623",
+     "source_type": "news",
+     "is_primary": true
+    }
+   ],
+   "updated_at": "2026-11-06T23:30:00Z"
   },
   {
    "id": "SC-20261104-001",
