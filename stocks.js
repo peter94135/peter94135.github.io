@@ -1,11 +1,15 @@
 /* =====================================================================
- * Stock Watchlist
- * (Merged in from the former stand-alone "Stock Theme Dashboard".)
- *   - themes + ticker lists live in Firestore  dashboards/main
- *   - quotes come from Yahoo Finance through the Cloudflare Worker proxy
- *     (falls back to public CORS proxies)
- *   - only the selected theme is fetched; quotes are cached in localStorage
- * Loaded lazily: nothing is fetched until the Watchlist page is opened.
+ * Stock Watchlist — sector → subsector → ticker layout, ported from
+ * hgvf.github.io (with the owner's permission), including its sectors,
+ * subsectors, tickers and notes.
+ *   - the whole tree lives in ONE Firestore doc: dashboards/watchlist
+ *       { sectors: [{ id, name, overview: [sym…],
+ *                     subsectors: [{ id, name, notes(md),
+ *                                    tickers: [{ symbol, name, market }],
+ *                                    research: [{ title, content(md) }] }] }] }
+ *   - prices: Yahoo "spark" batch endpoint (20 symbols / request) through the
+ *     Cloudflare Worker; P/E, market cap and volume from the v7 quote endpoint
+ *   - nothing is fetched until the Watchlist or Theme Strength page is opened
  * ===================================================================== */
 (function () {
   "use strict";
@@ -19,92 +23,81 @@
     messagingSenderId: "759320799290",
     appId: "1:759320799290:web:e15000031890438f3aad03",
   };
-  const CLOUD_DOC = "dashboards/main";
+  const TREE_DOC = "dashboards/watchlist";
   const WORKER_URL = "https://yf-proxy.peter94135.workers.dev";
-  // Google-sign-in UIDs allowed to edit (must match the Firestore write rules).
-  const OWNER_UIDS = [
-    "JN5nkZ6t8TcEc6AJNvnISvdWKDt1",
-    "arxW8uOFEQTwBb8o3XKkOnsGu5H3",
-  ];
-  // Used only until the cloud copy arrives (or if Firestore is unreachable).
-  const FALLBACK_THEMES = {
-    "半導體設備": ["LRCX", "AMAT", "ASML", "KLAC", "8035.T", "6857.T", "3131.TWO"],
-    "記憶體/SSD/HDD": ["MU", "000660.KS", "005930.KS", "WDC", "STX", "2408.TW"],
-    "高速傳輸": ["CRDO", "ALAB", "3665.TW", "TEL", "APH"],
-  };
   const PROXIES = [
     u => "https://corsproxy.io/?url=" + encodeURIComponent(u),
     u => "https://api.allorigins.win/raw?url=" + encodeURIComponent(u),
   ];
-  const LS = { themes: "wl_themes_v1", names: "wl_names_v1", data: "wl_data_v1", pref: "wl_pref_v1" };
+  const LS = { tree: "wl_tree_v1", fund: "wl_fund_v1", pref: "wl_pref_v2" };
+  const QUOTE_FRESH = 2 * 60 * 1000;      // re-fetch prices older than this when a tab is opened
+  const FUND_FRESH = 6 * 60 * 60 * 1000;  // P/E / market cap change slowly
 
   /* ---------- state ---------- */
   const load = k => { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } };
   const store = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
 
-  let themes = load(LS.themes) || structuredClone(FALLBACK_THEMES);
-  let names = load(LS.names) || {};
-  let dataMap = load(LS.data) || {};
-  let pref = Object.assign({ active: null, view: "cards", sort: { key: "day", dir: -1 }, collapsed: {} }, load(LS.pref) || {});
+  let tree = load(LS.tree);                 // cached copy of the Firestore doc
+  let fund = load(LS.fund) || {};           // sym → { pe, cap, cur, vol, name, t }
+  let pref = Object.assign({ active: null, view: "change", collapsed: [] }, load(LS.pref) || {});
+  let tickerNames = {};                     // sym → name from the tree
 
-  let db = null, auth = null, user = null;
-  let cloudReady = false, cloudLoaded = false, suppressCloud = false, cloudTimer = null;
+  let db = null, cloudReady = false, cloudLoaded = false;
   let started = false, refreshSeq = 0;
 
   const $ = id => document.getElementById(id);
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-
-  // Firestore does not preserve map key order, so sort tabs for a stable layout.
-  const themeKeys = () => Object.keys(themes).sort((a, b) => a.localeCompare(b, "zh-Hant"));
-
-  function activeTheme() {
-    const keys = themeKeys();
-    if (!keys.length) return null;
-    if (!pref.active || !themes[pref.active]) { pref.active = keys[0]; savePref(); }
-    return pref.active;
-  }
-  const canEdit = () => cloudLoaded && user && OWNER_UIDS.includes(user.uid);
   const savePref = () => store(LS.pref, pref);
 
-  function saveThemes() {
-    store(LS.themes, themes);
-    store(LS.names, names);
-    if (!cloudReady || suppressCloud || !canEdit()) return;
-    clearTimeout(cloudTimer);
-    cloudTimer = setTimeout(() => {
-      db.doc(CLOUD_DOC).set({ themes, names, updated: Date.now() }, { merge: true })
-        .catch(e => console.warn("Cloud save failed:", e.message));
-    }, 600);
+  const sectors = () => (tree && Array.isArray(tree.sectors) ? tree.sectors : []);
+  const sectorSymbols = s => [...new Set([
+    ...(s.overview || []),
+    ...(s.subsectors || []).flatMap(sub => (sub.tickers || []).map(t => t.symbol)),
+  ])];
+  const nameOf = sym => tickerNames[sym] || (fund[sym] && fund[sym].name) || "";
+  const quoteOf = sym => (stData.q[sym] || {});
+
+  function indexNames() {
+    tickerNames = {};
+    for (const s of sectors()) for (const sub of s.subsectors || []) for (const t of sub.tickers || []) {
+      if (t.name && !tickerNames[t.symbol]) tickerNames[t.symbol] = t.name;
+    }
+  }
+  indexNames();
+
+  function activeSector() {
+    const list = sectors();
+    if (!list.length) return null;
+    let s = list.find(x => x.id === pref.active);
+    if (!s) { s = list[0]; pref.active = s.id; savePref(); }
+    return s;
   }
 
-  /* ---------- Firebase ---------- */
+  /* ---------- Firebase (read-only) ---------- */
   let fbInit = false;
   function initFirebase() {
     if (fbInit || typeof firebase === "undefined") return;
     fbInit = true;
     try {
-      firebase.initializeApp(FIREBASE_CONFIG);
+      if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
       db = firebase.firestore();
-      auth = firebase.auth();
       cloudReady = true;
-      // Editing works when a signed-in owner session persists in this browser.
-      auth.onAuthStateChanged(u => { user = u; if (started) render(); });
-      db.doc(CLOUD_DOC).onSnapshot(snap => {
+      db.doc(TREE_DOC).onSnapshot(snap => {
         cloudLoaded = true;
-        if (!snap.exists) { if (stStarted) stOnThemes(); return; }
-        const d = snap.data() || {};
-        suppressCloud = true;
-        if (d.themes) themes = d.themes;
-        if (d.names) names = Object.assign({}, names, d.names);
-        store(LS.themes, themes); store(LS.names, names);
-        suppressCloud = false;
-        if (started) {
-          render();
-          const cur = activeTheme();
-          if (cur && themes[cur].some(s => !dataMap[s] || dataMap[s].last == null)) refresh();
+        const d = snap.exists ? snap.data() : null;
+        if (d && Array.isArray(d.sectors)) {
+          tree = { sectors: d.sectors };
+          store(LS.tree, tree);
+          indexNames();
         }
+        if (started) { renderAll(); refresh(); }
         if (stStarted) stOnThemes();
-      }, err => { console.warn("Firestore listen failed:", err.message); if (stStarted) stOnThemes(); });
+      }, err => {
+        console.warn("Firestore listen failed:", err.message);
+        cloudLoaded = true;
+        if (started) renderAll();
+        if (stStarted) stOnThemes();
+      });
     } catch (e) { console.warn("Firebase init failed:", e.message); }
   }
 
@@ -124,290 +117,257 @@
     throw new Error("fetch failed");
   }
 
-  async function fetchChart(sym) {
-    const out = { symbol: sym, error: false };
-    try {
-      const j = await fetchJSON(`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?range=1y&interval=1d`);
-      const res = j.chart.result[0], m = res.meta;
-      const ts = res.timestamp || [];
-      const closes = (res.indicators && res.indicators.quote && res.indicators.quote[0].close) || [];
-      const last = m.regularMarketPrice;
-      const nowSec = m.regularMarketTime || Math.floor(Date.now() / 1000);
-      const firstClose = closes.find(c => c != null);
-      // Previous close = last daily close before the current trading day.
-      // (meta.chartPreviousClose is the close *before the 1y range*, not yesterday.)
-      const gmt = m.gmtoffset || 0;
-      const dayStart = Math.floor((nowSec + gmt) / 86400) * 86400 - gmt;
-      let prev = null;
-      for (let i = 0; i < ts.length; i++) {
-        if (closes[i] == null) continue;
-        if (ts[i] < dayStart) prev = closes[i]; else break;
-      }
-      if (prev == null) prev = m.previousClose ?? null;
-      const ref = daysAgo => {
-        const target = nowSec - daysAgo * 86400;
-        let best = null;
-        for (let i = 0; i < ts.length; i++) {
-          if (closes[i] == null) continue;
-          if (ts[i] <= target) best = closes[i]; else break;
-        }
-        return best ?? firstClose;
-      };
-      const pct = r => (r ? (last - r) / r : null);
-      Object.assign(out, {
-        last, currency: m.currency, volume: m.regularMarketVolume,
-        day: pct(prev), week: pct(ref(7)), month: pct(ref(30)), year: pct(firstClose),
-      });
-      if (m.longName || m.shortName) names[sym] = { name: m.longName || m.shortName, currency: m.currency };
-    } catch (e) { out.error = true; }
-    out.name = (names[sym] && names[sym].name) || sym;
-    return out;
-  }
-
   async function fetchFundamentals(symbols) {
     const res = {};
-    if (!symbols.length) return res;
     try {
       const j = await fetchJSON(`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(symbols.join(","))}`);
       for (const q of (j.quoteResponse && j.quoteResponse.result) || []) {
-        res[q.symbol] = { pe: q.trailingPE ?? null, cap: q.marketCap ?? null, name: q.longName || q.shortName, currency: q.currency };
+        res[q.symbol] = {
+          pe: q.trailingPE ?? null, cap: q.marketCap ?? null, cur: q.currency || "",
+          vol: q.regularMarketVolume ?? null, name: q.shortName || q.longName || "", t: Date.now(),
+        };
       }
     } catch (e) { /* leave blank */ }
     return res;
   }
 
-  function mergeFund(sym, f) {
-    if (!f) return;
-    const d = dataMap[sym] || (dataMap[sym] = { symbol: sym });
-    d.pe = f.pe; d.cap = f.cap;
-    if (f.currency && !d.currency) d.currency = f.currency;
-    if ((!names[sym] || !names[sym].name) && f.name) names[sym] = { name: f.name, currency: f.currency };
-    if (!d.name || d.name === sym) d.name = (names[sym] && names[sym].name) || sym;
+  // Run `fn` over `items` in chunks of `size`, `workers` at a time.
+  async function inChunks(items, size, workers, fn) {
+    const queue = [];
+    for (let i = 0; i < items.length; i += size) queue.push(items.slice(i, i + size));
+    await Promise.all(Array.from({ length: workers }, async () => {
+      while (queue.length) await fn(queue.shift());
+    }));
   }
 
   async function refresh() {
-    const cur = activeTheme();
-    const all = cur ? [...new Set(themes[cur])] : [];
-    if (!all.length) { render(); return; }
+    const sec = activeSector();
+    if (!sec) return;
     const myId = ++refreshSeq;
-    const fundP = fetchFundamentals(all);
-    const queue = [...all];
-    async function worker() {
-      while (queue.length) {
-        if (myId !== refreshSeq) return;
-        const sym = queue.shift();
-        const prevPE = dataMap[sym] || {};
-        dataMap[sym] = Object.assign(await fetchChart(sym), { pe: prevPE.pe, cap: prevPE.cap });
-        if (myId === refreshSeq) render();
-      }
-    }
-    await Promise.all(Array.from({ length: 6 }, worker));
-    const fund = await fundP;
-    all.forEach(s => mergeFund(s, fund[s]));
-    store(LS.data, dataMap); store(LS.names, names);
-    if (myId !== refreshSeq) return;
-    render();
+    const syms = sectorSymbols(sec);
+    const now = Date.now();
+    const stale = syms.filter(s => !stData.q[s] || !stData.q[s].t || now - stData.q[s].t > QUOTE_FRESH);
+    const noFund = syms.filter(s => !fund[s] || now - fund[s].t > FUND_FRESH);
+    const fundP = inChunks(noFund, 40, 2, async c => { Object.assign(fund, await fetchFundamentals(c)); });
+    await inChunks(stale, 20, 4, async c => {
+      let res = null;
+      for (let a = 0; a < 2 && !res; a++) { try { res = await fetchSpark(c); } catch (e) { /* retry */ } }
+      if (!res) return;
+      const t = Date.now();
+      for (const [s, v] of Object.entries(res)) stData.q[s] = Object.assign(v, { t });
+      if (myId === refreshSeq) paintPrices();
+    });
+    store(ST_LS.data, stData);
+    await fundP;
+    store(LS.fund, fund);
+    if (myId === refreshSeq) paintPrices();
   }
 
-  /* ---------- formatting ---------- */
-  const fmtPrice = v => (v == null || isNaN(v) ? "—" : v.toLocaleString("en-US", { maximumFractionDigits: 2 }));
-  const fmtPct = v => (v == null || isNaN(v) ? "—" : (v > 0 ? "+" : "") + (v * 100).toFixed(2) + "%");
-  const fmtVol = v => (v == null || isNaN(v) ? "—" : v >= 1e6 ? (v / 1e6).toFixed(2) + " M" : Math.round(v).toLocaleString("en-US"));
+  /* ---------- formatting (as on hgvf.github.io) ---------- */
+  function tradingViewUrl(symbol) {
+    const tv = s => "https://www.tradingview.com/chart/?symbol=" + encodeURIComponent(s);
+    const m = symbol.match(/^(.+)\.([A-Z]+)$/);
+    if (!m) return tv(symbol);
+    const ex = { TWO: "TPEX", TW: "TWSE", KQ: "KRX", KS: "KRX", T: "TSE", SS: "SSE", SZ: "SZSE", HK: "HKEX",
+      AS: "EURONEXT", PA: "EURONEXT", BR: "EURONEXT", LS: "EURONEXT", IR: "EURONEXT", DE: "XETR", MI: "MIL",
+      MC: "BME", L: "LSE", ST: "OMX", CO: "OMX", HE: "OMX", OL: "OSL", VX: "SIX", SW: "SIX" }[m[2]];
+    return tv(ex ? `${ex}:${m[1]}` : symbol);
+  }
+  const changeClass = v => (v == null || isNaN(v) ? "neutral" : v > 0 ? "positive" : v < 0 ? "negative" : "neutral");
+  const fmtChg = v => (v == null || isNaN(v) ? "—" : (v >= 0 ? "+" : "") + (v * 100).toFixed(2) + "%");
+  function formatPrice(price, symbol) {
+    if (price == null || isNaN(price)) return "—";
+    // Whole-unit markets: TW, JP, KR, CN A-shares, HK
+    if (/\.(TW|TWO|T|KS|KQ|SS|SZ|HK)$/.test(symbol)) return price.toLocaleString("en-US", { maximumFractionDigits: 0 });
+    return price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
   function fmtCap(v, cur) {
     if (v == null || isNaN(v)) return "—";
-    const s = v >= 1e12 ? (v / 1e12).toFixed(2) + " T" : v >= 1e9 ? (v / 1e9).toFixed(2) + " B" : v >= 1e6 ? (v / 1e6).toFixed(2) + " M" : Math.round(v).toLocaleString("en-US");
+    const s = v >= 1e12 ? (v / 1e12).toFixed(2) + "T" : v >= 1e9 ? (v / 1e9).toFixed(2) + "B" : v >= 1e6 ? (v / 1e6).toFixed(2) + "M" : Math.round(v).toLocaleString("en-US");
     return s + (cur ? " " + cur : "");
   }
-  const dir = v => (v > 0 ? "up" : v < 0 ? "down" : "flat");
-  function tvUrl(sym) {
-    const base = sym.replace(/\..*/, "");
-    let path = base;
-    if (sym.endsWith(".TWO")) path = "TPEX-" + base;
-    else if (sym.endsWith(".TW")) path = "TWSE-" + base;
-    else if (sym.endsWith(".T")) path = "TSE-" + base;
-    else if (sym.endsWith(".KS")) path = "KRX-" + base;
-    else if (sym.endsWith(".KQ")) path = "KRX-" + base;
-    else if (sym.endsWith(".HK")) path = "HKEX-" + base;
-    return "https://www.tradingview.com/symbols/" + encodeURIComponent(path) + "/";
+  const fmtVolume = v => (!v ? "—" : v >= 1e6 ? (v / 1e6).toFixed(2) + "M" : v >= 1e3 ? (v / 1e3).toFixed(1) + "K" : String(v));
+  const INDICATOR = { positive: "var(--positive)", negative: "var(--negative)", neutral: "var(--neutral)" };
+  const dir = v => (v > 0 ? "up" : v < 0 ? "down" : "flat");   // Theme Strength colours
+
+  let mdReady = false;
+  function md(text) {
+    if (!text) return "";
+    if (window.marked) {
+      if (!mdReady) { window.marked.use({ breaks: true }); mdReady = true; }
+      return window.marked.parse(text).replace(/<img /g, '<img loading="lazy" ');
+    }
+    return esc(text).replace(/\n/g, "<br>");
   }
 
   /* ---------- rendering ---------- */
-  const COLS = [
-    { key: "name", label: "Name", left: true },
-    { key: "last", label: "Last" },
-    { key: "volume", label: "Volume" },
-    { key: "day", label: "Day" },
-    { key: "week", label: "Week" },
-    { key: "month", label: "Month" },
-    { key: "year", label: "Year" },
-    { key: "pe", label: "P/E" },
-    { key: "cap", label: "Market Cap" },
-  ];
-
-  function render() {
-    document.body.classList.toggle("readonly", !canEdit());
+  function renderAll() {
     renderTabs();
-    const body = $("wlBody");
-    const cur = activeTheme();
-    document.querySelectorAll("#page-watchlist .seg__btn").forEach(b => b.classList.toggle("active", b.dataset.view === pref.view));
-    if (!cur) { body.innerHTML = `<div class="wl-empty">No themes yet.</div>`; setSummary([]); return; }
-    const rows = themes[cur].map(s => ({ sym: s, d: dataMap[s] || { symbol: s } }));
-    setSummary(rows);
-    if (!rows.length) { body.innerHTML = `<div class="wl-empty">No stocks in this theme yet.</div>`; return; }
-    body.innerHTML = pref.view === "table" ? tableHTML(cur, rows) : cardsHTML(rows);
+    renderBar();
+    renderContent();
   }
 
   function renderTabs() {
-    const cur = activeTheme();
-    $("wlTabs").innerHTML = themeKeys().map(t =>
-      `<button class="sector-tab${t === cur ? " active" : ""}" data-theme="${esc(t)}" type="button">${esc(t)}<span class="tcount">${themes[t].length}</span></button>`
+    const cur = activeSector();
+    $("wlTabs").innerHTML = sectors().map(s =>
+      `<button class="sector-tab${cur && s.id === cur.id ? " active" : ""}" data-sector="${esc(s.id)}" type="button" role="tab">${esc(s.name)}</button>`
     ).join("");
   }
 
-  function setSummary(rows) {
+  function tickerCardHTML(sym) {
+    const q = quoteOf(sym);
+    const cls = changeClass(q.d);
+    return `<a class="ticker-card" style="--indicator-color:${INDICATOR[cls]}" href="${tradingViewUrl(sym)}" target="_blank" rel="noopener" title="Open in TradingView">
+      <span class="tc-symbol">${esc(sym)}</span><span class="tc-name">${esc(nameOf(sym))}&nbsp;</span>
+      <span class="tc-price">${formatPrice(q.last, sym)}</span><span class="tc-change ${cls}">${fmtChg(q.d)}</span></a>`;
+  }
+
+  function renderBar() {
+    const bar = $("wlBar");
+    const sec = activeSector();
+    if (!sec) {
+      bar.innerHTML = `<div class="wl-empty">${cloudLoaded || !cloudReady ? "No watchlist data." : "Loading…"}</div>`;
+      return;
+    }
+    const unique = sectorSymbols(sec);
     let up = 0, down = 0, flat = 0;
-    rows.forEach(({ d }) => { if (d.day > 0) up++; else if (d.day < 0) down++; else if (d.day === 0) flat++; });
-    $("wlUp").textContent = up; $("wlDown").textContent = down; $("wlFlat").textContent = flat;
-  }
-
-  function cardHTML(sym, d) {
-    const name = d.name || (names[sym] && names[sym].name) || "";
-    const body = d.error && d.last == null
-      ? `<div class="tc-err">Failed to load</div>`
-      : `<div class="tc-price">${fmtPrice(d.last)}</div><span class="tc-change">${fmtPct(d.day)}</span>`;
-    return `<a class="ticker-card ${dir(d.day)}" href="${tvUrl(sym)}" target="_blank" rel="noopener" title="Open ${esc(sym)} in TradingView">
-      <button class="tc-del" data-del="${esc(sym)}" type="button" title="Remove">✕</button>
-      <div class="tc-symbol">${esc(sym)}</div>
-      <div class="tc-name">${esc(name && name !== sym ? name : "")}&nbsp;</div>
-      ${body}</a>`;
-  }
-
-  function cardsHTML(rows) {
-    const byDay = (a, b) => (b.d.day ?? -Infinity) - (a.d.day ?? -Infinity);
-    const ups = rows.filter(r => r.d.day > 0).sort(byDay);
-    const downs = rows.filter(r => r.d.day < 0).sort((a, b) => a.d.day - b.d.day);
-    const rest = rows.filter(r => !(r.d.day > 0) && !(r.d.day < 0));
-    const zone = (key, cls, label, list) => {
-      if (!list.length) return "";
-      const collapsed = pref.collapsed[key] ? " collapsed" : "";
-      return `<div class="ticker-zone ${cls}${collapsed}" data-zone="${key}">
-        <div class="tz-head"><span class="tz-caret">▼</span>${label}<span class="tz-count">${list.length}</span></div>
-        <div class="tz-grid">${list.map(r => cardHTML(r.sym, r.d)).join("")}</div></div>`;
-    };
-    return `<div class="tz-wrap">${zone("up", "tz-up", "上漲", ups)}${zone("down", "tz-down", "下跌", downs)}${zone("flat", "tz-flat", "平盤 / 讀取中", rest)}</div>`;
-  }
-
-  function tableHTML(theme, rows) {
-    const s = pref.sort;
-    rows = rows.slice().sort((a, b) => {
-      if (s.key === "name") {
-        const va = (a.d.name || a.sym).toLowerCase(), vb = (b.d.name || b.sym).toLowerCase();
-        return va < vb ? -s.dir : va > vb ? s.dir : 0;
+    unique.forEach(s => { const d = quoteOf(s).d; if (d > 0) up++; else if (d < 0) down++; else flat++; });
+    const view = pref.view === "subsector" ? "subsector" : "change";
+    let html = `<div class="ticker-summary">
+      <span class="ts-label">總覽</span>
+      <span class="ts-stat ts-up">上漲 <strong>${up}</strong></span>
+      <span class="ts-stat ts-down">下跌 <strong>${down}</strong></span>
+      ${flat ? `<span class="ts-stat ts-flat">平盤 <strong>${flat}</strong></span>` : ""}
+      ${unique.length ? `<div class="ticker-viewtoggle" role="tablist">
+        <button class="tvt-btn${view === "change" ? " active" : ""}" data-view="change" type="button">依漲跌</button>
+        <button class="tvt-btn${view === "subsector" ? " active" : ""}" data-view="subsector" type="button">依題材</button></div>` : ""}
+    </div>`;
+    if (unique.length) {
+      const zone = (title, syms, kind, extra = "") => {
+        if (!syms.length) return "";
+        const key = `${view}::${title}`;
+        const collapsed = pref.collapsed.includes(key) ? " collapsed" : "";
+        return `<div class="ticker-zone tz-${kind}${extra}${collapsed}" data-key="${esc(key)}">
+          <div class="tz-head" role="button" tabindex="0" title="點擊收合 / 展開"><span class="tz-caret" aria-hidden="true">▾</span><span class="tz-title">${esc(title)}</span><span class="tz-count">${syms.length}</span></div>
+          <div class="tz-grid">${syms.map(tickerCardHTML).join("")}</div></div>`;
+      };
+      const chg = s => quoteOf(s).d;
+      let zones = "";
+      if (view === "subsector") {
+        const seen = new Set();
+        const byChg = (a, b) => (chg(b) ?? -Infinity) - (chg(a) ?? -Infinity);
+        for (const sub of sec.subsectors || []) {
+          const syms = [...new Set((sub.tickers || []).map(t => t.symbol))].filter(s => !seen.has(s));
+          syms.forEach(s => seen.add(s));
+          zones += zone(sub.name, syms.sort(byChg), "theme");
+        }
+        zones += zone("精選 / 其他", unique.filter(s => !seen.has(s)).sort(byChg), "theme", " tz-other");
+      } else {
+        const gainers = unique.filter(s => chg(s) > 0).sort((a, b) => chg(b) - chg(a));
+        const losers = unique.filter(s => chg(s) < 0).sort((a, b) => chg(a) - chg(b));
+        const neutrals = unique.filter(s => !chg(s));
+        zones = zone("上漲", gainers, "up") + zone("下跌", losers, "down") + zone("平盤 / 無資料", neutrals, "flat");
       }
-      const va = a.d[s.key], vb = b.d[s.key];
-      if (va == null) return 1; if (vb == null) return -1;
-      return (va - vb) * s.dir;
-    });
-    const head = COLS.map(c => `<th class="${c.left ? "left" : ""}" data-sort="${c.key}">${c.label}${s.key === c.key ? `<span class="arrow">${s.dir < 0 ? "▼" : "▲"}</span>` : ""}</th>`).join("");
-    const body = rows.map(({ sym, d }) => {
-      const cur = (names[sym] && names[sym].currency) || d.currency;
-      const nameCell = `<td class="left"><button class="tc-del" data-del="${esc(sym)}" type="button" title="Remove">✕</button><a class="sym" href="${tvUrl(sym)}" target="_blank" rel="noopener">${esc(sym)}</a><span class="cname">${esc(d.name && d.name !== sym ? d.name : "")}</span></td>`;
-      if (d.error && d.last == null) return `<tr>${nameCell}<td colspan="${COLS.length - 1}" style="text-align:left;color:var(--down)">Failed to load</td></tr>`;
-      return `<tr>${nameCell}
-        <td class="last">${fmtPrice(d.last)}</td><td>${fmtVol(d.volume)}</td>
-        <td class="${dir(d.day)}">${fmtPct(d.day)}</td><td class="${dir(d.week)}">${fmtPct(d.week)}</td>
-        <td class="${dir(d.month)}">${fmtPct(d.month)}</td><td class="${dir(d.year)}">${fmtPct(d.year)}</td>
-        <td>${d.pe != null ? d.pe.toFixed(2) : "—"}</td><td>${fmtCap(d.cap, cur)}</td></tr>`;
+      html += `<div class="ticker-zones">${zones}</div>`;
+    }
+    bar.innerHTML = html;
+  }
+
+  function watchlistTableHTML(tickers) {
+    const cols = ["Name", "Last", "Day%", "Wk%", "Mo%", "Yr%", "P/E", "Mkt Cap", "Volume"];
+    const rows = tickers.map(t => {
+      const q = quoteOf(t.symbol), f = fund[t.symbol] || {};
+      return `<tr>
+        <td><div class="wl-name-cell"><a class="wl-symbol" href="${tradingViewUrl(t.symbol)}" target="_blank" rel="noopener">${esc(t.symbol)}</a><span class="wl-fullname">${esc(t.name || nameOf(t.symbol))}</span></div></td>
+        <td>${formatPrice(q.last, t.symbol)}</td>
+        <td class="chg-${changeClass(q.d)}">${fmtChg(q.d)}</td>
+        <td class="chg-${changeClass(q.w)}">${fmtChg(q.w)}</td>
+        <td class="chg-${changeClass(q.m)}">${fmtChg(q.m)}</td>
+        <td class="chg-${changeClass(q.y)}">${fmtChg(q.y)}</td>
+        <td>${f.pe ? f.pe.toFixed(2) : "—"}</td>
+        <td>${fmtCap(f.cap, f.cur)}</td>
+        <td>${fmtVolume(f.vol)}</td></tr>`;
     }).join("");
-    return `<div class="tscroll"><table class="wl-table"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
+    return `<table class="wl-table"><thead><tr>${cols.map(c => `<th>${c}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table>`;
+  }
+
+  function renderContent() {
+    const box = $("wlContent");
+    const sec = activeSector();
+    if (!sec) { box.innerHTML = ""; return; }
+    box.innerHTML = (sec.subsectors || []).map((sub, i) => {
+      const tickers = sub.tickers || [];
+      const research = (sub.research || []).map(n => `<div class="research-card glass-card">
+          <div class="research-header" role="button" tabindex="0"><span class="research-title">${esc(n.title || "Note")}</span><span class="research-toggle" aria-hidden="true">▼</span></div>
+          <div class="research-body">${md(n.content)}</div></div>`).join("");
+      return `<div class="subsector-block">
+        <h3 class="subsector-title">${esc(sub.name)}</h3>
+        <div class="subsector-grid">
+          <div class="glass-card notes-card"><p class="card-title">Notes</p><div class="notes-body">${md(sub.notes)}</div></div>
+          ${tickers.length ? `<div class="glass-card wl-card"><p class="card-title">Watchlist</p><div class="wl-table-wrapper" data-sub="${i}">${watchlistTableHTML(tickers)}</div></div>` : ""}
+        </div>
+        ${research ? `<div class="research-section">${research}</div>` : ""}
+      </div>`;
+    }).join("");
+  }
+
+  // Price update: repaint the ticker bar and the tables only (keeps open research notes open).
+  function paintPrices() {
+    renderBar();
+    const sec = activeSector();
+    if (!sec) return;
+    document.querySelectorAll("#wlContent .wl-table-wrapper[data-sub]").forEach(w => {
+      const sub = (sec.subsectors || [])[+w.dataset.sub];
+      if (sub) w.innerHTML = watchlistTableHTML(sub.tickers || []);
+    });
   }
 
   /* ---------- actions ---------- */
-  function selectTheme(t) {
-    if (pref.active === t) return;
-    pref.active = t; savePref(); render(); refresh();
+  function selectSector(id) {
+    if (pref.active === id) return;
+    pref.active = id; savePref();
+    renderAll();
+    window.scrollTo(0, 0);
+    refresh();
   }
 
-  async function addTicker() {
-    const inp = $("wlAddInput");
-    const cur = activeTheme();
-    const s = inp.value.trim().toUpperCase();
-    if (!s || !cur || !canEdit()) return;
-    inp.value = "";
-    if (themes[cur].includes(s)) return;
-    themes[cur].push(s); saveThemes(); render();
-    dataMap[s] = await fetchChart(s);
-    mergeFund(s, (await fetchFundamentals([s]))[s]);
-    store(LS.data, dataMap); saveThemes(); render();
-  }
-
-  function removeTicker(sym) {
-    const cur = activeTheme();
-    if (!cur || !canEdit()) return;
-    themes[cur] = themes[cur].filter(x => x !== sym); saveThemes(); render();
-  }
-
-  function renameTheme() {
-    const old = activeTheme();
-    if (!old || !canEdit()) return;
-    const nn = (prompt("New theme name:", old) || "").trim();
-    if (!nn || nn === old) return;
-    if (themes[nn]) { alert("A theme with that name already exists."); return; }
-    const obj = {};
-    for (const k of Object.keys(themes)) obj[k === old ? nn : k] = themes[k];
-    themes = obj; pref.active = nn; savePref(); saveThemes(); render();
-  }
-
-  function deleteTheme() {
-    const t = activeTheme();
-    if (!t || !canEdit() || !confirm(`Delete theme “${t}”?`)) return;
-    delete themes[t]; pref.active = null; savePref(); saveThemes(); render(); refresh();
-  }
-
-  /* ---------- wiring ---------- */
   function wire() {
     $("wlTabs").addEventListener("click", e => {
-      const b = e.target.closest("[data-theme]");
-      if (b) selectTheme(b.dataset.theme);
+      const b = e.target.closest("[data-sector]");
+      if (b) selectSector(b.dataset.sector);
     });
-    $("wlBody").addEventListener("click", e => {
-      const del = e.target.closest("[data-del]");
-      if (del) { e.preventDefault(); e.stopPropagation(); removeTicker(del.dataset.del); return; }
+    $("wlBar").addEventListener("click", e => {
+      const v = e.target.closest("[data-view]");
+      if (v) { pref.view = v.dataset.view; savePref(); renderBar(); return; }
       const head = e.target.closest(".tz-head");
       if (head) {
-        const key = head.parentElement.dataset.zone;
-        pref.collapsed[key] = !pref.collapsed[key]; savePref();
-        head.parentElement.classList.toggle("collapsed");
-        return;
-      }
-      const th = e.target.closest("th[data-sort]");
-      if (th) {
-        const k = th.dataset.sort;
-        pref.sort = { key: k, dir: pref.sort.key === k ? -pref.sort.dir : (k === "name" ? 1 : -1) };
-        savePref(); render();
+        const zone = head.parentElement, key = zone.dataset.key;
+        const collapsed = zone.classList.toggle("collapsed");
+        pref.collapsed = pref.collapsed.filter(k => k !== key);
+        if (collapsed) pref.collapsed.push(key);
+        savePref();
       }
     });
-    document.querySelectorAll("#page-watchlist .seg__btn").forEach(b => b.addEventListener("click", () => {
-      pref.view = b.dataset.view; savePref(); render();
-    }));
-    $("wlAddBtn").addEventListener("click", addTicker);
-    $("wlAddInput").addEventListener("keydown", e => { if (e.key === "Enter") addTicker(); });
-    $("wlRename").addEventListener("click", renameTheme);
-    $("wlDelTheme").addEventListener("click", deleteTheme);
+    const toggleResearch = e => {
+      const h = e.target.closest(".research-header");
+      if (h) h.closest(".research-card").classList.toggle("open");
+    };
+    $("wlContent").addEventListener("click", toggleResearch);
+    $("wlContent").addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleResearch(e); } });
   }
 
   function start() {
     if (started) return;
     started = true;
     wire();
-    render();
+    renderAll();
     initFirebase();
     refresh();
   }
 
   /* =====================================================================
    * Theme Strength (題材強弱)
-   *   Ranks every watchlist theme by price momentum. Each theme's return over
+   *   Ranks every Watchlist sector (大類, all of its tickers) by price momentum. Each theme's return over
    *   a window is the MEDIAN of its members (robust to a single +300% name).
    *   "綜合" = weighted percentile rank across windows; mid-term (week/month)
    *   is weighted highest so rotation shows up, the 1-year window lowest.
@@ -443,7 +403,7 @@
     const s = a.slice().sort((x, y) => x - y), h = s.length >> 1;
     return s.length % 2 ? s[h] : (s[h - 1] + s[h]) / 2;
   };
-  const allSymbols = () => [...new Set(Object.values(themes).flat())];
+  const allSymbols = () => [...new Set(sectors().flatMap(sectorSymbols))];
   const quadOf = r => (r.m >= 0 ? (r.w >= 0 ? "lead" : "weaken") : (r.w >= 0 ? "improve" : "lag"));
 
   // Returns over each window from a daily close series (last bar = latest price).
@@ -459,7 +419,7 @@
       return best;
     };
     const r = base => (base ? last / base - 1 : null);
-    return { d: r(pts[pts.length - 2][1]), w: r(ref(7)), m: r(ref(30)), q: r(ref(91)), y: r(pts[0][1]) };
+    return { last, d: r(pts[pts.length - 2][1]), w: r(ref(7)), m: r(ref(30)), q: r(ref(91)), y: r(pts[0][1]) };
   }
 
   async function fetchSpark(syms) {
@@ -470,7 +430,7 @@
       const e = j && j[s];
       if (!e || !e.timestamp || !e.close) continue;
       const r = returnsFromSeries(e.timestamp, e.close);
-      if (r) out[s] = r;
+      if (r) { r.t = Date.now(); out[s] = r; }
     }
     return out;
   }
@@ -511,8 +471,8 @@
   }
 
   function themeStats() {
-    const rows = themeKeys().map(name => {
-      const syms = [...new Set(themes[name])];
+    const rows = sectors().map(sec => {
+      const name = sec.name, syms = sectorSymbols(sec);
       const vals = syms.map(s => stData.q[s]).filter(Boolean);
       const r = { name, n: syms.length, got: vals.length };
       for (const k of WINDOWS) {
@@ -669,15 +629,16 @@
 
   function stMembersHTML(theme, dim) {
     const k = dim === "score" ? "w" : dim;
-    const list = [...new Set(themes[theme] || [])].map(sym => ({ sym, v: stData.q[sym] || {} }))
+    const sec = sectors().find(s => s.name === theme);
+    const list = (sec ? sectorSymbols(sec) : []).map(sym => ({ sym, v: stData.q[sym] || {} }))
       .sort((a, b) => (b.v[k] ?? -Infinity) - (a.v[k] ?? -Infinity));
     const rows = list.map(({ sym, v }) => {
-      const nm = (names[sym] && names[sym].name) || "";
-      return `<tr><td class="left"><a class="sym" href="${tvUrl(sym)}" target="_blank" rel="noopener">${esc(sym)}</a><span class="cname">${esc(nm && nm !== sym ? nm : "")}</span></td>
+      const nm = nameOf(sym);
+      return `<tr><td class="left"><a class="sym" href="${tradingViewUrl(sym)}" target="_blank" rel="noopener">${esc(sym)}</a><span class="cname">${esc(nm && nm !== sym ? nm : "")}</span></td>
         ${WINDOWS.map(w => `<td class="${dir(v[w])}">${fmtPct1(v[w])}</td>`).join("")}</tr>`;
     }).join("");
     return `<div class="st-members">
-      <div class="tscroll"><table class="wl-table st-table"><thead><tr><th class="left">個股（依${k === "w" && dim === "score" ? "週" : DIMS.find(d => d.key === k).label}漲跌排序）</th>${WINDOWS.map(w => `<th>${DIMS.find(d => d.key === w).label}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table></div>
+      <div class="tscroll"><table class="st-table"><thead><tr><th class="left">個股（依${k === "w" && dim === "score" ? "週" : DIMS.find(d => d.key === k).label}漲跌排序）</th>${WINDOWS.map(w => `<th>${DIMS.find(d => d.key === w).label}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table></div>
       <a class="text-link st-open-wl" href="#watchlist" data-wl="${esc(theme)}">在 Watchlist 開啟「${esc(theme)}」 →</a>
     </div>`;
   }
@@ -717,7 +678,8 @@
       const wl = e.target.closest("[data-wl]");
       if (wl) {
         const t = wl.dataset.wl;
-        if (started) selectTheme(t); else { pref.active = t; savePref(); }
+        const sec = sectors().find(s => s.name === t);
+        if (sec) { if (started) selectSector(sec.id); else { pref.active = sec.id; savePref(); } }
         return;   // the href navigates to #watchlist
       }
       const row = e.target.closest("[data-toggle]");

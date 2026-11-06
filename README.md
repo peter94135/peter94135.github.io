@@ -24,11 +24,19 @@ add a sidebar link with `data-page="…"` and register the id in `PAGES` in `scr
 
 ## Stock Watchlist
 
-`stocks.js` keeps the themes and tickers in Firestore (`dashboards/main`, project `stock-dashboard-c595d`).
-The former stand-alone stock dashboard is merged into this page (card / table views, ticker editing).
-The page has no sign-in button; editing (add/remove ticker, rename/delete theme) is unlocked only when the
-browser already holds a persisted Firebase Google session whose UID is in `OWNER_UIDS`.
-Quotes go through the Cloudflare Worker `yf-proxy` (fallback: public CORS proxies); only the selected theme is fetched.
+The Watchlist layout and its data (sectors → subsectors → tickers, Markdown notes and research notes)
+are copied, with permission, from [hgvf.github.io](https://hgvf.github.io).
+The whole tree lives in one Firestore doc, `dashboards/watchlist` (project `stock-dashboard-c595d`):
+
+```
+{ sectors: [{ id, name, overview: [symbol…],
+              subsectors: [{ id, name, notes, tickers: [{ symbol, name, market }],
+                             research: [{ title, content }] }] }] }
+```
+
+The page only reads it (no sign-in). Prices come from Yahoo's `v8/finance/spark` (20 symbols / request) and
+P/E, market cap and volume from `v7/finance/quote`, both through the Cloudflare Worker `yf-proxy`
+(fallback: public CORS proxies). The previous theme list is still in `dashboards/main`, unused.
 
 ## Theme Strength (題材強弱)
 
