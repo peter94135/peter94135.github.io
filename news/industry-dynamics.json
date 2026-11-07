@@ -1,0 +1,449 @@
+{
+ "updated": "2026-11-07T00:06:35Z",
+ "items": [
+  {
+   "id": "IN-20261105-002",
+   "event_date": "2026-11-05",
+   "published_at": "2026-11-05T00:00:00+08:00",
+   "industry": "solar_storage",
+   "industries_secondary": [
+    "data_center"
+   ],
+   "event_type": "contract_award",
+   "event_type_secondary": [],
+   "importance_score": 66,
+   "importance_tier": "relevant",
+   "evidence_level": "reported",
+   "title_zh": "馬來西亞 Northern Solar 取得兩座資料中心共 189 MW 太陽能併儲能合約",
+   "title_original": "Northern Solar secures solar and battery storage contracts for Malaysia data centres",
+   "summary_zh": "據 REGlobal 報導，Northern Solar Holdings 子公司取得兩份太陽能加電池儲能合約，合計 189 MWac（100 MWac 與 89 MWac），供應馬來西亞兩座資料中心，適用企業再生能源供應計畫（CRESS）。兩座設施年用電量分別為 2.628 億與 2.3389 億度。專案金額、地點與開工時間未揭露。",
+   "why_it_matters": "顯示馬來西亞資料中心採購綠電的實際合約化，帶動區域太陽能與儲能需求。",
+   "themes": [
+    "data center",
+    "solar",
+    "BESS",
+    "CRESS"
+   ],
+   "regions": [
+    "MY"
+   ],
+   "tickers": [],
+   "companies": [
+    {
+     "name": "Northern Solar Holdings Berhad",
+     "ticker": null,
+     "country": "MY",
+     "role": "supplier",
+     "impact_direction": "positive",
+     "impact_mechanism": "取得合計 189 MWac 太陽能併儲能合約。"
+    }
+   ],
+   "content_nodes": [
+    {
+     "node_id": "IN-20261105-002-N01",
+     "node_type": "event_facts",
+     "title_zh": "事件核心",
+     "summary_zh": "子公司 Northern Solar Assets 取得兩份合約，客戶為馬來西亞資料中心基礎設施公司及新加坡資料中心業者的馬來西亞子公司。",
+     "bullets": [
+      "100 MWac + 89 MWac",
+      "含 BESS，容量未揭露",
+      "金額與開工日未揭露"
+     ],
+     "evidence": "reported"
+    },
+    {
+     "node_id": "IN-20261105-002-N02",
+     "node_type": "investment_impact",
+     "title_zh": "投資傳導",
+     "summary_zh": "資料中心用電需求推動長期綠電合約；實際營收貢獻須待金額揭露。",
+     "bullets": [],
+     "evidence": "inferred"
+    },
+    {
+     "node_id": "IN-20261105-002-N03",
+     "node_type": "kpi_watch",
+     "title_zh": "後續觀察",
+     "summary_zh": "追蹤專案金額、BESS 容量與商轉時程。",
+     "bullets": [
+      "公司公告是否揭露合約金額"
+     ],
+     "evidence": "inferred"
+    }
+   ],
+   "supply_chain": {
+    "upstream": [],
+    "component": [
+     "solar PV",
+     "BESS"
+    ],
+    "supplier": [
+     "Northern Solar"
+    ],
+    "customer": [
+     "data center operators"
+    ],
+    "end_market": [
+     "Malaysia data centers"
+    ]
+   },
+   "products": [
+    "solar PV",
+    "BESS"
+   ],
+   "metrics": [
+    {
+     "name": "solar capacity",
+     "value": 189,
+     "unit": "MWac",
+     "period": "2026-11"
+    }
+   ],
+   "milestones": [],
+   "watch_items": [
+    {
+     "question_zh": "合約金額與商轉時間？",
+     "indicator": "company announcement"
+    }
+   ],
+   "search_keywords": [
+    "northern solar",
+    "馬來西亞",
+    "資料中心",
+    "太陽能",
+    "儲能",
+    "cress",
+    "bess",
+    "189 mw",
+    "malaysia"
+   ],
+   "sources": [
+    {
+     "publisher": "REGlobal",
+     "url": "https://reglobal.org/northern-solar-secures-solar-and-battery-storage-contracts-for-malaysia-data-centres",
+     "is_primary": true
+    }
+   ],
+   "updated_at": "2026-11-07T03:00:00Z"
+  },
+  {
+   "id": "IN-20261105-001",
+   "event_date": "2026-11-05",
+   "published_at": "2026-11-05T00:00:00+08:00",
+   "industry": "data_center",
+   "industries_secondary": [
+    "power_generation"
+   ],
+   "event_type": "supply_agreement",
+   "event_type_secondary": [],
+   "importance_score": 80,
+   "importance_tier": "high",
+   "evidence_level": "confirmed",
+   "title_zh": "NTT DATA 與 Bloom Energy 簽署 900 MW 資料中心現場供電協議",
+   "title_original": "NTT DATA Announces Agreement with Bloom Energy for 900 MW of Onsite Power Generation Across Multiple Data Center Projects",
+   "summary_zh": "NTT DATA 旗下 NTT Global Data Centers 與 Bloom Energy 宣布簽署協議，將在全球多個資料中心專案部署合計 900 MW 的現場發電，採用 Bloom 的燃料電池作為主要電源，可分階段擴充，首批出貨預計 2027 年開始。Bloom 稱這是其迄今最大的海外專案。新聞稿未揭露合約金額與具體地點。",
+   "why_it_matters": "顯示資料中心業者為縮短取電時程，願以現場燃料電池作為主電源；Bloom 的海外訂單能見度因此提高。",
+   "themes": [
+    "AI data center",
+    "on-site power",
+    "fuel cell"
+   ],
+   "regions": [
+    "US",
+    "GB",
+    "JP"
+   ],
+   "tickers": [
+    "BE"
+   ],
+   "companies": [
+    {
+     "name": "Bloom Energy",
+     "ticker": "BE",
+     "country": "US",
+     "role": "supplier",
+     "impact_direction": "positive",
+     "impact_mechanism": "取得 900 MW 現場供電協議，為其最大海外專案。"
+    },
+    {
+     "name": "NTT DATA (NTT Global Data Centers)",
+     "ticker": null,
+     "country": "JP",
+     "role": "customer",
+     "impact_direction": "neutral",
+     "impact_mechanism": "以現場電力加快資料中心供電時程。"
+    }
+   ],
+   "content_nodes": [
+    {
+     "node_id": "IN-20261105-001-N01",
+     "node_type": "event_facts",
+     "title_zh": "事件核心",
+     "summary_zh": "NTT DATA 與 Bloom Energy 於 2026-11-05 宣布 900 MW 現場發電協議，涵蓋全球多個資料中心專案。",
+     "bullets": [
+      "採用 Bloom 燃料電池作為主要電源",
+      "模組化設計，可分階段擴充",
+      "首批出貨 2027 年開始",
+      "未揭露金額與地點"
+     ],
+     "evidence": "confirmed"
+    },
+    {
+     "node_id": "IN-20261105-001-N02",
+     "node_type": "technology_mechanism",
+     "title_zh": "技術與供電方式",
+     "summary_zh": "燃料電池於園區現場發電，不必等待電網併聯，縮短資料中心取電時間。",
+     "bullets": [
+      "NTT 高層稱「speed to power」是交付容量的關鍵因素"
+     ],
+     "evidence": "confirmed"
+    },
+    {
+     "node_id": "IN-20261105-001-N03",
+     "node_type": "investment_impact",
+     "title_zh": "投資傳導",
+     "summary_zh": "對 Bloom 而言是大型海外訂單；也反映資料中心供電瓶頸推升現場發電需求。",
+     "bullets": [
+      "實際營收認列時程取決於 2027 年起的出貨節奏"
+     ],
+     "evidence": "inferred"
+    },
+    {
+     "node_id": "IN-20261105-001-N04",
+     "node_type": "kpi_watch",
+     "title_zh": "後續觀察",
+     "summary_zh": "追蹤首批出貨時間、專案所在地、合約金額與後續擴大至 GW 等級的進展。",
+     "bullets": [
+      "首批出貨是否如期於 2027 年開始",
+      "Bloom 財報中的海外訂單與積壓訂單"
+     ],
+     "evidence": "inferred"
+    }
+   ],
+   "supply_chain": {
+    "upstream": [],
+    "component": [
+     "solid oxide fuel cells"
+    ],
+    "supplier": [
+     "Bloom Energy"
+    ],
+    "customer": [
+     "NTT Global Data Centers"
+    ],
+    "end_market": [
+     "AI data center"
+    ]
+   },
+   "products": [
+    "fuel cell"
+   ],
+   "metrics": [
+    {
+     "name": "onsite power capacity",
+     "value": 900,
+     "unit": "MW",
+     "period": "multi-project"
+    }
+   ],
+   "milestones": [
+    {
+     "date": "2027",
+     "label_zh": "首批出貨開始",
+     "status": "planned"
+    }
+   ],
+   "watch_items": [
+    {
+     "question_zh": "900 MW 協議的首批專案地點與出貨時程為何？",
+     "indicator": "shipment schedule"
+    }
+   ],
+   "search_keywords": [
+    "bloom energy",
+    "be",
+    "ntt data",
+    "ntt global data centers",
+    "fuel cell",
+    "燃料電池",
+    "資料中心",
+    "現場發電",
+    "onsite power",
+    "900 mw",
+    "data center power"
+   ],
+   "sources": [
+    {
+     "publisher": "Bloom Energy",
+     "url": "https://bloomenergy.com/news/ntt-data-announces-agreement-with-bloom-energy-for-900-mw-of-onsite-power-generation-across-multiple-data-center-projects",
+     "is_primary": true
+    }
+   ],
+   "updated_at": "2026-11-07T03:00:00Z"
+  },
+  {
+   "id": "IN-20261103-001",
+   "event_date": "2026-11-03",
+   "published_at": "2026-11-03T00:00:00+08:00",
+   "industry": "semiconductor_manufacturing",
+   "industries_secondary": [],
+   "event_type": "capacity_expansion",
+   "event_type_secondary": [],
+   "importance_score": 78,
+   "importance_tier": "high",
+   "evidence_level": "confirmed",
+   "title_zh": "華邦電董事會通過 731.63 億元資本支出，擴建高雄 12 吋廠 Module B",
+   "title_original": "華邦電再砸731億元資本支出 擴建高雄12吋廠",
+   "summary_zh": "華邦電於 2026-11-03 董事會通過 731.63 億元資本支出，用於高雄 12 吋廠 Module B 的土建、機電設施及長交期設備。Module B 規劃月產能約 5 萬至 6 萬片，約為 Module A 的兩倍，採 16nm 製程；預計 2029 年下半年小量出貨、2030 年滿載。管理層表示後續仍需追加資本支出，董事會將另行評估。",
+   "why_it_matters": "記憶體供給吃緊下，華邦電以大額資本支出擴增 DRAM 產能，影響利基型 DRAM 供需與設備供應鏈。",
+   "themes": [
+    "DRAM",
+    "12-inch fab",
+    "capex"
+   ],
+   "regions": [
+    "TW"
+   ],
+   "tickers": [
+    "2344.TW"
+   ],
+   "companies": [
+    {
+     "name": "Winbond Electronics",
+     "ticker": "2344.TW",
+     "country": "TW",
+     "role": "investor",
+     "impact_direction": "mixed",
+     "impact_mechanism": "資本支出提高中長期產能，短期增加現金支出與資金需求。"
+    }
+   ],
+   "content_nodes": [
+    {
+     "node_id": "IN-20261103-001-N01",
+     "node_type": "event_facts",
+     "title_zh": "事件核心",
+     "summary_zh": "董事會通過 731.63 億元資本支出，預計 2026 年 11 月起分階段投入，資金來自自有資金與銀行借款。",
+     "bullets": [
+      "用於土建、機電設施及長交期設備",
+      "Module B 月產能約 5–6 萬片",
+      "2029 下半年小量出貨，2030 年滿載"
+     ],
+     "evidence": "confirmed"
+    },
+    {
+     "node_id": "IN-20261103-001-N02",
+     "node_type": "timeline_milestones",
+     "title_zh": "時程",
+     "summary_zh": "Module A 月產能由第三季約 1.6 萬片增至年底 2.4 萬片；Module B 預計 12 月底動土（報導稱 12/29）。",
+     "bullets": [
+      "報導對動土日期的說法略有差異"
+     ],
+     "evidence": "reported"
+    },
+    {
+     "node_id": "IN-20261103-001-N03",
+     "node_type": "investment_impact",
+     "title_zh": "投資傳導",
+     "summary_zh": "擴產鎖定 2027 年後供給，並有部分產能保留給長期供貨協議（LTA）客戶，設備與廠務供應商受惠。",
+     "bullets": [
+      "Module B 需要的資本支出高於此次核准金額"
+     ],
+     "evidence": "inferred"
+    },
+    {
+     "node_id": "IN-20261103-001-N04",
+     "node_type": "kpi_watch",
+     "title_zh": "後續觀察",
+     "summary_zh": "追蹤後續資本支出追加、LTA 簽約進度與 Module A 產能爬升。",
+     "bullets": [
+      "Module A 是否如期達 2.4 萬片",
+      "LTA 簽約客戶數"
+     ],
+     "evidence": "inferred"
+    }
+   ],
+   "supply_chain": {
+    "upstream": [
+     "semiconductor equipment"
+    ],
+    "component": [
+     "DRAM"
+    ],
+    "supplier": [
+     "Winbond Electronics"
+    ],
+    "customer": [
+     "LTA customers"
+    ],
+    "end_market": [
+     "AI servers",
+     "specialty DRAM"
+    ]
+   },
+   "products": [
+    "DRAM"
+   ],
+   "metrics": [
+    {
+     "name": "capex approved",
+     "value": 73163,
+     "unit": "million TWD",
+     "period": "2026-11-03"
+    },
+    {
+     "name": "Module B planned capacity",
+     "value": "50,000-60,000",
+     "unit": "wafers/month",
+     "period": "2030"
+    }
+   ],
+   "milestones": [
+    {
+     "date": "2029-H2",
+     "label_zh": "Module B 小量出貨",
+     "status": "planned"
+    },
+    {
+     "date": "2030",
+     "label_zh": "Module B 滿載",
+     "status": "planned"
+    }
+   ],
+   "watch_items": [
+    {
+     "question_zh": "後續追加資本支出規模為何？",
+     "indicator": "board capex approvals"
+    }
+   ],
+   "financial_data": {
+    "amount": 73163000000,
+    "currency": "TWD"
+   },
+   "search_keywords": [
+    "華邦電",
+    "winbond",
+    "2344.tw",
+    "高雄",
+    "dram",
+    "12吋廠",
+    "module b",
+    "資本支出",
+    "capex",
+    "記憶體",
+    "16nm"
+   ],
+   "sources": [
+    {
+     "publisher": "自由時報",
+     "url": "https://ec.ltn.com.tw/article/breakingnews/5628056",
+     "is_primary": true
+    },
+    {
+     "publisher": "TechNews",
+     "url": "https://finance.technews.tw/2026/11/03/winbond-electronics-approves-nt73-1-billion-capital-expenditure-plan/",
+     "is_primary": false
+    }
+   ],
+   "updated_at": "2026-11-07T03:00:00Z"
+  }
+ ]
+}

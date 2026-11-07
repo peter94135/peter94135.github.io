@@ -1,0 +1,373 @@
+{
+ "updated": "2026-11-07T00:06:35Z",
+ "items": [
+  {
+   "id": "in-2026-11-06-malabar-2026-yokosuka",
+   "event_date": "2026-11-06",
+   "event_end_date": null,
+   "publication_date": "2026-11-06",
+   "country": "IN",
+   "countries_involved": [
+    "IN",
+    "US",
+    "JP",
+    "AU"
+   ],
+   "service": "Navy",
+   "agency": "Indian Navy",
+   "event_type": "exercise",
+   "event_status": "ongoing",
+   "theater": "Indo-Pacific",
+   "title": "Quad navies begin Exercise Malabar 2026 with harbour phase at Yokosuka",
+   "title_zh": "【未查證】四方海軍在橫須賀展開「馬拉巴爾 2026」演習",
+   "title_original": "Quad Navies launch Malabar 2026 multi-domain drills",
+   "summary": "ANI reported that the navies of the US, India, Japan and Australia began Exercise Malabar 2026, with a harbour phase at Yokosuka followed by a sea phase; Indian frigate INS Sahyadri arrived at Yokosuka. Exact exercise dates were not stated.",
+   "summary_zh": "【未查證】ANI 報導，美、印、日、澳四國海軍展開「馬拉巴爾 2026」演習，先於橫須賀進行港口階段，再進入海上階段；印度海軍護衛艦 INS Sahyadri 已抵達橫須賀。確切演習日期未載明。",
+   "why_it_matters_zh": "四方海軍年度多領域演訓，反映印太海上合作。",
+   "systems": [
+    {
+     "canonical_name": "INS Sahyadri",
+     "name_zh": "INS Sahyadri 護衛艦",
+     "category": "naval",
+     "operator_country": "IN"
+    }
+   ],
+   "units": [
+    {
+     "name": "INS Sahyadri (Eastern Fleet)",
+     "country": "IN",
+     "service": "Navy"
+    }
+   ],
+   "locations": [
+    {
+     "name": "Yokosuka Naval Base",
+     "country_code": "JP",
+     "precision": "facility",
+     "geometry": {
+      "type": "Point",
+      "coordinates": [
+       139.67,
+       35.29
+      ]
+     },
+     "geocode_confidence": "high",
+     "map_display_allowed": true
+    }
+   ],
+   "map": {
+    "marker_category": "exercise",
+    "active_from": "2026-11-06",
+    "active_until": null
+   },
+   "importance": {
+    "score": 50
+   },
+   "tags": [
+    "malabar",
+    "quad",
+    "yokosuka"
+   ],
+   "quality": {
+    "verification_status": "single_reliable_source",
+    "needs_review": true,
+    "issues": [
+     "media_only_source",
+     "exercise_exact_dates_not_explicit"
+    ]
+   },
+   "sources": [
+    {
+     "publisher": "The Tribune (ANI)",
+     "url": "https://tribuneindia.com/news/world/quad-navies-launch-malabar-2026-multi-domain-drills-to-strengthen-free-and-open-indo-pacific",
+     "official": false
+    }
+   ],
+   "updated_at": "2026-11-07T03:00:00Z",
+   "exercise": {
+    "exercise_name": "Malabar 2026",
+    "host_country": "JP",
+    "participant_countries": [
+     "IN",
+     "US",
+     "JP",
+     "AU"
+    ],
+    "start_date": null,
+    "end_date": null,
+    "live_fire": null
+   }
+  },
+  {
+   "id": "es-2026-11-05-sinkex-26-isaac-peral",
+   "event_date": "2026-11-05",
+   "event_end_date": null,
+   "publication_date": "2026-11-05",
+   "country": "ES",
+   "countries_involved": [
+    "ES"
+   ],
+   "service": "Navy",
+   "agency": "Armada Española",
+   "event_type": "weapon_test",
+   "event_status": "completed",
+   "theater": "Europe",
+   "title": "Spanish submarine Isaac Peral sinks old patrol vessel in SINKEX-26",
+   "title_zh": "【未查證】西班牙潛艦艾薩克·佩拉爾號在 SINKEX-26 擊沉退役巡邏艦",
+   "title_original": "Submarine 'Isaac Peral' sinks the old patrol vessel 'Infanta Elena' during the live-fire exercise SINKEX-26",
+   "summary": "According to a Spanish Navy release reported by Naval News, the S-80 submarine Isaac Peral (S-81) sank the decommissioned patrol vessel Infanta Elena with one torpedo in Atlantic waters during SINKEX-26, with frigates, AV-8B aircraft, a helicopter and a ScanEagle UAV in support.",
+   "summary_zh": "【未查證】據 Naval News 轉述西班牙海軍新聞稿，S-80 級潛艦艾薩克·佩拉爾號（S-81）在 SINKEX-26 實彈演練中於大西洋海域以一枚魚雷擊沉退役巡邏艦 Infanta Elena，並有護衛艦、AV-8B、直升機與 ScanEagle 無人機支援。",
+   "why_it_matters_zh": "為 S-80 首艦實彈射擊能力展示，並顯示西班牙海軍多軍種協同。",
+   "systems": [
+    {
+     "canonical_name": "S-80 Plus submarine Isaac Peral (S-81)",
+     "name_zh": "S-80 級潛艦艾薩克·佩拉爾號",
+     "category": "submarine",
+     "operator_country": "ES"
+    }
+   ],
+   "units": [
+    {
+     "name": "41st Escort Squadron (COMANDES-41)",
+     "country": "ES",
+     "service": "Navy"
+    }
+   ],
+   "locations": [
+    {
+     "name": "Atlantic Ocean, Spanish waters",
+     "country_code": "ES",
+     "precision": "sea_region",
+     "geometry": {
+      "type": "Point",
+      "coordinates": [
+       -9.0,
+       43.0
+      ]
+     },
+     "geocode_confidence": "low",
+     "map_display_allowed": true
+    }
+   ],
+   "map": {
+    "marker_category": "weapon_test",
+    "active_from": "2026-11-05",
+    "active_until": "2026-11-05"
+   },
+   "importance": {
+    "score": 55
+   },
+   "tags": [
+    "s-80",
+    "sinkex",
+    "torpedo",
+    "spain"
+   ],
+   "quality": {
+    "verification_status": "single_reliable_source",
+    "needs_review": true,
+    "issues": [
+     "media_only_source"
+    ]
+   },
+   "sources": [
+    {
+     "publisher": "Naval News",
+     "url": "https://www.navalnews.com/naval-news/2026/11/submarine-isaac-peral-sinks-the-old-patrol-vessel-infanta-elena-during-the-live-fire-exercise-sinkex-26/",
+     "official": false
+    }
+   ],
+   "updated_at": "2026-11-07T03:00:00Z",
+   "exercise": {
+    "exercise_name": "SINKEX-26",
+    "host_country": "ES",
+    "participant_countries": [
+     "ES"
+    ],
+    "start_date": "2026-11-05",
+    "end_date": "2026-11-05",
+    "live_fire": true
+   }
+  },
+  {
+   "id": "ao-2026-10-29-nimi-ya-lukeni-corvette-launch",
+   "event_date": "2026-10-29",
+   "event_end_date": null,
+   "publication_date": "2026-11-04",
+   "country": "AO",
+   "countries_involved": [
+    "AO",
+    "AE",
+    "FR"
+   ],
+   "service": "Navy",
+   "agency": "Angolan Navy",
+   "event_type": "sea_trial",
+   "event_status": "completed",
+   "theater": "Middle East",
+   "title": "EDGE launches second BR71 MK II corvette for Angolan Navy in Abu Dhabi",
+   "title_zh": "【未查證】EDGE 在阿布達比下水安哥拉海軍第二艘 BR71 MK II 巡防艦",
+   "title_original": "EDGE Launches Second Corvette for Angolan Navy, First of Its Class Built in UAE",
+   "summary": "EDGE launched NRA Nimi-ya-Lukeni (F301), second of three CMN-designed BR71 MK II corvettes for Angola, on 29 October 2026 at ADSB in Abu Dhabi; the lead ship was launched in Cherbourg in March 2026.",
+   "summary_zh": "【未查證】EDGE 於 2026-10-29 在阿布達比 ADSB 船廠下水安哥拉海軍 NRA Nimi-ya-Lukeni（F301），為三艘 CMN 設計 BR71 MK II 輕巡防艦的第二艘，也是同級艦首艘在阿聯製造者；首艦已於 2026 年 3 月在法國瑟堡下水。滿載約 900 噸，配備 Exocet MM40 Block 3C 與 VL MICA。",
+   "why_it_matters_zh": "顯示阿聯 EDGE 承接歐洲設計艦艇的在地建造能力，並推進安哥拉海軍現代化。",
+   "systems": [
+    {
+     "canonical_name": "BR71 MK II corvette",
+     "name_zh": "BR71 MK II 輕巡防艦",
+     "category": "naval",
+     "operator_country": "AO"
+    }
+   ],
+   "units": [
+    {
+     "name": "Angolan Navy",
+     "country": "AO",
+     "service": "Navy"
+    }
+   ],
+   "locations": [
+    {
+     "name": "Abu Dhabi Ship Building (ADSB), Abu Dhabi",
+     "country_code": "AE",
+     "precision": "city",
+     "geometry": {
+      "type": "Point",
+      "coordinates": [
+       54.37,
+       24.47
+      ]
+     },
+     "geocode_confidence": "low",
+     "map_display_allowed": true
+    }
+   ],
+   "map": {
+    "marker_category": "sea_trial",
+    "active_from": "2026-10-29",
+    "active_until": "2026-10-29"
+   },
+   "importance": {
+    "score": 45
+   },
+   "tags": [
+    "edge",
+    "angola",
+    "corvette",
+    "launch"
+   ],
+   "quality": {
+    "verification_status": "single_reliable_source",
+    "needs_review": true,
+    "issues": [
+     "media_only_source"
+    ]
+   },
+   "sources": [
+    {
+     "publisher": "Naval News",
+     "url": "https://www.navalnews.com/naval-news/2026/11/edge-launches-second-corvette-for-angolan-navy-first-of-its-class-built-in-uae/",
+     "official": false
+    }
+   ],
+   "updated_at": "2026-11-07T03:00:00Z"
+  },
+  {
+   "id": "gb-2026-10-20-nyan-strike-drone-hms-queen-elizabeth",
+   "event_date": "2026-10-20",
+   "event_end_date": null,
+   "publication_date": "2026-11-05",
+   "country": "GB",
+   "countries_involved": [
+    "GB"
+   ],
+   "service": "Navy",
+   "agency": "Royal Navy",
+   "event_type": "weapon_test",
+   "event_status": "completed",
+   "theater": "Atlantic",
+   "title": "Royal Navy launches Nyan one-way strike drones from HMS Queen Elizabeth for first time",
+   "title_zh": "【未查證】英國皇家海軍首度從伊莉莎白女王號航艦發射 Nyan 單向攻擊無人機",
+   "title_original": "Strike drones launched from British aircraft carrier for the first time",
+   "summary": "The Royal Navy said Callen-Lenz Nyan Maritime one-way strike drones were launched from HMS Queen Elizabeth's flight deck in the North Atlantic in mid-October 2026, the first such launch from a UK carrier; a Tekever AR5 also operated from the ship during Heavy Lift Challenge 3.",
+   "summary_zh": "【未查證】皇家海軍表示，10 月中旬在北大西洋，Callen-Lenz 製 Nyan Maritime 單向攻擊無人機首度從英國航艦伊莉莎白女王號甲板起飛；同艦在 Heavy Lift Challenge 3 中也讓 Tekever AR5 無人機運作。MiGFlug 引述 Navy Lookout 稱 10/20 於 Neptune Reach B 期間發射四架且均抵達目標點，此細節僅單一媒體報導。",
+   "why_it_matters_zh": "為「混合艦載機聯隊」概念提供試驗證據，顯示英國探索無人機與 F-35B 協同作戰。",
+   "systems": [
+    {
+     "canonical_name": "Nyan Maritime",
+     "name_zh": "Nyan 海上單向攻擊無人機",
+     "category": "drone",
+     "operator_country": "GB"
+    },
+    {
+     "canonical_name": "Tekever AR5",
+     "name_zh": "Tekever AR5 無人機",
+     "category": "drone",
+     "operator_country": "GB"
+    }
+   ],
+   "units": [
+    {
+     "name": "HMS Queen Elizabeth",
+     "country": "GB",
+     "service": "Navy"
+    }
+   ],
+   "locations": [
+    {
+     "name": "North Atlantic",
+     "country_code": "GB",
+     "precision": "sea_region",
+     "geometry": {
+      "type": "Point",
+      "coordinates": [
+       -30.0,
+       50.0
+      ]
+     },
+     "geocode_confidence": "low",
+     "map_display_allowed": true
+    }
+   ],
+   "map": {
+    "marker_category": "weapon_test",
+    "active_from": "2026-10-20",
+    "active_until": "2026-10-20"
+   },
+   "importance": {
+    "score": 74
+   },
+   "tags": [
+    "nyan",
+    "carrier",
+    "one-way-attack",
+    "royal-navy"
+   ],
+   "quality": {
+    "verification_status": "single_reliable_source",
+    "needs_review": true,
+    "issues": [
+     "media_only_source"
+    ]
+   },
+   "sources": [
+    {
+     "publisher": "Naval News",
+     "url": "https://www.navalnews.com/naval-news/2026/11/strike-drones-launched-from-british-aircraft-carrier-for-the-first-time/",
+     "official": false
+    },
+    {
+     "publisher": "MiGFlug",
+     "url": "https://migflug.com/afterburner/hms-queen-elizabeth-nyan-strike-drone-tekever-ar5-carrier-trials-2026/",
+     "official": false
+    }
+   ],
+   "updated_at": "2026-11-07T03:00:00Z",
+   "test": {
+    "test_type": "carrier launch trial",
+    "result": "success",
+    "objective_zh": "驗證單向攻擊無人機自航艦發射"
+   }
+  }
+ ]
+}
