@@ -1,6 +1,403 @@
 {
- "updated": "2026-11-07T00:06:35Z",
+ "updated": "2026-11-08T00:14:02Z",
  "items": [
+  {
+   "id": "IN-20261106-003",
+   "event_date": "2026-11-06",
+   "published_at": "2026-11-06T00:00:00+08:00",
+   "industry": "nuclear",
+   "industries_secondary": [
+    "other"
+   ],
+   "event_type": "government_funding",
+   "event_type_secondary": [],
+   "themes": [
+    "SMR",
+    "district heating",
+    "EU Innovation Fund"
+   ],
+   "regions": [
+    "FR",
+    "EU"
+   ],
+   "importance_score": 66,
+   "importance_tier": "relevant",
+   "evidence_level": "reported",
+   "title_zh": "法國SMR開發商Calogena獲歐盟創新基金4,000萬歐元，支持Pierrelatte首座商用反應爐",
+   "title_original": "Calogena receives EUR40 million from the EU Innovation Fund",
+   "summary_zh": "Group Gorgé旗下法國SMR開發商Calogena獲歐盟執委會創新基金4,000萬歐元，用於其位於法國南部Pierrelatte的首座商用反應爐。CAL30為30 MWt低溫低壓池式水冷SMR，供城市區域供熱，約可服務2萬戶，目標最快2030年部署；此設計是法國核安機關正評估的四種SMR設計之一。",
+   "why_it_matters": "歐盟資金支持SMR供熱應用的商業化，顯示核能供熱在歐洲能源轉型中的政策定位。",
+   "content_nodes": [
+    {
+     "node_type": "event_facts",
+     "title_zh": "事件核心",
+     "summary_zh": "創新基金撥款4,000萬歐元（約4,460萬美元）。",
+     "bullets": [
+      "先前已獲France 2030逾5,000萬歐元",
+      "與芬蘭Steady Energy合作CityHeat專案",
+      "6月與Veolia簽署中東歐區域供熱SMR合作協議"
+     ],
+     "evidence": "reported"
+    },
+    {
+     "node_type": "kpi_watch",
+     "title_zh": "後續觀察",
+     "summary_zh": "追蹤法國核安機關對CAL30的審查結果與Pierrelatte最終投資決定。",
+     "bullets": [
+      "2030年部署目標",
+      "審查進度"
+     ],
+     "evidence": "inferred"
+    }
+   ],
+   "tickers": [],
+   "companies": [
+    {
+     "name": "Calogena",
+     "ticker": null,
+     "country": "FR",
+     "role": "investee",
+     "impact_direction": "positive",
+     "impact_mechanism": "取得首座商用反應爐的補助資金。"
+    }
+   ],
+   "search_keywords": [
+    "calogena",
+    "cal30",
+    "smr",
+    "innovation fund",
+    "pierrelatte",
+    "group gorgé",
+    "district heating",
+    "小型模組化反應爐",
+    "區域供熱",
+    "創新基金",
+    "法國"
+   ],
+   "sources": [
+    {
+     "publisher": "World Nuclear News",
+     "source_type": "trade_media",
+     "url": "https://world-nuclear-news.org/articles/calogena-awarded-eu-funding-for-smr-deployment",
+     "is_primary": true
+    }
+   ],
+   "updated_at": "2026-11-08T01:00:00Z",
+   "financial_data": {
+    "amount": 40000000,
+    "currency": "EUR"
+   }
+  },
+  {
+   "id": "IN-20261106-002",
+   "event_date": "2026-11-06",
+   "published_at": "2026-11-06T00:00:00+08:00",
+   "industry": "nuclear",
+   "industries_secondary": [
+    "power_generation"
+   ],
+   "event_type": "contract_award",
+   "event_type_secondary": [],
+   "themes": [
+    "SMR",
+    "advanced nuclear",
+    "Xe-100",
+    "data center power"
+   ],
+   "regions": [
+    "US"
+   ],
+   "importance_score": 74,
+   "importance_tier": "relevant",
+   "evidence_level": "reported",
+   "title_zh": "X-energy選定Fluor承攬第二座Xe-100專案核島工程（華盛頓州Cascade設施）",
+   "title_original": "X-energy selects Fluor for second Xe-100 project",
+   "summary_zh": "Fluor獲X-energy選定，負責Energy Northwest位於華盛頓州Richland附近Cascade先進能源設施的核島工程、設計、供應鏈、估算與專案控制。該設施規劃4座各80 MWe的Xe-100高溫氣冷堆，共320 MWe，可擴充至12座。合約金額未公開，Fluor將於第三季認列；這是雙方第二份核島合約，第一份在4月簽署，對應Dow旗下德州Seadrift專案。",
+   "why_it_matters": "顯示先進核能專案由設計走向工程執行；Cascade亦是X-energy與Amazon於2024年合作、目標2039年前部署5 GW新核能的第一個專案。",
+   "content_nodes": [
+    {
+     "node_type": "event_facts",
+     "title_zh": "事件核心",
+     "summary_zh": "Fluor承攬Cascade設施核島工程；金額未公開。",
+     "bullets": [
+      "4座Xe-100共320 MWe，可擴至12座",
+      "常規島由Kiewit Nuclear Solutions、Black & Veatch、Aecon組成的合資公司負責",
+      "10月AEP與X-energy簽署聯合開發協議，評估印第安納州960 MWe第二案"
+     ],
+     "evidence": "reported"
+    },
+    {
+     "node_type": "investment_impact",
+     "title_zh": "投資傳導",
+     "summary_zh": "工程承攬商可望累積先進核能專案經驗與backlog；實際貢獻取決於未公開的合約金額。",
+     "bullets": [
+      "金額未公開，影響程度無法量化"
+     ],
+     "evidence": "inferred"
+    },
+    {
+     "node_type": "kpi_watch",
+     "title_zh": "後續觀察",
+     "summary_zh": "追蹤NRC許可進度、Fluor披露的合約金額與Cascade的最終投資決定。",
+     "bullets": [
+      "Fluor季報backlog",
+      "Cascade許可與開工時程"
+     ],
+     "evidence": "inferred"
+    }
+   ],
+   "tickers": [
+    "FLR"
+   ],
+   "companies": [
+    {
+     "name": "Fluor Corporation",
+     "ticker": "FLR",
+     "country": "US",
+     "role": "supplier",
+     "impact_direction": "positive",
+     "impact_mechanism": "取得第二份Xe-100核島工程合約，擴大核能工程backlog。"
+    },
+    {
+     "name": "X-energy",
+     "ticker": null,
+     "country": "US",
+     "role": "customer",
+     "impact_direction": "positive",
+     "impact_mechanism": "以重複執行降低專案風險。"
+    }
+   ],
+   "search_keywords": [
+    "fluor",
+    "flr",
+    "x-energy",
+    "xe-100",
+    "energy northwest",
+    "cascade",
+    "smr",
+    "nuclear",
+    "amazon",
+    "核能",
+    "小型模組化反應爐",
+    "核島"
+   ],
+   "sources": [
+    {
+     "publisher": "World Nuclear News",
+     "source_type": "trade_media",
+     "url": "https://world-nuclear-news.org/articles/x-energy-selects-fluor-for-second-xe-100-project",
+     "is_primary": true
+    }
+   ],
+   "updated_at": "2026-11-08T01:00:00Z"
+  },
+  {
+   "id": "IN-20261106-001",
+   "event_date": "2026-11-06",
+   "published_at": "2026-11-06T00:00:00+08:00",
+   "industry": "nuclear",
+   "industries_secondary": [
+    "power_generation"
+   ],
+   "event_type": "commercial_deployment",
+   "event_type_secondary": [],
+   "themes": [
+    "HTGR",
+    "nuclear heat",
+    "industrial steam"
+   ],
+   "regions": [
+    "CN"
+   ],
+   "importance_score": 72,
+   "importance_tier": "relevant",
+   "evidence_level": "reported",
+   "title_zh": "中核集團江蘇徐圩核能供熱發電廠高溫氣冷堆（3號機）核島首罐混凝土澆築",
+   "title_original": "Construction of Chinese HTGR begins",
+   "summary_zh": "中核集團（CNNC）宣布，位於江蘇連雲港、鄰近田灣核電廠的徐圩核能供熱發電廠3號機——一座660 MWe的高溫氣冷堆「赤龍一號」（與清華大學共同開發、設計壽命60年）——核島首罐混凝土已澆築。該廠一期另含兩座1,208 MWe華龍一號壓水式機組，1號機核島已於2026年1月開工。CNNC稱此為全球首個高溫氣冷堆商業應用專案，將以反應爐蒸汽供應鄰近石化園區。",
+   "why_it_matters": "高溫氣冷堆進入商業化建設階段，並以核能供應工業蒸汽，顯示核能供熱在石化等高耗能產業的應用方向；相關設備與工程供應商將受關注。",
+   "content_nodes": [
+    {
+     "node_type": "event_facts",
+     "title_zh": "事件核心",
+     "summary_zh": "徐圩3號機高溫氣冷堆核島首罐混凝土澆築，為一期專案的一部分。",
+     "bullets": [
+      "機組：660 MWe 高溫氣冷堆（赤龍一號）",
+      "一期另含兩座1,208 MWe華龍一號，1號機2026年1月開工",
+      "常規島合約2025年9月授予聯合體，金額人民幣42億元"
+     ],
+     "evidence": "reported"
+    },
+    {
+     "node_type": "investment_impact",
+     "title_zh": "投資傳導",
+     "summary_zh": "高溫氣冷堆商轉驗證若順利，可能帶動核島設備、特殊材料與工業供熱服務的需求。",
+     "bullets": [
+      "對象為工業蒸汽與電力雙產出",
+      "此為依來源推論，非來源明示"
+     ],
+     "evidence": "inferred"
+    },
+    {
+     "node_type": "kpi_watch",
+     "title_zh": "後續觀察",
+     "summary_zh": "追蹤工期節點、冷試與裝料時程，以及一期年產蒸汽與發電量目標達成情況。",
+     "bullets": [
+      "一期預期年產工業蒸汽3,250萬噸",
+      "最大發電量逾115億度"
+     ],
+     "evidence": "inferred"
+    }
+   ],
+   "tickers": [],
+   "companies": [
+    {
+     "name": "China National Nuclear Corporation",
+     "ticker": null,
+     "country": "CN",
+     "role": "investor",
+     "impact_direction": "positive",
+     "impact_mechanism": "推進高溫氣冷堆商業化示範，擴大核能供熱應用。"
+    }
+   ],
+   "search_keywords": [
+    "nuclear",
+    "htgr",
+    "cnnc",
+    "xuwei",
+    "高溫氣冷堆",
+    "中核集團",
+    "徐圩",
+    "連雲港",
+    "核能供熱",
+    "赤龍一號",
+    "華龍一號",
+    "china"
+   ],
+   "sources": [
+    {
+     "publisher": "World Nuclear News",
+     "source_type": "trade_media",
+     "url": "https://world-nuclear-news.org/articles/construction-of-chinese-htgr-begins",
+     "is_primary": true
+    }
+   ],
+   "updated_at": "2026-11-08T01:00:00Z",
+   "financial_data": {
+    "amount": 4200000000,
+    "currency": "CNY"
+   }
+  },
+  {
+   "id": "IN-20261105-003",
+   "event_date": "2026-11-05",
+   "published_at": "2026-11-05T00:00:00+08:00",
+   "industry": "nuclear",
+   "industries_secondary": [
+    "power_generation"
+   ],
+   "event_type": "supply_agreement",
+   "event_type_secondary": [],
+   "themes": [
+    "AP1000",
+    "nuclear supply chain",
+    "Poland"
+   ],
+   "regions": [
+    "PL",
+    "JP"
+   ],
+   "importance_score": 70,
+   "importance_tier": "relevant",
+   "evidence_level": "reported",
+   "title_zh": "IHI獲Westinghouse訂單，供應波蘭首座AP1000首部機組圍阻體與大型鋼製模組",
+   "title_original": "IHI to supply components for first Polish AP1000",
+   "summary_zh": "日本IHI獲Westinghouse訂單，為波蘭首座核電廠第一部機組進行長交期品項的工程與採購，範圍含一座圍阻體與一個大型鋼製模組。該廠規劃在波蘭北部Lubiatowo-Kopalino興建3部AP1000，預計2028年開工、首部機組2036年商轉、2038年全部完工（較原計畫延後三年）。Westinghouse也向多家波蘭廠商發出附條件採購單。",
+   "why_it_matters": "顯示AP1000供應鏈由設計轉入長交期設備採購，日本與波蘭重工業者取得訂單。",
+   "content_nodes": [
+    {
+     "node_type": "event_facts",
+     "title_zh": "事件核心",
+     "summary_zh": "IHI接單；金額未公開。",
+     "bullets": [
+      "CA01超級模組約26 m×29 m×23 m，由47個子模組組成",
+      "Mostostal Kielce、EPG、Mostostal Kraków、FAMAK取得附條件採購單"
+     ],
+     "evidence": "reported"
+    },
+    {
+     "node_type": "investment_impact",
+     "title_zh": "投資傳導",
+     "summary_zh": "IHI核能機器業務取得海外大型訂單；實際營收貢獻待公司披露。",
+     "bullets": [
+      "金額未公開"
+     ],
+     "evidence": "inferred"
+    },
+    {
+     "node_type": "kpi_watch",
+     "title_zh": "後續觀察",
+     "summary_zh": "追蹤PEJ後續於施工合約內下達的生產與交貨訂單，以及2028年開工時程。",
+     "bullets": [
+      "2036年首部機組商轉",
+      "2038年全部完工"
+     ],
+     "evidence": "inferred"
+    }
+   ],
+   "tickers": [
+    "7013.T"
+   ],
+   "companies": [
+    {
+     "name": "IHI Corporation",
+     "ticker": "7013.T",
+     "country": "JP",
+     "role": "supplier",
+     "impact_direction": "positive",
+     "impact_mechanism": "取得圍阻體與大型鋼製模組的工程與採購訂單。"
+    },
+    {
+     "name": "Westinghouse Electric Company",
+     "ticker": null,
+     "country": "US",
+     "role": "customer",
+     "impact_direction": "neutral",
+     "impact_mechanism": "推進波蘭AP1000長交期品項採購。"
+    },
+    {
+     "name": "Polskie Elektrownie Jądrowe",
+     "ticker": null,
+     "country": "PL",
+     "role": "customer",
+     "impact_direction": "neutral",
+     "impact_mechanism": "上月核准Westinghouse訂購首部機組長交期品項。"
+    }
+   ],
+   "search_keywords": [
+    "ihi",
+    "7013.t",
+    "westinghouse",
+    "ap1000",
+    "poland",
+    "pej",
+    "lubiatowo",
+    "核電",
+    "波蘭",
+    "圍阻體",
+    "西屋",
+    "nuclear"
+   ],
+   "sources": [
+    {
+     "publisher": "World Nuclear News",
+     "source_type": "trade_media",
+     "url": "https://world-nuclear-news.org/articles/ihi-to-supply-components-for-first-polish-ap1000",
+     "is_primary": true
+    }
+   ],
+   "updated_at": "2026-11-08T01:00:00Z"
+  },
   {
    "id": "IN-20261105-002",
    "event_date": "2026-11-05",

@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-07T00:06:35Z",
+ "updated": "2026-11-08T00:14:02Z",
  "items": [
   {
    "id": "in-2026-11-06-malabar-2026-yokosuka",
@@ -188,6 +188,102 @@
     "end_date": "2026-11-05",
     "live_fire": true
    }
+  },
+  {
+   "id": "us-2026-11-04-mk21a-reentry-vehicle-flight-test",
+   "event_date": "2026-11-04",
+   "publication_date": "2026-11-06",
+   "country": "US",
+   "countries_involved": [
+    "US"
+   ],
+   "service": "Air Force",
+   "agency": "U.S. Air Force / Lockheed Martin",
+   "event_type": "weapon_test",
+   "event_status": "completed",
+   "event_phase": "test",
+   "theater": "North America",
+   "title": "Lockheed Martin and USAF fly Mk21A reentry vehicle for Sentinel ICBM",
+   "title_zh": "【未查證】洛克希德馬丁與美國空軍完成 Sentinel 洲際飛彈 Mk21A 再入載具飛行試驗",
+   "title_original": "Lockheed Martin Completes Flight Test of Future Intercontinental Ballistic Missile System Reentry Vehicle",
+   "summary": "Lockheed Martin said it and the U.S. Air Force flew an unarmed developmental Mk21A reentry vehicle, launched from Vandenberg Space Force Base over the Pacific. Data will guide design refinements ahead of the Critical Design Review.",
+   "summary_zh": "【未查證】洛克希德馬丁表示，已與美國空軍從加州范登堡太空軍基地向太平洋方向發射無武裝的 Mk21A 再入載具發展型進行飛行試驗，資料將用於設計改進與後續關鍵設計審查；性能結果未公布，試驗確切日期來源未明列。",
+   "why_it_matters_zh": "Mk21A 是 Sentinel 洲際飛彈的前端酬載，試驗屬該計畫重整後的重要進度。",
+   "systems": [
+    {
+     "canonical_name": "Mk21A reentry vehicle",
+     "name_zh": "Mk21A 再入載具",
+     "category": "nuclear",
+     "operator_country": "US"
+    },
+    {
+     "canonical_name": "LGM-35A Sentinel",
+     "name_zh": "LGM-35A 哨兵洲際飛彈",
+     "category": "missile",
+     "operator_country": "US"
+    }
+   ],
+   "programs": [],
+   "units": [],
+   "test": {
+    "test_type": "reentry_vehicle_flight_test",
+    "result": "unknown",
+    "objective_zh": "驗證 Mk21A 設計與再入技術"
+   },
+   "locations": [
+    {
+     "name": "Vandenberg Space Force Base",
+     "country_code": "US",
+     "precision": "facility",
+     "geometry": {
+      "type": "Point",
+      "coordinates": [
+       -120.57,
+       34.74
+      ]
+     },
+     "geocode_confidence": "high",
+     "map_display_allowed": true,
+     "source_disclosed": true
+    }
+   ],
+   "map": {
+    "marker_category": "weapon_test",
+    "active_from": "2026-11-04",
+    "active_until": "2026-11-04"
+   },
+   "importance": {
+    "score": 62
+   },
+   "tags": [
+    "sentinel",
+    "icbm",
+    "mk21a",
+    "lockheed-martin"
+   ],
+   "quality": {
+    "verification_status": "single_reliable_source",
+    "needs_review": true,
+    "issues": [
+     "company_release_only",
+     "test_date_not_explicit"
+    ]
+   },
+   "sources": [
+    {
+     "publisher": "Lockheed Martin",
+     "url": "https://news.lockheedmartin.com/Lockheed-Martin-Completes-Flight-Test-of-Future-Intercontinental-Ballistic-Missile-System-Reentry-Vehicle",
+     "official": false,
+     "source_type": "company_release"
+    },
+    {
+     "publisher": "The Defense Post",
+     "url": "https://thedefensepost.com/2026/11/06/lockheed-mk21a-sentinel-icbm-test/",
+     "official": false,
+     "source_type": "media_report"
+    }
+   ],
+   "updated_at": "2026-11-08T01:00:00Z"
   },
   {
    "id": "ao-2026-10-29-nimi-ya-lukeni-corvette-launch",
