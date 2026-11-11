@@ -19,9 +19,14 @@ themeButtons.forEach(b => b.addEventListener("click", () => {
 syncThemeButton();
 
 // ===== Page routing (hash-based, like a single-page app) =====
-const PAGES = ["home", "experience", "publications", "awards", "watchlist", "strength", "supply", "industry", "dynamics", "military", "intel", "facts", "highlights", "earnings", "annual", "defense"];
+const PAGES = ["home", "experience", "publications", "awards"];
+
+// The Stock pages moved to the Stock Dashboard side project; keep old links working.
+const STOCK_PAGES = ["watchlist", "strength", "supply", "industry", "dynamics", "military", "intel", "facts", "highlights", "earnings", "annual", "defense"];
+const STOCK_SITE = "https://peter94135.github.io/stock-dashboard/";
 
 function showPage(id) {
+  if (STOCK_PAGES.includes(id)) { location.replace(STOCK_SITE + location.hash); return; }
   if (!PAGES.includes(id)) id = "home";
   document.querySelectorAll(".page").forEach(p => p.classList.toggle("active", p.id === "page-" + id));
   document.querySelectorAll(".nav-item[data-page]").forEach(n => n.classList.toggle("active", n.dataset.page === id));
@@ -29,7 +34,7 @@ function showPage(id) {
   if (!location.hash.includes("&")) window.scrollTo(0, 0);
   document.dispatchEvent(new CustomEvent("pagechange", { detail: id }));
 }
-// "#supply&item=<id>" / "#industry&ticker=NVDA": the page id is the part before "&".
+// "#supply&item=<id>": the page id is the part before "&".
 const pageFromHash = () => location.hash.slice(1).split("&")[0];
 window.addEventListener("hashchange", () => showPage(pageFromHash()));
 showPage(pageFromHash());
