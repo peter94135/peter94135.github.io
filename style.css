@@ -243,6 +243,8 @@ strong { font-weight: 600; }
 .theme-switch button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 @media (prefers-reduced-motion: reduce) { .theme-switch::before { transition: none; } }
 
+.nav-empty { display: block; padding: 0.4rem 0.75rem; font-size: 0.78rem; color: var(--text-3); font-style: italic; }
+
 /* ===== Main ===== */
 .main-content {
   margin-left: var(--sidebar-w);

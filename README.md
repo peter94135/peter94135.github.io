@@ -13,12 +13,11 @@ My personal academic website, hosted on GitHub Pages → **https://peter94135.gi
 └── .nojekyll       # Tells GitHub Pages to serve files as-is
 ```
 
-## Side Projects
+## Stock pages (moved)
 
-- **Stock Dashboard** → https://peter94135.github.io/stock-dashboard/ (repo
-  [peter94135/stock-dashboard](https://github.com/peter94135/stock-dashboard)): stock watchlist, theme strength and
-  the daily AI news pages. It lived in this repo until 2026-11-11; old links such as `#watchlist` or `#supply&item=…`
-  are redirected there by `script.js`. The old `news-data` branch here is no longer updated.
+The Stock pages moved to their own repo, [peter94135/stock-dashboard](https://github.com/peter94135/stock-dashboard)
+(https://peter94135.github.io/stock-dashboard/), on 2026-11-11. Old links such as `#watchlist` or `#supply&item=…`
+are redirected there by `script.js`. The old `news-data` branch here is no longer updated.
 
 ## How to edit
 
